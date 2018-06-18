@@ -9,10 +9,6 @@ export default class Signup extends Component {
     this.state = {};
   }
 
-  preventReload = e => {
-    e.preventDefault();
-  };
-
   render() {
     return <Box>Signup!</Box>;
   }

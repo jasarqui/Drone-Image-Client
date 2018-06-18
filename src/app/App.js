@@ -7,6 +7,7 @@ import Login from '../components/login/Login';
 import Signup from '../components/signup/Signup';
 import AnalyzeTab from '../components/analysis/AnalyzeTab';
 import PageNotExist from '../components/error/PageNotExist';
+import Footbar from '../components/access/Footbar';
 
 /* import assets here */
 import '../assets/index.css';
@@ -17,7 +18,7 @@ export default class App extends Component {
     super();
 
     this.state = {
-      /* pages: home, login, signup */
+      /* pages: home, login, signup, analyze */
       activePage: 'home',
       loggedIn: false
     };
@@ -28,14 +29,18 @@ export default class App extends Component {
   };
 
   handleChangePage = e => {
-    console.dir(e.target);
     this.setState({ activePage: e.target.dataset.value });
+    e.preventDefault();
+  };
+
+  preventReload = e => {
     e.preventDefault();
   };
 
   render() {
     return (
       <div className="app">
+        {/* this is the navbar part*/}
         <Navbar
           {...{
             /* pass the props here */
@@ -43,18 +48,48 @@ export default class App extends Component {
             loggedIn: this.state.loggedIn,
             /* pass the handlers here */
             handleLogin: this.handleLogin,
-            handleChangePage: this.handleChangePage
+            handleChangePage: this.handleChangePage,
+            preventReload: this.preventReload
           }}
         />
+        {/* here lies the body of the page */}
         {this.state.activePage === 'home' ? (
-          <Homepage />
+          <Login
+            {...{
+              /* pass the props here */
+              /* pass the handlers here */
+              preventReload: this.preventReload
+            }}
+          />
         ) : this.state.activePage === 'login' ? (
-          <Login />
+          <Login
+            {...{
+              /* pass the props here */
+              /* pass the handlers here */
+              preventReload: this.preventReload
+            }}
+          />
         ) : this.state.activePage === 'signup' ? (
-          <Signup />
+          <Signup
+            {...{
+              /* pass the props here */
+              /* pass the handlers here */
+              preventReload: this.preventReload
+            }}
+          />
+        ) : this.state.activePage === 'analyze' ? (
+          <AnalyzeTab />
         ) : (
-          <PageNotExist />
+          <PageNotExist
+            {...{
+              /* pass the props here */
+              /* pass the handlers here */
+              preventReload: this.preventReload
+            }}
+          />
         )}
+        {/* this is the footer part */}
+        <Footbar />
       </div>
     );
   }

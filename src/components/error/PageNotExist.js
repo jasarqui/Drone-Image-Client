@@ -9,10 +9,6 @@ export default class PageNotExist extends Component {
     this.state = {};
   }
 
-  preventReload = e => {
-    e.preventDefault();
-  };
-
   render() {
     return <Box>Error 404</Box>;
   }

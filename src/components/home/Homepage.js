@@ -9,10 +9,6 @@ export default class Homepage extends Component {
     this.state = {};
   }
 
-  preventReload = e => {
-    e.preventDefault();
-  };
-
   render() {
     return <Box>Hello world!</Box>;
   }

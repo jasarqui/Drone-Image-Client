@@ -27,10 +27,6 @@ export default class Login extends Component {
     this.state = { tabActive: 1 };
   }
 
-  preventReload = e => {
-    e.preventDefault();
-  };
-
   changeLoginState = e => {
     e.preventDefault();
     this.props.handleLogin();
