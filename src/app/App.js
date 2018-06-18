@@ -28,10 +28,8 @@ export default class App extends Component {
   };
 
   handleChangePage = e => {
-    console.log(e);
-    console.log(e.currentTarget);
-    console.log(e.currentTarget.value);
-    this.setState({ activePage: e.currentTarget.value });
+    console.dir(e.target);
+    this.setState({ activePage: e.target.dataset.value });
     e.preventDefault();
   };
 

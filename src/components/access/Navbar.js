@@ -45,8 +45,9 @@ export default class Login extends Component {
               <NavbarItem
                 style={style.navItem}
                 href="."
-                onClick={this.preventReload}>
-                <h1>Drone Image Analysis</h1>
+                data-value={'home'}
+                onClick={this.props.handleChangePage}>
+                Drone Image Analysis
               </NavbarItem>
             </NavbarStart>
             <NavbarEnd>
@@ -76,13 +77,13 @@ export default class Login extends Component {
                   <NavbarDropdown>
                     <NavbarItem
                       href="."
-                      value={'login'}
-                      onClick={this.changeLoginState}>
+                      data-value={'login'}
+                      onClick={this.props.handleChangePage}>
                       Login
                     </NavbarItem>
                     <NavbarItem
+                      data-value={'signup'}
                       href="."
-                      value={'signup'}
                       onClick={this.props.handleChangePage}>
                       Signup
                     </NavbarItem>
