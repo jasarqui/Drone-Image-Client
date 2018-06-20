@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 /* import <Component> from '../features/<component>/<filename>'*/
 import Navbar from '../components/access/Navbar';
 import Homepage from '../components/home/Homepage';
-import Login from '../components/login/Login';
 import Signup from '../components/signup/Signup';
 import AnalyzeTab from '../components/analysis/AnalyzeTab';
 import PageNotExist from '../components/error/PageNotExist';
@@ -17,7 +16,7 @@ export default class App extends Component {
     super();
 
     this.state = {
-      /* pages: home, login, signup, analyze */
+      /* pages: home, signup, analyze */
       activePage: 'home',
       loggedIn: false
     };
@@ -66,16 +65,6 @@ export default class App extends Component {
                   /* pass the handlers here */
                 }
               }
-            />
-          ) : this.state.activePage === 'login' ? (
-            <Login
-              {...{
-                /* pass the props here */
-                /* pass the handlers here */
-                handleLogin: this.handleLogin,
-                handleChangePage: this.directChangePage,
-                preventReload: this.preventReload
-              }}
             />
           ) : this.state.activePage === 'signup' ? (
             <Signup

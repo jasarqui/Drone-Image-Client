@@ -1,10 +1,7 @@
 /* import React components here */
 import React, { Component } from 'react';
-import DocumentTitle from 'react-document-title';
 /* import bulma components */
 import {
-  Columns,
-  Column,
   Box,
   Label,
   Control,
@@ -14,7 +11,10 @@ import {
   Button,
   Image,
   Notification,
-  Title
+  Modal,
+  ModalContent,
+  ModalClose,
+  ModalBackground
 } from 'bloomer';
 /* import assets here */
 import DiaIcon from '../../assets/dia-logo-white.png';
@@ -23,10 +23,6 @@ import * as API from '../../api';
 
 /* insert styles here */
 const style = {
-  bodyMargin: {
-    margin: '10px',
-    paddingTop: '25px'
-  },
   submit: {
     backgroundColor: 'navy',
     color: 'white',
@@ -36,14 +32,13 @@ const style = {
   whiteText: {
     color: 'white'
   },
-  border: {
-    border: '1px solid silver'
-  },
-  infoBox: {
-    marginTop: '25px',
-    backgroundColor: '#0a090c',
+  noBorder: {
+    paddingTop: '12px',
     border: '1px solid white',
-    color: 'white'
+    color: '#ff3860'
+  },
+  notifMargin: {
+    border: '5px solid black'
   }
 };
 
@@ -81,6 +76,7 @@ export default class Login extends Component {
         this.setState({ logState: 'success' });
         this.props.handleLogin();
         setTimeout(() => this.props.handleChangePage('home'), 500);
+        this.props.close();
       })
       .catch(error => {
         if (error.response !== undefined) {
@@ -92,37 +88,16 @@ export default class Login extends Component {
 
   render() {
     return (
-      <DocumentTitle title="DIA | Login">
-        <Columns style={style.bodyMargin}>
-          <Column isSize="2/3">
-            <Column isVertical>
-              <center style={style.whiteText}>
-                <Image src={DiaIcon} isSize="128x128" />
-                <Title isSize={5} style={style.whiteText}>
-                  Drone Image Analysis
-                </Title>
-              </center>
-            </Column>
-            <Column>
-              <Box style={style.infoBox}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                Curabitur sodales eu risus quis ultrices. Donec facilisis neque
-                ac enim pellentesque, et interdum libero mollis. Morbi ac
-                scelerisque massa, id mattis quam. Nam vitae ante massa. Nulla
-                pulvinar ante nunc, nec gravida turpis tristique sit amet. Donec
-                sodales pellentesque diam. Integer porttitor metus a justo
-                efficitur convallis. Cras felis nibh, ullamcorper ac facilisis
-                et, tempus sed magna. Phasellus maximus mollis efficitur.
-                Praesent id justo ipsum. Duis interdum neque sed orci euismod,
-                in gravida arcu tempus.
-              </Box>
-            </Column>
-          </Column>
-          {/* this is the login side */}
-          <Column isSize="1/3">
+      <div>
+        <Modal isActive={this.props.active}>
+          <ModalBackground onClick={this.props.close} />
+          <ModalContent>
             <Box>
-              <Notification isColor={this.state.logState} style={style.border}>
+              <Notification
+                isColor={this.state.logState}
+                style={style.notifMargin}>
                 <center>
+                  <Image src={DiaIcon} isSize="128x128" />
                   <p style={style.whiteText}>
                     {this.state.logState === 'info' ? (
                       'Welcome!'
@@ -179,14 +154,22 @@ export default class Login extends Component {
                         type="submit">
                         LOGIN
                       </Button>
+                      <Button style={style.noBorder}>
+                        <Icon
+                          href="."
+                          onClick={this.props.close}
+                          className="fa fa-times-circle fa-2x"
+                        />
+                      </Button>
                     </center>
                   </Control>
                 </Field>
               </form>
             </Box>
-          </Column>
-        </Columns>
-      </DocumentTitle>
+          </ModalContent>
+          <ModalClose onClick={this.props.close} />
+        </Modal>
+      </div>
     );
   }
 }

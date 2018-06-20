@@ -1,4 +1,6 @@
+/* import React components here */
 import React, { Component } from 'react';
+import Login from '../login/Login';
 /* import bulma components */
 import {
   Navbar,
@@ -20,16 +22,29 @@ const style = {
   navUser: { marginRight: '15px' }
 };
 
-export default class Login extends Component {
+export default class NavigBar extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { tabActive: 1 };
+    this.state = {
+      tabActive: 1,
+      modalActive: false
+    };
   }
 
   changeLoginState = e => {
     e.preventDefault();
     this.props.handleLogin();
+  };
+
+  openLoginModal = e => {
+    e.preventDefault();
+    this.setState({ modalActive: true });
+  };
+
+  closeLoginModal = e => {
+    e.preventDefault();
+    this.setState({ modalActive: false });
   };
 
   render() {
@@ -71,10 +86,7 @@ export default class Login extends Component {
                     />
                   </NavbarLink>
                   <NavbarDropdown>
-                    <NavbarItem
-                      href="."
-                      data-value={'login'}
-                      onClick={this.props.handleChangePage}>
+                    <NavbarItem href="." onClick={this.openLoginModal}>
                       Login
                     </NavbarItem>
                     <NavbarItem
@@ -89,6 +101,15 @@ export default class Login extends Component {
             </NavbarEnd>
           </NavbarMenu>
         </Navbar>
+        <Login
+          {...{
+            /* insert props here */
+            active: this.state.modalActive,
+            /* insert handlers here */
+            open: this.openLoginModal,
+            close: this.closeLoginModal
+          }}
+        />
       </div>
     );
   }
