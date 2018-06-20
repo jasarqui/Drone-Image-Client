@@ -1,6 +1,29 @@
 body {
+  position: absolute;
   margin: 0;
   padding: 0;
   font-family: sans-serif;
   background-color: #0a090c;
+  width: 100%;
+  height: 100%;
+}
+
+/* container */
+.app {
+  min-height: 100%;
+  position: relative;
+}
+
+/* no header css */
+
+.body {
+  position: relative;
+  background-color: #0a090c;
+}
+
+.footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  height: 0px;
 }

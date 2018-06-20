@@ -7,7 +7,6 @@ import Login from '../components/login/Login';
 import Signup from '../components/signup/Signup';
 import AnalyzeTab from '../components/analysis/AnalyzeTab';
 import PageNotExist from '../components/error/PageNotExist';
-import Footbar from '../components/access/Footbar';
 
 /* import assets here */
 import '../assets/index.css';
@@ -33,6 +32,10 @@ export default class App extends Component {
     e.preventDefault();
   };
 
+  directChangePage = page => {
+    this.setState({ activePage: page });
+  };
+
   preventReload = e => {
     e.preventDefault();
   };
@@ -42,6 +45,7 @@ export default class App extends Component {
       <div className="app">
         {/* this is the navbar part*/}
         <Navbar
+          className="header"
           {...{
             /* pass the props here */
             activePage: this.state.activePage,
@@ -53,43 +57,47 @@ export default class App extends Component {
           }}
         />
         {/* here lies the body of the page */}
-        {this.state.activePage === 'home' ? (
-          <Login
-            {...{
-              /* pass the props here */
-              /* pass the handlers here */
-              preventReload: this.preventReload
-            }}
-          />
-        ) : this.state.activePage === 'login' ? (
-          <Login
-            {...{
-              /* pass the props here */
-              /* pass the handlers here */
-              preventReload: this.preventReload
-            }}
-          />
-        ) : this.state.activePage === 'signup' ? (
-          <Signup
-            {...{
-              /* pass the props here */
-              /* pass the handlers here */
-              preventReload: this.preventReload
-            }}
-          />
-        ) : this.state.activePage === 'analyze' ? (
-          <AnalyzeTab />
-        ) : (
-          <PageNotExist
-            {...{
-              /* pass the props here */
-              /* pass the handlers here */
-              preventReload: this.preventReload
-            }}
-          />
-        )}
+        <div className="body">
+          {this.state.activePage === 'home' ? (
+            <Homepage
+              {
+                ...{
+                  /* pass the props here */
+                  /* pass the handlers here */
+                }
+              }
+            />
+          ) : this.state.activePage === 'login' ? (
+            <Login
+              {...{
+                /* pass the props here */
+                /* pass the handlers here */
+                handleLogin: this.handleLogin,
+                handleChangePage: this.directChangePage,
+                preventReload: this.preventReload
+              }}
+            />
+          ) : this.state.activePage === 'signup' ? (
+            <Signup
+              {...{
+                /* pass the props here */
+                /* pass the handlers here */
+                preventReload: this.preventReload
+              }}
+            />
+          ) : this.state.activePage === 'analyze' ? (
+            <AnalyzeTab />
+          ) : (
+            <PageNotExist
+              {...{
+                /* pass the props here */
+                /* pass the handlers here */
+                preventReload: this.preventReload
+              }}
+            />
+          )}
+        </div>
         {/* this is the footer part */}
-        <Footbar />
       </div>
     );
   }

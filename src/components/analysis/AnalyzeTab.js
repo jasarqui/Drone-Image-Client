@@ -1,4 +1,7 @@
+/* import React components here */
 import React, { Component } from 'react';
+import DocumentTitle from 'react-document-title';
+/* import Bloomer components here */
 import { Container, Tabs, Tab, TabList, TabLink } from 'bloomer';
 
 /* create styles here */
@@ -23,79 +26,81 @@ export default class AnalyzeTab extends Component {
 
   render() {
     return (
-      <div style={style.nav}>
-        <Tabs isBoxed isFullWidth>
-          <Container>
-            <TabList>
-              <Tab
-                isActive={this.state.tabActive === 1 ? true : false}
-                value={1}
-                onClick={this.changeTab}>
-                <TabLink
-                  style={
-                    this.state.tabActive === 1
-                      ? style.activeText
-                      : style.inactiveText
-                  }>
-                  Overview
-                </TabLink>
-              </Tab>
-              <Tab
-                isActive={this.state.tabActive === 2 ? true : false}
-                value={2}
-                onClick={this.changeTab}>
-                <TabLink
-                  style={
-                    this.state.tabActive === 2
-                      ? style.activeText
-                      : style.inactiveText
-                  }>
-                  Grid
-                </TabLink>
-              </Tab>
-              <Tab
-                isActive={this.state.tabActive === 3 ? true : false}
-                value={3}
-                onClick={this.changeTab}>
-                <TabLink
-                  style={
-                    this.state.tabActive === 3
-                      ? style.activeText
-                      : style.inactiveText
-                  }>
-                  Element
-                </TabLink>
-              </Tab>
-              <Tab
-                isActive={this.state.tabActive === 4 ? true : false}
-                value={4}
-                onClick={this.changeTab}>
-                <TabLink
-                  style={
-                    this.state.tabActive === 4
-                      ? style.activeText
-                      : style.inactiveText
-                  }>
-                  Components
-                </TabLink>
-              </Tab>
-              <Tab
-                isActive={this.state.tabActive === 5 ? true : false}
-                value={5}
-                onClick={this.changeTab}>
-                <TabLink
-                  style={
-                    this.state.tabActive === 5
-                      ? style.activeText
-                      : style.inactiveText
-                  }>
-                  Layout
-                </TabLink>
-              </Tab>
-            </TabList>
-          </Container>
-        </Tabs>
-      </div>
+      <DocumentTitle title="DIA">
+        <div style={style.nav}>
+          <Tabs isBoxed isFullWidth>
+            <Container>
+              <TabList>
+                <Tab
+                  isActive={this.state.tabActive === 1 ? true : false}
+                  value={1}
+                  onClick={this.changeTab}>
+                  <TabLink
+                    style={
+                      this.state.tabActive === 1
+                        ? style.activeText
+                        : style.inactiveText
+                    }>
+                    Overview
+                  </TabLink>
+                </Tab>
+                <Tab
+                  isActive={this.state.tabActive === 2 ? true : false}
+                  value={2}
+                  onClick={this.changeTab}>
+                  <TabLink
+                    style={
+                      this.state.tabActive === 2
+                        ? style.activeText
+                        : style.inactiveText
+                    }>
+                    Grid
+                  </TabLink>
+                </Tab>
+                <Tab
+                  isActive={this.state.tabActive === 3 ? true : false}
+                  value={3}
+                  onClick={this.changeTab}>
+                  <TabLink
+                    style={
+                      this.state.tabActive === 3
+                        ? style.activeText
+                        : style.inactiveText
+                    }>
+                    Element
+                  </TabLink>
+                </Tab>
+                <Tab
+                  isActive={this.state.tabActive === 4 ? true : false}
+                  value={4}
+                  onClick={this.changeTab}>
+                  <TabLink
+                    style={
+                      this.state.tabActive === 4
+                        ? style.activeText
+                        : style.inactiveText
+                    }>
+                    Components
+                  </TabLink>
+                </Tab>
+                <Tab
+                  isActive={this.state.tabActive === 5 ? true : false}
+                  value={5}
+                  onClick={this.changeTab}>
+                  <TabLink
+                    style={
+                      this.state.tabActive === 5
+                        ? style.activeText
+                        : style.inactiveText
+                    }>
+                    Layout
+                  </TabLink>
+                </Tab>
+              </TabList>
+            </Container>
+          </Tabs>
+        </div>
+      </DocumentTitle>
     );
   }
 }

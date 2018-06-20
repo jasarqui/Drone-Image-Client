@@ -1,4 +1,6 @@
+/* import React components here */
 import React, { Component } from 'react';
+import DocumentTitle from 'react-document-title';
 /* import bulma components */
 import { Box } from 'bloomer';
 
@@ -10,6 +12,10 @@ export default class Homepage extends Component {
   }
 
   render() {
-    return <Box>Hello world!</Box>;
+    return (
+      <DocumentTitle title="DIA">
+        <Box>Hello world!</Box>
+      </DocumentTitle>
+    );
   }
 }

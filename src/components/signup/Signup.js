@@ -1,4 +1,6 @@
+/* import React components here */
 import React, { Component } from 'react';
+import DocumentTitle from 'react-document-title';
 /* import bulma components */
 import { Box } from 'bloomer';
 
@@ -10,6 +12,10 @@ export default class Signup extends Component {
   }
 
   render() {
-    return <Box>Signup!</Box>;
+    return (
+      <DocumentTitle title="DIA | Signup">
+        <Box>Signup!</Box>
+      </DocumentTitle>
+    );
   }
 }
