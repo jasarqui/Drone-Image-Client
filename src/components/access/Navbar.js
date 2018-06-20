@@ -5,8 +5,8 @@ import {
   NavbarEnd,
   NavbarItem,
   NavbarMenu,
-  NavbarStart,
   NavbarLink,
+  NavbarBrand,
   NavbarDropdown,
   Icon
 } from 'bloomer';
@@ -37,15 +37,15 @@ export default class Login extends Component {
       <div style={style.nav}>
         <Navbar style={style.nav}>
           <NavbarMenu>
-            <NavbarStart>
+            <NavbarBrand>
               <NavbarItem
                 style={style.navItem}
                 href="."
                 data-value={'home'}
                 onClick={this.props.handleChangePage}>
-                Drone Image Analysis
+                Something something
               </NavbarItem>
-            </NavbarStart>
+            </NavbarBrand>
             <NavbarEnd>
               {this.props.loggedIn ? (
                 <NavbarItem hasDropdown isHoverable style={style.navDrop}>
