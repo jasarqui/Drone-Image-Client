@@ -37,14 +37,16 @@ const style = {
     border: '1px solid white',
     color: '#ff3860'
   },
-  notifMargin: {
-    border: '5px solid black'
+  boxPadding: {
+    paddingLeft: '0px',
+    paddingRight: '0px',
+    paddingTop: '0px'
+  },
+  formPadding: {
+    marginLeft: '20px',
+    marginRight: '20px'
   }
 };
-
-/* create regex here */
-const alphanumRegex = /^[A-Za-z'-]+$/;
-const passRegex = /^[A-Za-z0-9-_.]{6,}$/;
 
 export default class Login extends Component {
   constructor(props) {
@@ -65,6 +67,17 @@ export default class Login extends Component {
     this.setState({ password: e.target.value });
   };
 
+  handleClose = e => {
+    this.state.logState === 'danger' &&
+    !this.state.username &&
+    !this.state.password
+      ? this.setState({ logState: 'info' })
+      : {
+          /* do nothing */
+        };
+    this.props.close(e);
+  };
+
   startLogin = e => {
     e.preventDefault();
 
@@ -74,9 +87,13 @@ export default class Login extends Component {
     })
       .then(result => {
         this.setState({ logState: 'success' });
-        this.props.handleLogin();
-        setTimeout(() => this.props.handleChangePage('home'), 500);
-        this.props.close();
+        this.props.changeLog();
+
+        setTimeout(() => {
+          this.props.close(e);
+          /* this resets the modal */
+          this.setState({ username: '', password: '', logState: 'info' });
+        }, 350);
       })
       .catch(error => {
         if (error.response !== undefined) {
@@ -90,34 +107,32 @@ export default class Login extends Component {
     return (
       <div>
         <Modal isActive={this.props.active}>
-          <ModalBackground onClick={this.props.close} />
+          <ModalBackground onClick={this.handleClose} />
           <ModalContent>
-            <Box>
-              <Notification
-                isColor={this.state.logState}
-                style={style.notifMargin}>
+            <Box style={style.boxPadding}>
+              <Notification isColor={this.state.logState}>
                 <center>
                   <Image src={DiaIcon} isSize="128x128" />
                   <p style={style.whiteText}>
                     {this.state.logState === 'info' ? (
                       'Welcome!'
                     ) : this.state.logState === 'success' ? (
-                      <div>
+                      <span>
                         <Icon className="fa fa-check-circle" />
                         {'Successfully logged in!'}
-                      </div>
+                      </span>
                     ) : this.state.logState === 'danger' ? (
-                      <div>
+                      <span>
                         <Icon className="fa fa-times-circle" />
-                        {'Username and Password combination does not exist'}
-                      </div>
+                        {'Username and Password combination does not exist!'}
+                      </span>
                     ) : (
                       ''
                     )}
                   </p>
                 </center>
               </Notification>
-              <form>
+              <form style={style.formPadding}>
                 <Field>
                   <Label>Username</Label>
                   <Control hasIcons="left">
@@ -157,7 +172,7 @@ export default class Login extends Component {
                       <Button style={style.noBorder}>
                         <Icon
                           href="."
-                          onClick={this.props.close}
+                          onClick={this.handleClose}
                           className="fa fa-times-circle fa-2x"
                         />
                       </Button>
@@ -167,7 +182,7 @@ export default class Login extends Component {
               </form>
             </Box>
           </ModalContent>
-          <ModalClose onClick={this.props.close} />
+          <ModalClose onClick={this.handleClose} />
         </Modal>
       </div>
     );

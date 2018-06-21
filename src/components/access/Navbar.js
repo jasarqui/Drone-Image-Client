@@ -1,6 +1,7 @@
 /* import React components here */
 import React, { Component } from 'react';
-import Login from '../login/Login';
+import Login from '../auth/Login';
+import Logout from '../auth/Logout';
 /* import bulma components */
 import {
   Navbar,
@@ -12,6 +13,8 @@ import {
   NavbarDropdown,
   Icon
 } from 'bloomer';
+/* import api here */
+import * as API from '../../api';
 
 /* create styles here */
 const style = {
@@ -19,7 +22,8 @@ const style = {
   navItem: { backgroundColor: 'navy', color: 'white' },
   navLog: { color: 'white' },
   navDrop: { marginRight: '25px' },
-  navUser: { marginRight: '15px' }
+  navUser: { marginRight: '15px' },
+  navIcon: { marginRight: '10px' }
 };
 
 export default class NavigBar extends Component {
@@ -28,9 +32,20 @@ export default class NavigBar extends Component {
 
     this.state = {
       tabActive: 1,
-      modalActive: false
+      loginActive: false,
+      logoutActive: false
     };
   }
+
+  componentDidMount = () => {
+    API.getSession().then(result => {
+      result.data.data
+        ? this.props.handleLogin()
+        : {
+            /* do nothing */
+          };
+    });
+  };
 
   changeLoginState = e => {
     e.preventDefault();
@@ -39,12 +54,22 @@ export default class NavigBar extends Component {
 
   openLoginModal = e => {
     e.preventDefault();
-    this.setState({ modalActive: true });
+    this.setState({ loginActive: true });
   };
 
   closeLoginModal = e => {
     e.preventDefault();
-    this.setState({ modalActive: false });
+    this.setState({ loginActive: false });
+  };
+
+  openLogoutModal = e => {
+    e.preventDefault();
+    this.setState({ logoutActive: true });
+  };
+
+  closeLogoutModal = e => {
+    e.preventDefault();
+    this.setState({ logoutActive: false });
   };
 
   render() {
@@ -58,7 +83,26 @@ export default class NavigBar extends Component {
                 href="."
                 data-value={'home'}
                 onClick={this.props.handleChangePage}>
-                Something something
+                Lorem Ipsum
+              </NavbarItem>
+              <NavbarItem hasDropdown isHoverable style={style.navDrop}>
+                <NavbarLink style={style.navItem}>Images</NavbarLink>
+                <NavbarDropdown>
+                  <NavbarItem
+                    data-value={'browse'}
+                    href="."
+                    onClick={this.props.handleChangePage}>
+                    <Icon style={style.navIcon} className="fa fa-search" />
+                    Browse
+                  </NavbarItem>
+                  <NavbarItem
+                    data-value={'analyze'}
+                    href="."
+                    onClick={this.props.handleChangePage}>
+                    <Icon style={style.navIcon} className="fa fa-bolt" />
+                    Analyze
+                  </NavbarItem>
+                </NavbarDropdown>
               </NavbarItem>
             </NavbarBrand>
             <NavbarEnd>
@@ -72,7 +116,7 @@ export default class NavigBar extends Component {
                     You are logged in!
                   </NavbarLink>
                   <NavbarDropdown>
-                    <NavbarItem href="." onClick={this.changeLoginState}>
+                    <NavbarItem href="." onClick={this.openLogoutModal}>
                       Logout
                     </NavbarItem>
                   </NavbarDropdown>
@@ -101,13 +145,23 @@ export default class NavigBar extends Component {
             </NavbarEnd>
           </NavbarMenu>
         </Navbar>
+        {/* below are modals */}
         <Login
           {...{
             /* insert props here */
-            active: this.state.modalActive,
+            active: this.state.loginActive,
             /* insert handlers here */
-            open: this.openLoginModal,
-            close: this.closeLoginModal
+            close: this.closeLoginModal,
+            changeLog: this.props.handleLogin
+          }}
+        />
+        <Logout
+          {...{
+            /* insert props here */
+            active: this.state.logoutActive,
+            /* insert handlers here */
+            close: this.closeLogoutModal,
+            changeLog: this.changeLoginState
           }}
         />
       </div>

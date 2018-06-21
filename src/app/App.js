@@ -4,7 +4,8 @@ import React, { Component } from 'react';
 import Navbar from '../components/access/Navbar';
 import Homepage from '../components/home/Homepage';
 import Signup from '../components/signup/Signup';
-import AnalyzeTab from '../components/analysis/AnalyzeTab';
+import Browse from '../components/browse/Browse';
+import Analyze from '../components/analysis/Analyze';
 import PageNotExist from '../components/error/PageNotExist';
 
 /* import assets here */
@@ -16,7 +17,7 @@ export default class App extends Component {
     super();
 
     this.state = {
-      /* pages: home, signup, analyze */
+      /* pages: home, signup, browse, analyze */
       activePage: 'home',
       loggedIn: false
     };
@@ -52,7 +53,8 @@ export default class App extends Component {
             /* pass the handlers here */
             handleLogin: this.handleLogin,
             handleChangePage: this.handleChangePage,
-            preventReload: this.preventReload
+            preventReload: this.preventReload,
+            directChangePage: this.directChangePage
           }}
         />
         {/* here lies the body of the page */}
@@ -75,7 +77,22 @@ export default class App extends Component {
               }}
             />
           ) : this.state.activePage === 'analyze' ? (
-            <AnalyzeTab />
+            <Analyze
+              {...{
+                /* pass the props here */
+                /* pass the handlers here */
+                preventReload: this.preventReload
+              }}
+            />
+          ) : this.state.activePage === 'browse' ? (
+            <Browse
+              {...{
+                /* pass the props here */
+                loggedIn: this.state.loggedIn,
+                /* pass the handlers here */
+                preventReload: this.preventReload
+              }}
+            />
           ) : (
             <PageNotExist
               {...{
