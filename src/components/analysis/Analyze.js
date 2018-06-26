@@ -5,7 +5,6 @@ import DocumentTitle from 'react-document-title';
 import {
   Columns,
   Column,
-  Box,
   Card,
   CardContent,
   CardHeader,

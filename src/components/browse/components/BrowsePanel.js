@@ -10,7 +10,6 @@ import {
   Control,
   Input,
   Icon,
-  Checkbox,
   Button,
   Select
 } from 'bloomer';
