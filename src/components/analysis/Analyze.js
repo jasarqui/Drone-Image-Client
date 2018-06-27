@@ -22,6 +22,8 @@ import {
   MenuLink,
   MenuList
 } from 'bloomer';
+/* import misc components here */
+import dialog from 'nw-dialog';
 
 /* create styles here */
 const style = {
@@ -46,10 +48,20 @@ export default class Analyze extends Component {
 
     this.state = {
       selectedFile: null,
-      metadata: {
-        name: 'sample_file.png',
-        date: '06/27/2018'
-      },
+      metadata: [
+        {
+          name: 'Name',
+          value: 'sample_file.png'
+        },
+        {
+          name: 'Date',
+          value: '06/27/2018'
+        },
+        {
+          name: 'Camera',
+          value: 'RGB Camera'
+        }
+      ],
       attrib: [
         {
           name: 'Height',
@@ -65,7 +77,9 @@ export default class Analyze extends Component {
 
   uploadFile = e => {
     e.preventDefault();
-    this.setState({ selectedFile: e.target.value });
+    dialog.folderBrowserDialog(result => {
+      this.setState({ selectedFile: result });
+    });
   };
 
   analyzeImage = e => {
@@ -98,13 +112,15 @@ export default class Analyze extends Component {
               <CardContent>
                 <Columns>
                   <Column isSize="1/2">
-                    <Button
-                      isFullWidth
-                      isColor="primary"
-                      onClick={this.uploadFile}>
-                      <Icon className="fa fa-upload" style={style.icon} />
-                      Upload Image
-                    </Button>
+                    <form>
+                      <Button
+                        isFullWidth
+                        isColor="primary"
+                        onClick={this.uploadFile}>
+                        <Icon className="fa fa-upload" style={style.icon} />
+                        Upload Image
+                      </Button>
+                    </form>
                   </Column>
                   <Column isSize="1/2">
                     <Button
@@ -126,32 +142,24 @@ export default class Analyze extends Component {
                 <Menu>
                   <MenuLabel>Metadata</MenuLabel>
                   <MenuList>
-                    <li>
-                      <MenuLink style={style.removeUnderline}>
-                        <Columns>
-                          <Column isSize="1/3">Name</Column>
-                          <Column isSize="2/3">
-                            {this.state.metadata.name}
-                          </Column>
-                        </Columns>
-                      </MenuLink>
-                    </li>
-                    <li>
-                      <MenuLink style={style.removeUnderline}>
-                        <Columns>
-                          <Column isSize="1/3">Date</Column>
-                          <Column isSize="2/3">
-                            {this.state.metadata.date}
-                          </Column>
-                        </Columns>
-                      </MenuLink>
-                    </li>
+                    {this.state.metadata.map((data, id) => {
+                      return (
+                        <li key={id}>
+                          <MenuLink style={style.removeUnderline}>
+                            <Columns>
+                              <Column isSize="1/3">{data.name}</Column>
+                              <Column isSize="2/3">{data.value}</Column>
+                            </Columns>
+                          </MenuLink>
+                        </li>
+                      );
+                    })}
                   </MenuList>
                   <MenuLabel>Attributes</MenuLabel>
                   <MenuList>
-                    {this.state.attrib.map(attribute => {
+                    {this.state.attrib.map((attribute, id) => {
                       return (
-                        <li>
+                        <li key={id}>
                           <MenuLink style={style.removeUnderline}>
                             <Columns>
                               <Column isSize="1/3">{attribute.name}</Column>

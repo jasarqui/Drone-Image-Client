@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import Login from '../auth/Login';
 import Logout from '../auth/Logout';
+import Signup from '../signup/Signup';
 /* import bulma components */
 import {
   Navbar,
@@ -33,7 +34,8 @@ export default class NavigBar extends Component {
     this.state = {
       tabActive: 1,
       loginActive: false,
-      logoutActive: false
+      logoutActive: false,
+      signupActive: false
     };
   }
 
@@ -70,6 +72,16 @@ export default class NavigBar extends Component {
   closeLogoutModal = e => {
     e.preventDefault();
     this.setState({ logoutActive: false });
+  };
+
+  openSignupModal = e => {
+    e.preventDefault();
+    this.setState({ signupActive: true });
+  };
+
+  closeSignupModal = e => {
+    e.preventDefault();
+    this.setState({ signupActive: false });
   };
 
   render() {
@@ -133,10 +145,7 @@ export default class NavigBar extends Component {
                     <NavbarItem href="." onClick={this.openLoginModal}>
                       Login
                     </NavbarItem>
-                    <NavbarItem
-                      data-value={'signup'}
-                      href="."
-                      onClick={this.props.handleChangePage}>
+                    <NavbarItem href="." onClick={this.openSignupModal}>
                       Signup
                     </NavbarItem>
                   </NavbarDropdown>
@@ -162,6 +171,14 @@ export default class NavigBar extends Component {
             /* insert handlers here */
             close: this.closeLogoutModal,
             changeLog: this.changeLoginState
+          }}
+        />
+        <Signup
+          {...{
+            /* insert props here */
+            active: this.state.signupActive,
+            /* insert handlers here */
+            close: this.closeSignupModal
           }}
         />
       </div>
