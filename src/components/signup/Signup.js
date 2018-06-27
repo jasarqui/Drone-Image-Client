@@ -54,7 +54,7 @@ const style = {
 const nameRegex = /[A-Za-z'-\s]{1,}/;
 const credRegex = /[A-Za-z-_]{6,}/;
 // email regex according to General Email Regex (RFC 5322 Official Standard)
-const emailRegex = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@irri.org/;
+const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
 
 export default class Signup extends Component {
   constructor(props) {
