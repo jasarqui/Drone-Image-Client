@@ -169,13 +169,6 @@ export default class Login extends Component {
                         type="submit">
                         LOGIN
                       </Button>
-                      <Button style={style.noBorder}>
-                        <Icon
-                          href="."
-                          onClick={this.handleClose}
-                          className="fa fa-times-circle fa-2x"
-                        />
-                      </Button>
                     </center>
                   </Control>
                 </Field>
