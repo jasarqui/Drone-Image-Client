@@ -26,18 +26,12 @@ import * as API from '../../api';
 /* insert styles here */
 const style = {
   submit: {
-    backgroundColor: 'navy',
     color: 'white',
     width: '40%',
-    marginTop: '20px'
+    marginTop: '10px'
   },
   whiteText: {
     color: 'white'
-  },
-  noBorder: {
-    paddingTop: '12px',
-    border: '1px solid white',
-    color: '#ff3860'
   },
   boxPadding: {
     paddingLeft: '0px',
@@ -47,12 +41,22 @@ const style = {
   formPadding: {
     marginLeft: '10px',
     marginRight: '10px'
+  },
+  greenText: {
+    color: '#23d160'
+  },
+  redText: {
+    color: '#ff3860'
+  },
+  noText: {
+    color: 'black'
   }
 };
 
 /* create regex here */
-const nameRegex = /[A-Za-z'-\s]{1,}/;
-const credRegex = /[A-Za-z-_]{6,}/;
+const nameRegex = /^[A-Za-z'-\s]{1,}$/;
+const credRegex = /^[A-Za-z0-9-_]{6,}$/;
+const passRegex = /^[A-Za-z0-9-_./\\@";:,<>()]{6,}$/;
 // email regex according to General Email Regex (RFC 5322 Official Standard)
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
 
@@ -73,50 +77,51 @@ export default class Signup extends Component {
 
   inputFirstName = e => {
     this.setState({ firstname: e.target.value });
-    this.changeSignupState();
   };
 
   inputLastName = e => {
     this.setState({ lastname: e.target.value });
-    this.changeSignupState();
   };
 
   inputEmail = e => {
     this.setState({ email: e.target.value });
-    this.changeSignupState();
   };
 
   inputUserName = e => {
     this.setState({ username: e.target.value });
-    this.changeSignupState();
   };
 
   inputPassword = e => {
     this.setState({ password: e.target.value });
-    this.changeSignupState();
   };
 
   inputRepeatPass = e => {
     this.setState({ repeatpass: e.target.value });
-    this.changeSignupState();
   };
 
   changeSignupState = () => {
-    this.state.firstname &&
-    this.state.lastname &&
-    this.state.email &&
-    this.state.username &&
-    this.state.password &&
-    this.state.repeatpass
-      ? this.state.firstname.match(nameRegex) &&
-        this.state.lastname.match(nameRegex) &&
-        this.state.email.match(emailRegex) &&
-        this.state.username.match(credRegex) &&
-        this.state.password.match(credRegex) &&
-        this.state.repeatpass.match(credRegex)
-        ? this.setState({ signupState: 'success' })
-        : this.setState({ signupState: 'danger' })
-      : this.setState({ signupState: 'info' });
+    /* Timeout is used to have a buffer time,
+    so that the function will only check the state
+    only after the values change */
+
+    setTimeout(() => {
+      this.state.firstname &&
+      this.state.lastname &&
+      this.state.email &&
+      this.state.username &&
+      this.state.password &&
+      this.state.repeatpass
+        ? this.state.firstname.match(nameRegex) &&
+          this.state.lastname.match(nameRegex) &&
+          this.state.email.match(emailRegex) &&
+          this.state.username.match(credRegex) &&
+          this.state.password.match(passRegex) &&
+          this.state.repeatpass.match(passRegex) &&
+          this.state.password === this.state.repeatpass
+          ? this.setState({ signupState: 'success' })
+          : this.setState({ signupState: 'danger' })
+        : this.setState({ signupState: 'info' });
+    }, 50);
   };
 
   handleClose = e => {
@@ -152,9 +157,27 @@ export default class Signup extends Component {
                   </p>
                 </center>
               </Notification>
-              <form style={style.formPadding}>
+              <form style={style.formPadding} onChange={this.changeSignupState}>
                 <Field style={style.formPadding}>
-                  <Label>Name</Label>
+                  <Label>
+                    Name{' '}
+                    <small
+                      style={
+                        this.state.firstname && this.state.lastname
+                          ? this.state.firstname.match(nameRegex) &&
+                            this.state.lastname.match(nameRegex)
+                            ? style.greenText
+                            : style.redText
+                          : style.noText
+                      }>
+                      {this.state.firstname && this.state.lastname
+                        ? this.state.firstname.match(nameRegex) &&
+                          this.state.lastname.match(nameRegex)
+                          ? 'looks good!'
+                          : 'should only contain letters, spaces, dashes, and single quotes'
+                        : ''}
+                    </small>
+                  </Label>
                   <Columns>
                     <Column isSize="1/2">
                       <Control hasIcons={['left', 'right']}>
@@ -223,7 +246,23 @@ export default class Signup extends Component {
                   </Columns>
                 </Field>
                 <Field style={style.formPadding}>
-                  <Label>E-mail</Label>
+                  <Label>
+                    E-mail{' '}
+                    <small
+                      style={
+                        this.state.email
+                          ? this.state.email.match(emailRegex)
+                            ? style.greenText
+                            : style.redText
+                          : style.noText
+                      }>
+                      {this.state.email
+                        ? this.state.email.match(emailRegex)
+                          ? 'looks good!'
+                          : 'should be a valid email under the IRRI domain!'
+                        : ''}
+                    </small>
+                  </Label>
                   <Control hasIcons={['left', 'right']}>
                     <Input
                       placeholder="Email Address"
@@ -256,7 +295,23 @@ export default class Signup extends Component {
                   </Control>
                 </Field>
                 <Field style={style.formPadding}>
-                  <Label>Username</Label>
+                  <Label>
+                    Username{' '}
+                    <small
+                      style={
+                        this.state.username
+                          ? this.state.username.match(credRegex)
+                            ? style.greenText
+                            : style.redText
+                          : style.noText
+                      }>
+                      {this.state.username
+                        ? this.state.username.match(credRegex)
+                          ? 'looks good!'
+                          : 'should contain at least 6 valid characters!'
+                        : ''}
+                    </small>
+                  </Label>
                   <Control hasIcons={['left', 'right']}>
                     <Input
                       placeholder="Username"
@@ -289,7 +344,27 @@ export default class Signup extends Component {
                   </Control>
                 </Field>
                 <Field style={style.formPadding}>
-                  <Label>Password</Label>
+                  <Label>
+                    Password{' '}
+                    <small
+                      style={
+                        this.state.password
+                          ? this.state.password.match(passRegex)
+                            ? this.state.password === this.state.repeatpass
+                              ? style.greenText
+                              : style.redText
+                            : style.redText
+                          : style.noText
+                      }>
+                      {this.state.password
+                        ? this.state.password.match(passRegex)
+                          ? this.state.password === this.state.repeatpass
+                            ? 'looks good!'
+                            : 'should match!'
+                          : 'should contain at least 6 valid characters!'
+                        : ''}
+                    </small>
+                  </Label>
                   <Control hasIcons={['left', 'right']}>
                     <Input
                       placeholder="Password"
@@ -298,8 +373,10 @@ export default class Signup extends Component {
                       type="password"
                       isColor={
                         this.state.password
-                          ? this.state.password.match(credRegex)
-                            ? 'success'
+                          ? this.state.password.match(passRegex)
+                            ? this.state.password === this.state.repeatpass
+                              ? 'success'
+                              : 'danger'
                             : 'danger'
                           : 'light'
                       }
@@ -314,8 +391,10 @@ export default class Signup extends Component {
                       isAlign="right"
                       className={
                         this.state.password
-                          ? this.state.password.match(credRegex)
-                            ? 'fa fa-check'
+                          ? this.state.password.match(passRegex)
+                            ? this.state.password === this.state.repeatpass
+                              ? 'fa fa-check'
+                              : 'fa fa-times'
                             : 'fa fa-times'
                           : 'fa fa-question'
                       }
@@ -323,7 +402,27 @@ export default class Signup extends Component {
                   </Control>
                 </Field>
                 <Field style={style.formPadding}>
-                  <Label>Repeat Password</Label>
+                  <Label>
+                    Repeat Password{' '}
+                    <small
+                      style={
+                        this.state.repeatpass
+                          ? this.state.repeatpass.match(passRegex)
+                            ? this.state.repeatpass === this.state.password
+                              ? style.greenText
+                              : style.redText
+                            : style.redText
+                          : style.noText
+                      }>
+                      {this.state.repeatpass
+                        ? this.state.repeatpass.match(passRegex)
+                          ? this.state.repeatpass === this.state.password
+                            ? 'looks good!'
+                            : 'should match!'
+                          : 'should contain at least 6 valid characters!'
+                        : ''}
+                    </small>
+                  </Label>
                   <Control hasIcons={['left', 'right']}>
                     <Input
                       placeholder="Repeat Password"
@@ -332,8 +431,10 @@ export default class Signup extends Component {
                       type="password"
                       isColor={
                         this.state.repeatpass
-                          ? this.state.repeatpass.match(credRegex)
-                            ? 'success'
+                          ? this.state.repeatpass.match(passRegex)
+                            ? this.state.repeatpass === this.state.password
+                              ? 'success'
+                              : 'danger'
                             : 'danger'
                           : 'light'
                       }
@@ -348,14 +449,28 @@ export default class Signup extends Component {
                       isAlign="right"
                       className={
                         this.state.repeatpass
-                          ? this.state.repeatpass.match(credRegex)
-                            ? 'fa fa-check'
+                          ? this.state.repeatpass.match(passRegex)
+                            ? this.state.repeatpass === this.state.password
+                              ? 'fa fa-check'
+                              : 'fa fa-times'
                             : 'fa fa-times'
                           : 'fa fa-question'
                       }
                     />
                   </Control>
                 </Field>
+                <Control>
+                  <center>
+                    <Button
+                      style={style.submit}
+                      isColor={this.state.signupState}
+                      disabled={
+                        this.state.signupState === 'success' ? false : true
+                      }>
+                      SUBMIT
+                    </Button>
+                  </center>
+                </Control>
               </form>
             </Box>
           </ModalContent>
