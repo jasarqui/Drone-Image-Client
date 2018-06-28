@@ -125,7 +125,35 @@ export default class Signup extends Component {
   };
 
   handleClose = e => {
-    this.props.close(e);
+    e.preventDefault();
+    this.state.signupState === 'success'
+      ? API.getUser(this.state.username).then(result => {
+          result.data.data
+            ? {
+                /* display error exists here */
+              }
+            : API.signup({
+                firstname: this.state.firstname,
+                lastname: this.state.lastname,
+                email: this.state.email,
+                username: this.state.username,
+                password: this.state.password
+              }).then(
+                setTimeout(() => {
+                  API.login({
+                    username: this.state.username,
+                    password: this.state.password
+                  })
+                    .then(result => {
+                      this.setState({ logState: 'success' });
+                      this.props.changeLog(e);
+                    })
+                    .then(this.props.close(e));
+                }),
+                50
+              );
+        })
+      : this.props.close(e);
   };
 
   render() {
@@ -157,7 +185,10 @@ export default class Signup extends Component {
                   </p>
                 </center>
               </Notification>
-              <form style={style.formPadding} onChange={this.changeSignupState}>
+              <form
+                style={style.formPadding}
+                onChange={this.changeSignupState}
+                onSubmit={this.handleClose}>
                 <Field style={style.formPadding}>
                   <Label>
                     Name{' '}
@@ -464,6 +495,7 @@ export default class Signup extends Component {
                     <Button
                       style={style.submit}
                       isColor={this.state.signupState}
+                      type="submit"
                       disabled={
                         this.state.signupState === 'success' ? false : true
                       }>

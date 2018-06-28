@@ -2,3 +2,4 @@
 
 /* export * from './entities/<api> */
 export * from './entities/auth';
+export * from './entities/user';

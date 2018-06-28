@@ -178,7 +178,8 @@ export default class NavigBar extends Component {
             /* insert props here */
             active: this.state.signupActive,
             /* insert handlers here */
-            close: this.closeSignupModal
+            close: this.closeSignupModal,
+            changeLog: this.changeLoginState
           }}
         />
       </div>
