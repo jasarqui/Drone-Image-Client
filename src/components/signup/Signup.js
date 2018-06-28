@@ -126,32 +126,49 @@ export default class Signup extends Component {
 
   handleClose = e => {
     e.preventDefault();
-    this.state.signupState === 'success'
+    this.state.signupState === 'success' || 'warning'
       ? API.getUser(this.state.username).then(result => {
           result.data.data
-            ? {
-                /* display error exists here */
-              }
-            : API.signup({
-                firstname: this.state.firstname,
-                lastname: this.state.lastname,
-                email: this.state.email,
-                username: this.state.username,
-                password: this.state.password
-              }).then(
-                setTimeout(() => {
-                  API.login({
-                    username: this.state.username,
-                    password: this.state.password
-                  })
-                    .then(result => {
-                      this.setState({ logState: 'success' });
-                      this.props.changeLog(e);
-                    })
-                    .then(this.props.close(e));
-                }),
-                50
-              );
+            ? this.setState({ signupState: 'warning' })
+            : API.getEmail(this.state.email).then(res => {
+                res.data.data
+                  ? this.setState({ signupState: 'warning' })
+                  : API.signup({
+                      firstname: this.state.firstname,
+                      lastname: this.state.lastname,
+                      email: this.state.email,
+                      username: this.state.username,
+                      password: this.state.password
+                    }).then(
+                      /* set timeout is added because
+                login is faster than signing up */
+
+                      setTimeout(() => {
+                        API.login({
+                          username: this.state.username,
+                          password: this.state.password
+                        })
+                          .then(result => {
+                            this.setState({ logState: 'success' });
+                            this.props.changeLog(e);
+                          })
+                          .then(this.props.close(e))
+                          .then(
+                            /* reset the modal */
+                            this.setState({
+                              firstname: '',
+                              lastname: '',
+                              email: '',
+                              username: '',
+                              password: '',
+                              repeatpass: '',
+                              signupState: 'info'
+                            })
+                          );
+                      }),
+                      50
+                    );
+              });
         })
       : this.props.close(e);
   };
@@ -160,7 +177,7 @@ export default class Signup extends Component {
     return (
       <div>
         <Modal isActive={this.props.active}>
-          <ModalBackground onClick={this.handleClose} />
+          <ModalBackground onClick={this.props.close} />
           <ModalContent>
             <Box style={style.boxPadding}>
               <Notification isColor={this.state.signupState}>
@@ -178,6 +195,11 @@ export default class Signup extends Component {
                       <span>
                         <Icon className="fa fa-times-circle" />
                         {'Account information is invalid!'}
+                      </span>
+                    ) : this.state.signupState === 'warning' ? (
+                      <span>
+                        <Icon className="fa fa-times-circle" />
+                        {'Account already exists!'}
                       </span>
                     ) : (
                       ''
