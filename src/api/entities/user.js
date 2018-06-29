@@ -7,10 +7,10 @@ export const signup = form => {
 
 // gets a username by username
 export const getUser = username => {
-  return axios.get(`/user/${username}`);
+  return axios.get(`/user/byUname/${username}`);
 };
 
 // gets a username by email
 export const getEmail = email => {
-  return axios.get(`/user/email/${email}`);
+  return axios.get(`/user/byEmail/${email}`);
 };
