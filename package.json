@@ -8,11 +8,12 @@
     "bulma": "^0.7.1",
     "bulma-start": "^0.0.2",
     "font-awesome": "^4.7.0",
-    "nw-dialog": "^1.0.7",
     "react": "^16.4.1",
     "react-document-title": "^2.0.3",
     "react-dom": "^16.4.1",
-    "react-scripts": "1.1.4"
+    "react-dropzone": "^4.2.12",
+    "react-scripts": "1.1.4",
+    "superagent": "^3.8.3"
   },
   "scripts": {
     "start": "react-scripts start",

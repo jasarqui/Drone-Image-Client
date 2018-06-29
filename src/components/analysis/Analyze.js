@@ -1,6 +1,7 @@
 /* import React components here */
 import React, { Component } from 'react';
 import DocumentTitle from 'react-document-title';
+import Dropzone from 'react-dropzone';
 /* import bulma components */
 import {
   Columns,
@@ -9,7 +10,6 @@ import {
   CardContent,
   CardHeader,
   CardHeaderTitle,
-  CardHeaderIcon,
   Icon,
   Image,
   CardImage,
@@ -20,10 +20,11 @@ import {
   Menu,
   MenuLabel,
   MenuLink,
-  MenuList
+  MenuList,
+  Section
 } from 'bloomer';
 /* import misc components here */
-import dialog from 'nw-dialog';
+import request from 'superagent';
 
 /* create styles here */
 const style = {
@@ -32,15 +33,30 @@ const style = {
     borderRadius: '25px'
   },
   icon: {
-    marginRight: '5px'
+    marginRight: '3px'
   },
   removeUnderline: {
     textDecoration: 'none'
   },
   marginPanel: {
-    margin: '30px 20px 20px 0px'
+    margin: '30px'
+  },
+  dropzone: {
+    /* pseudo flexbox */
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alingItems: 'center',
+    height: '500px',
+    verticalAlign: 'center',
+    border: '2px dashed silver',
+    margin: '5px'
   }
 };
+
+/* create constants here */
+const CLOUDINARY_UPLOAD_PRESET = 'dronedb';
+const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/jasarqui/upload';
 
 export default class Analyze extends Component {
   constructor(props) {
@@ -48,6 +64,7 @@ export default class Analyze extends Component {
 
     this.state = {
       selectedFile: null,
+      fileURL: null,
       metadata: [
         {
           name: 'Name',
@@ -75,10 +92,29 @@ export default class Analyze extends Component {
     };
   }
 
-  uploadFile = e => {
-    e.preventDefault();
-    dialog.folderBrowserDialog(result => {
-      this.setState({ selectedFile: result });
+  buttonUpload = e => {};
+
+  uploadFile = files => {
+    this.setState({ selectedFile: files[0] });
+
+    this.uploadImage(files[0]);
+  };
+
+  uploadImage = image => {
+    let upload = request
+      .post(CLOUDINARY_UPLOAD_URL)
+      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+      .field('file', image);
+
+    upload.end((err, response) => {
+      if (err) {
+        console.error(err);
+      }
+
+      if (response.body.secure_url !== '') {
+        console.log(this.state.fileURL);
+        this.setState({ fileURL: response.body.secure_url });
+      }
     });
   };
 
@@ -95,43 +131,42 @@ export default class Analyze extends Component {
             <Card style={style.marginCard}>
               <CardHeader>
                 <CardHeaderTitle>Component</CardHeaderTitle>
-                <CardHeaderIcon>
-                  <Icon className="fa fa-angle-down" />
-                </CardHeaderIcon>
               </CardHeader>
               <CardImage>
-                <Image
-                  isRatio="4:3"
-                  src={
-                    this.state.selectedFile
-                      ? this.state.selectedFile
-                      : 'http://www.outokummunseutu.fi/components/com_easyblog/themes/wireframe/images/placeholder-image.png'
-                  }
-                />
+                <center>
+                  {this.state.fileURL ? (
+                    <Image isSize="4:3" src={this.state.fileURL} />
+                  ) : (
+                    <Dropzone
+                      style={style.dropzone}
+                      multiple={false}
+                      accept="image/*"
+                      onDrop={this.uploadFile}>
+                      <div>
+                        <Section isHidden="mobile">
+                          <Icon className="fa fa-download" style={style.icon} />
+                          Drop an image or{'  '}
+                          <Icon className="fa fa-upload" style={style.icon} />
+                          Click to select a file.
+                        </Section>
+                        <Section isHidden="desktop">
+                          <Icon className="fa fa-upload" style={style.icon} />
+                          Click to select a file.
+                        </Section>
+                      </div>
+                    </Dropzone>
+                  )}
+                </center>
               </CardImage>
               <CardContent>
-                <Columns>
-                  <Column isSize="1/2">
-                    <form>
-                      <Button
-                        isFullWidth
-                        isColor="primary"
-                        onClick={this.uploadFile}>
-                        <Icon className="fa fa-upload" style={style.icon} />
-                        Upload Image
-                      </Button>
-                    </form>
-                  </Column>
-                  <Column isSize="1/2">
-                    <Button
-                      isFullWidth
-                      isColor="primary"
-                      onClick={this.analyzeImage}>
-                      <Icon className="fa fa-bolt" style={style.icon} />
-                      Analyze
-                    </Button>
-                  </Column>
-                </Columns>
+                <Button
+                  isFullWidth
+                  isColor="primary"
+                  onClick={this.analyzeImage}
+                  disabled={this.state.fileURL ? false : true}>
+                  <Icon className="fa fa-bolt" style={style.icon} />
+                  Analyze
+                </Button>
               </CardContent>
             </Card>
           </Column>
