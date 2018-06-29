@@ -41,6 +41,9 @@ const style = {
   marginPanel: {
     margin: '30px'
   },
+  imageMargin: {
+    margin: '5px'
+  },
   dropzone: {
     /* pseudo flexbox */
     display: 'flex',
@@ -92,27 +95,26 @@ export default class Analyze extends Component {
     };
   }
 
-  buttonUpload = e => {};
-
   uploadFile = files => {
     this.setState({ selectedFile: files[0] });
-
     this.uploadImage(files[0]);
   };
 
   uploadImage = image => {
+    /* this is to post to the cloudinary api,
+    so that the image is uploaded to the cloud */
     let upload = request
       .post(CLOUDINARY_UPLOAD_URL)
       .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
       .field('file', image);
 
+    /* upload end is when the image is finished uploading */
     upload.end((err, response) => {
       if (err) {
         console.error(err);
       }
 
       if (response.body.secure_url !== '') {
-        console.log(this.state.fileURL);
         this.setState({ fileURL: response.body.secure_url });
       }
     });
@@ -135,7 +137,21 @@ export default class Analyze extends Component {
               <CardImage>
                 <center>
                   {this.state.fileURL ? (
-                    <Image isSize="4:3" src={this.state.fileURL} />
+                    <Image
+                      isSize="4:3"
+                      src={this.state.fileURL}
+                      style={style.imageMargin}
+                    />
+                  ) : this.state.selectedFile ? (
+                    <div style={style.dropzone}>
+                      <Icon
+                        className="fa fa-cog fa-spin fa-5x"
+                        style={style.icon}
+                        isSize="large"
+                      />
+                      <br />
+                      Please wait until the upload is complete
+                    </div>
                   ) : (
                     <Dropzone
                       style={style.dropzone}
