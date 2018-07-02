@@ -9,6 +9,7 @@ import PageNotExist from '../components/error/PageNotExist';
 
 /* import assets here */
 import '../assets/index.css';
+import Main from '../components/alert/Main';
 
 /* This is where we will handle page redirection */
 export default class App extends Component {
@@ -96,6 +97,8 @@ export default class App extends Component {
           )}
         </div>
         {/* this is the footer part */}
+        {/* these are misc components */}
+        <Main />
       </div>
     );
   }

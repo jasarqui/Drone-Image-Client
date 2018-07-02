@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import DocumentTitle from 'react-document-title';
 import Dropzone from 'react-dropzone';
+import Alert from 'react-s-alert';
+
 /* import bulma components */
 import {
   Columns,
@@ -58,13 +60,17 @@ const style = {
     border: '2px dashed silver',
     margin: '5px'
   },
-  saveButtonOn: {
-    textDecoration: 'none',
-    color: '#23d160'
+  switchOn: {
+    color: '#23d160',
+    margin: '0px',
+    padding: '0px',
+    textDecoration: 'none'
   },
-  saveButtonOff: {
-    textDecoration: 'none',
-    color: '#b5b5b5'
+  switchOff: {
+    color: '#b5b5b5',
+    margin: '0px',
+    padding: '0px',
+    textDecoration: 'none'
   }
 };
 
@@ -86,6 +92,7 @@ export default class Analyze extends Component {
       name: '',
       camera: '',
       date: '',
+      private: false, // this is default
       /* these are analyzed data */
       attrib: [
         {
@@ -154,16 +161,32 @@ export default class Analyze extends Component {
     this.setState({ attribOpen: !this.state.attribOpen });
   };
 
+  // this will send the image info into the database
   save = e => {
-    // this will send the image info into the database
     e.preventDefault();
+
+    /* saves the image information */
     API.save({
       fileURL: this.state.fileURL,
       name: this.state.name,
       camera: this.state.camera,
       date: this.state.date,
+      private: this.state.private,
       attrib: this.state.attrib
-    });
+    }).then(
+      /* this is an alert on success */
+      Alert.success('Successfully saved image.', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
+      })
+    );
+  };
+
+  switch = e => {
+    e.preventDefault();
+    this.setState({ private: !this.state.private });
   };
 
   render() {
@@ -233,8 +256,15 @@ export default class Analyze extends Component {
                     <Button
                       isFullWidth
                       isColor="primary"
-                      onClick={this.analyzeImage}
-                      disabled={this.state.fileURL ? false : true}>
+                      onClick={this.save}
+                      disabled={
+                        this.state.fileURL &&
+                        this.state.name &&
+                        this.state.camera &&
+                        this.state.date
+                          ? false
+                          : true
+                      }>
                       <Icon className="fa fa-save" style={style.icon} />
                       Save
                     </Button>
@@ -301,6 +331,36 @@ export default class Analyze extends Component {
                           <Columns>
                             <Column isSize="1/3">Date</Column>
                             <Column isSize="2/3">{this.state.date}</Column>
+                          </Columns>
+                        </MenuLink>
+                      </li>
+                      <li>
+                        <MenuLink style={style.removeUnderline}>
+                          <Columns>
+                            <Column isSize="1/3">Private</Column>
+                            <Column isSize="2/3">
+                              {this.state.private ? (
+                                <a
+                                  href="."
+                                  style={style.switchOn}
+                                  onClick={this.switch}>
+                                  <Icon
+                                    className={'fa fa-toggle-on fa-lg'}
+                                    isSize="small"
+                                  />
+                                </a>
+                              ) : (
+                                <a
+                                  href="."
+                                  style={style.switchOff}
+                                  onClick={this.switch}>
+                                  <Icon
+                                    className={'fa fa-toggle-off fa-lg'}
+                                    isSize="small"
+                                  />
+                                </a>
+                              )}
+                            </Column>
                           </Columns>
                         </MenuLink>
                       </li>
