@@ -125,7 +125,7 @@ export default class NavigBar extends Component {
                       className="fa fa-user-circle fa-2x"
                       style={style.navUser}
                     />
-                    You are logged in!
+                    You are logged in as {this.props.username}!
                   </NavbarLink>
                   <NavbarDropdown>
                     <NavbarItem href="." onClick={this.openLogoutModal}>
@@ -161,7 +161,8 @@ export default class NavigBar extends Component {
             active: this.state.loginActive,
             /* insert handlers here */
             close: this.closeLoginModal,
-            changeLog: this.props.handleLogin
+            changeLog: this.props.handleLogin,
+            changeUser: this.props.changeUser
           }}
         />
         <Logout
@@ -170,7 +171,8 @@ export default class NavigBar extends Component {
             active: this.state.logoutActive,
             /* insert handlers here */
             close: this.closeLogoutModal,
-            changeLog: this.changeLoginState
+            changeLog: this.changeLoginState,
+            removeUser: this.props.removeUser
           }}
         />
         <Signup
@@ -179,7 +181,8 @@ export default class NavigBar extends Component {
             active: this.state.signupActive,
             /* insert handlers here */
             close: this.closeSignupModal,
-            changeLog: this.changeLoginState
+            changeLog: this.changeLoginState,
+            changeUser: this.props.changeUser
           }}
         />
       </div>

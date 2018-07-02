@@ -88,6 +88,7 @@ export default class Login extends Component {
       .then(result => {
         this.setState({ logState: 'success' });
         this.props.changeLog();
+        this.props.changeUser(result.data.data.username, result.data.data.id);
 
         setTimeout(() => {
           this.props.close(e);

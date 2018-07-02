@@ -32,6 +32,7 @@ export default class Logout extends Component {
   handleLogout = e => {
     API.logout().then(() => {
       this.props.changeLog(e);
+      this.props.removeUser();
       this.props.close(e);
     });
   };

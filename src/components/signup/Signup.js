@@ -139,9 +139,9 @@ export default class Signup extends Component {
                       email: this.state.email,
                       username: this.state.username,
                       password: this.state.password
-                    }).then(
+                    }).then(result => {
                       /* set timeout is added because
-                login is faster than signing up */
+                      login is faster than signing up */
 
                       setTimeout(() => {
                         API.login({
@@ -151,9 +151,13 @@ export default class Signup extends Component {
                           .then(result => {
                             this.setState({ logState: 'success' });
                             this.props.changeLog(e);
+                            this.props.changeUser(
+                              this.state.username,
+                              this.state.password
+                            );
                           })
                           .then(this.props.close(e))
-                          .then(
+                          .then(result => {
                             /* reset the modal */
                             this.setState({
                               firstname: '',
@@ -163,11 +167,11 @@ export default class Signup extends Component {
                               password: '',
                               repeatpass: '',
                               signupState: 'info'
-                            })
-                          );
+                            });
+                          });
                       }),
-                      50
-                    );
+                        50;
+                    });
               });
         })
       : this.props.close(e);

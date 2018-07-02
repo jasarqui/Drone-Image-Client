@@ -20,7 +20,8 @@ export default class App extends Component {
       /* pages: home, browse, analyze */
       activePage: 'home',
       loggedIn: false,
-      username: ''
+      username: '',
+      currentUserId: ''
     };
   }
 
@@ -41,6 +42,14 @@ export default class App extends Component {
     e.preventDefault();
   };
 
+  changeUser = (username, id) => {
+    this.setState({ username: username, currentUserId: id });
+  };
+
+  removeUser = () => {
+    this.setState({ username: '', currentUserId: '' });
+  };
+
   render() {
     return (
       <div className="app">
@@ -51,11 +60,14 @@ export default class App extends Component {
             /* pass the props here */
             activePage: this.state.activePage,
             loggedIn: this.state.loggedIn,
+            username: this.state.username,
             /* pass the handlers here */
             handleLogin: this.handleLogin,
             handleChangePage: this.handleChangePage,
             preventReload: this.preventReload,
-            directChangePage: this.directChangePage
+            directChangePage: this.directChangePage,
+            changeUser: this.changeUser,
+            removeUser: this.removeUser
           }}
         />
         {/* here lies the body of the page */}
@@ -73,6 +85,7 @@ export default class App extends Component {
             <Analyze
               {...{
                 /* pass the props here */
+                userId: this.state.currentUserId,
                 /* pass the handlers here */
                 preventReload: this.preventReload
               }}

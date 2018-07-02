@@ -171,8 +171,9 @@ export default class Analyze extends Component {
       name: this.state.name,
       camera: this.state.camera,
       date: this.state.date,
-      private: this.state.private,
-      attrib: this.state.attrib
+      is_private: this.state.private,
+      attrib: this.state.attrib,
+      userId: this.props.userId
     }).then(
       /* this is an alert on success */
       Alert.success('Successfully saved image.', {
