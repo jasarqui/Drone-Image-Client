@@ -10,9 +10,6 @@ import 'react-s-alert/dist/s-alert-css-effects/jelly.css';
 /* The primary purpose of this component is that 
 to import the React sAlert module into our app */
 class Main extends React.Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <div>

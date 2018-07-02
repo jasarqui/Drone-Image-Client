@@ -58,7 +58,7 @@ const nameRegex = /^[A-Za-z'-\s]{1,}$/;
 const credRegex = /^[A-Za-z0-9-_]{6,}$/;
 const passRegex = /^[A-Za-z0-9-_./\\@";:,<>()]{6,}$/;
 // email regex according to General Email Regex (RFC 5322 Official Standard)
-const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
+const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
 
 export default class Signup extends Component {
   constructor(props) {

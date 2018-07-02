@@ -124,10 +124,24 @@ export default class Analyze extends Component {
     upload.end((err, response) => {
       if (err) {
         console.error(err);
+        /* this is an alert on success */
+        Alert.error('Failed to save image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
       }
 
       if (response.body.secure_url !== '') {
         this.setState({ fileURL: response.body.secure_url });
+        /* this is an alert on success */
+        Alert.success('Successfully uploaded image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
       }
     });
   };
@@ -140,6 +154,15 @@ export default class Analyze extends Component {
     this.setState({
       /* this should only get the date excluding the time */
       date: new Date(Date.now()).toLocaleString().split(',')[0]
+    });
+
+    // placeholder, needs glue
+    /* this is an alert on success */
+    Alert.success('Successfully analyzed image.', {
+      beep: false,
+      position: 'top-right',
+      effect: 'jelly',
+      timeout: 2000
     });
   };
 
@@ -174,15 +197,25 @@ export default class Analyze extends Component {
       is_private: this.state.private,
       attrib: this.state.attrib,
       userId: this.props.userId
-    }).then(
-      /* this is an alert on success */
-      Alert.success('Successfully saved image.', {
-        beep: false,
-        position: 'top-right',
-        effect: 'jelly',
-        timeout: 2000
+    })
+      .then(result => {
+        /* this is an alert on success */
+        Alert.success('Successfully saved image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
       })
-    );
+      .catch(error => {
+        /* this is an alert on failure */
+        Alert.error('Failed to save image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      });
   };
 
   switch = e => {
@@ -336,30 +369,28 @@ export default class Analyze extends Component {
                         </MenuLink>
                       </li>
                       <li>
-                        <MenuLink style={style.removeUnderline}>
+                        <MenuLink
+                          style={style.removeUnderline}
+                          onClick={this.switch}>
                           <Columns>
                             <Column isSize="1/3">Private</Column>
                             <Column isSize="2/3">
                               {this.state.private ? (
-                                <a
-                                  href="."
-                                  style={style.switchOn}
-                                  onClick={this.switch}>
+                                <i style={style.switchOn}>
                                   <Icon
+                                    href="."
                                     className={'fa fa-toggle-on fa-lg'}
                                     isSize="small"
                                   />
-                                </a>
+                                </i>
                               ) : (
-                                <a
-                                  href="."
-                                  style={style.switchOff}
-                                  onClick={this.switch}>
+                                <i style={style.switchOff}>
                                   <Icon
+                                    href="."
                                     className={'fa fa-toggle-off fa-lg'}
                                     isSize="small"
                                   />
-                                </a>
+                                </i>
                               )}
                             </Column>
                           </Columns>
