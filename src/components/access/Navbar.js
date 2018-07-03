@@ -42,15 +42,19 @@ export default class NavigBar extends Component {
   componentDidMount = () => {
     API.getSession().then(result => {
       result.data.data
-        ? this.props.handleLogin()
+        ? (this.props.handleLogin(),
+          this.props.changeUser(
+            result.data.data.firstname,
+            result.data.data.lastname,
+            result.data.data.id
+          ))
         : {
             /* do nothing */
           };
     });
   };
 
-  changeLoginState = e => {
-    e.preventDefault();
+  changeLoginState = () => {
     this.props.handleLogin();
   };
 
@@ -59,8 +63,7 @@ export default class NavigBar extends Component {
     this.setState({ loginActive: true });
   };
 
-  closeLoginModal = e => {
-    e.preventDefault();
+  closeLoginModal = () => {
     this.setState({ loginActive: false });
   };
 
@@ -69,8 +72,7 @@ export default class NavigBar extends Component {
     this.setState({ logoutActive: true });
   };
 
-  closeLogoutModal = e => {
-    e.preventDefault();
+  closeLogoutModal = () => {
     this.setState({ logoutActive: false });
   };
 
@@ -79,8 +81,7 @@ export default class NavigBar extends Component {
     this.setState({ signupActive: true });
   };
 
-  closeSignupModal = e => {
-    e.preventDefault();
+  closeSignupModal = () => {
     this.setState({ signupActive: false });
   };
 
@@ -125,7 +126,7 @@ export default class NavigBar extends Component {
                       className="fa fa-user-circle fa-2x"
                       style={style.navUser}
                     />
-                    You are logged in as {this.props.username}!
+                    {this.props.username}
                   </NavbarLink>
                   <NavbarDropdown>
                     <NavbarItem href="." onClick={this.openLogoutModal}>

@@ -1,5 +1,7 @@
 /* import React components here */
 import React, { Component } from 'react';
+import GoogleLogin from 'react-google-login';
+import Alert from 'react-s-alert';
 /* import bulma components */
 import {
   Box,
@@ -26,9 +28,20 @@ import * as API from '../../api';
 /* insert styles here */
 const style = {
   submit: {
+    backgroundColor: 'navy',
     color: 'white',
-    width: '40%',
-    marginTop: '10px'
+    width: '100%',
+    height: '35px',
+    borderRadius: '3px',
+    border: '1px solid navy'
+  },
+  googleSubmit: {
+    backgroundColor: 'navy',
+    height: '35px',
+    borderRadius: '3px',
+    border: '1px solid navy',
+    cursor: 'pointer',
+    width: '100%'
   },
   whiteText: {
     color: 'white'
@@ -50,12 +63,14 @@ const style = {
   },
   noText: {
     color: 'black'
+  },
+  buttons: {
+    width: '90%'
   }
 };
 
 /* create regex here */
 const nameRegex = /^[A-Za-z'-\s]{1,}$/;
-const credRegex = /^[A-Za-z0-9-_]{6,}$/;
 const passRegex = /^[A-Za-z0-9-_./\\@";:,<>()]{6,}$/;
 // email regex according to General Email Regex (RFC 5322 Official Standard)
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
@@ -68,7 +83,6 @@ export default class Signup extends Component {
       firstname: '',
       lastname: '',
       email: '',
-      username: '',
       password: '',
       repeatpass: '',
       signupState: 'info'
@@ -85,10 +99,6 @@ export default class Signup extends Component {
 
   inputEmail = e => {
     this.setState({ email: e.target.value });
-  };
-
-  inputUserName = e => {
-    this.setState({ username: e.target.value });
   };
 
   inputPassword = e => {
@@ -108,13 +118,11 @@ export default class Signup extends Component {
       this.state.firstname &&
       this.state.lastname &&
       this.state.email &&
-      this.state.username &&
       this.state.password &&
       this.state.repeatpass
         ? this.state.firstname.match(nameRegex) &&
           this.state.lastname.match(nameRegex) &&
           this.state.email.match(emailRegex) &&
-          this.state.username.match(credRegex) &&
           this.state.password.match(passRegex) &&
           this.state.repeatpass.match(passRegex) &&
           this.state.password === this.state.repeatpass
@@ -124,64 +132,114 @@ export default class Signup extends Component {
     }, 50);
   };
 
-  handleClose = e => {
+  signup = (firstname, lastname, email, password) => {
+    API.signup({
+      firstname: firstname,
+      lastname: lastname,
+      email: email,
+      password: password
+    }).then(() => {
+      /* set timeout is added because
+      login is faster than signing up */
+
+      setTimeout(() => {
+        API.login({
+          email: email,
+          password: password
+        })
+          .then(res => {
+            this.setState({ logState: 'success' });
+            this.props.changeLog();
+            this.props.changeUser(firstname, lastname, res.data.data.id);
+          })
+          .then(() => {
+            this.props.close();
+            /* reset the modal */
+            this.setState({
+              firstname: '',
+              lastname: '',
+              email: '',
+              password: '',
+              repeatpass: '',
+              signupState: 'info'
+            });
+          });
+      }),
+        50;
+    });
+  };
+
+  handleSubmit = e => {
     e.preventDefault();
     this.state.signupState === 'success' || 'warning'
-      ? API.getUser(this.state.username).then(result => {
-          result.data.data
+      ? API.getEmail(this.state.email).then(res => {
+          res.data.data
             ? this.setState({ signupState: 'warning' })
-            : API.getEmail(this.state.email).then(res => {
-                res.data.data
-                  ? this.setState({ signupState: 'warning' })
-                  : API.signup({
-                      firstname: this.state.firstname,
-                      lastname: this.state.lastname,
-                      email: this.state.email,
-                      username: this.state.username,
-                      password: this.state.password
-                    }).then(result => {
-                      /* set timeout is added because
-                      login is faster than signing up */
-
-                      setTimeout(() => {
-                        API.login({
-                          username: this.state.username,
-                          password: this.state.password
-                        })
-                          .then(result => {
-                            this.setState({ logState: 'success' });
-                            this.props.changeLog(e);
-                            this.props.changeUser(
-                              this.state.username,
-                              this.state.password
-                            );
-                          })
-                          .then(this.props.close(e))
-                          .then(result => {
-                            /* reset the modal */
-                            this.setState({
-                              firstname: '',
-                              lastname: '',
-                              email: '',
-                              username: '',
-                              password: '',
-                              repeatpass: '',
-                              signupState: 'info'
-                            });
-                          });
-                      }),
-                        50;
-                    });
-              });
+            : this.signup(
+                this.state.firstname,
+                this.state.lastname,
+                this.state.email,
+                this.state.password
+              );
         })
-      : this.props.close(e);
+      : this.props.close();
+  };
+
+  responseGoogle = response => {
+    /* if there was an error with loggin in */
+    if (response.error && response.error !== 'popup_closed_by_user') {
+      // closing the popup is considered an error, but must not show error alert
+      Alert.error('Login Error.', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
+      });
+    }
+
+    /* successfully logged in */
+    if (response.googleId) {
+      if (response.profileObj.email.match(emailRegex)) {
+        API.getEmail(response.profileObj.email).then(res => {
+          res.data.data
+            ? this.setState({ signupState: 'warning' })
+            : this.signup(
+                response.profileObj.givenName,
+                response.profileObj.familyName,
+                response.profileObj.email,
+                response.profileObj.googleId
+              );
+        });
+      } else {
+        this.setState({ signupState: 'danger' });
+        Alert.error('Must be under IRRI domain.', {
+          beep: false,
+          position: 'top',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      }
+    }
+  };
+
+  closeModal = () => {
+    if (
+      !this.state.firstname &&
+      !this.state.lastname &&
+      !this.state.email &&
+      !this.state.password &&
+      !this.state.repeatpass
+    ) {
+      this.setState({ signupState: 'info' });
+    }
+    this.props.close();
   };
 
   render() {
     return (
       <div>
         <Modal isActive={this.props.active}>
-          <ModalBackground onClick={this.props.close} />
+          <ModalBackground onClick={this.closeModal} />
           <ModalContent>
             <Box style={style.boxPadding}>
               <Notification isColor={this.state.signupState}>
@@ -214,7 +272,7 @@ export default class Signup extends Component {
               <form
                 style={style.formPadding}
                 onChange={this.changeSignupState}
-                onSubmit={this.handleClose}>
+                onSubmit={this.handleSubmit}>
                 <Field style={style.formPadding}>
                   <Label>
                     Name{' '}
@@ -353,55 +411,6 @@ export default class Signup extends Component {
                 </Field>
                 <Field style={style.formPadding}>
                   <Label>
-                    Username{' '}
-                    <small
-                      style={
-                        this.state.username
-                          ? this.state.username.match(credRegex)
-                            ? style.greenText
-                            : style.redText
-                          : style.noText
-                      }>
-                      {this.state.username
-                        ? this.state.username.match(credRegex)
-                          ? 'looks good!'
-                          : 'should contain at least 6 valid characters!'
-                        : ''}
-                    </small>
-                  </Label>
-                  <Control hasIcons={['left', 'right']}>
-                    <Input
-                      placeholder="Username"
-                      value={this.state.username}
-                      onChange={this.inputUserName}
-                      isColor={
-                        this.state.username
-                          ? this.state.username.match(credRegex)
-                            ? 'success'
-                            : 'danger'
-                          : 'light'
-                      }
-                    />
-                    <Icon
-                      isSize="small"
-                      isAlign="left"
-                      className="fa fa-user"
-                    />
-                    <Icon
-                      isSize="small"
-                      isAlign="right"
-                      className={
-                        this.state.username
-                          ? this.state.username.match(credRegex)
-                            ? 'fa fa-check'
-                            : 'fa fa-times'
-                          : 'fa fa-question'
-                      }
-                    />
-                  </Control>
-                </Field>
-                <Field style={style.formPadding}>
-                  <Label>
                     Password{' '}
                     <small
                       style={
@@ -518,21 +527,39 @@ export default class Signup extends Component {
                 </Field>
                 <Control>
                   <center>
-                    <Button
-                      style={style.submit}
-                      isColor={this.state.signupState}
-                      type="submit"
-                      disabled={
-                        this.state.signupState === 'success' ? false : true
-                      }>
-                      SUBMIT
-                    </Button>
+                    <Columns style={style.buttons}>
+                      <Column isSize="1/2">
+                        <Button
+                          style={style.submit}
+                          type="submit"
+                          disabled={
+                            this.state.signupState === 'success' ? false : true
+                          }>
+                          <small>Submit</small>
+                        </Button>
+                      </Column>
+                      <Column isSize="1/2">
+                        <GoogleLogin
+                          style={style.googleSubmit}
+                          clientId="224633775911-d2hav5ep4grlovqrqc4ugtgtqaiub07g.apps.googleusercontent.com"
+                          onSuccess={this.responseGoogle}
+                          onFailure={this.responseGoogle}
+                          redirectUri={'localhost:3000'}
+                          buttonText={
+                            <span style={style.whiteText}>
+                              <Icon className={'fa fa-google'} />Signup with
+                              Google
+                            </span>
+                          }
+                        />
+                      </Column>
+                    </Columns>
                   </center>
                 </Control>
               </form>
             </Box>
           </ModalContent>
-          <ModalClose onClick={this.handleClose} />
+          <ModalClose onClick={this.closeModal} />
         </Modal>
       </div>
     );

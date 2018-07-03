@@ -1,5 +1,7 @@
 /* import React components here */
 import React, { Component } from 'react';
+import GoogleLogin from 'react-google-login';
+import Alert from 'react-s-alert';
 /* import bulma components */
 import {
   Box,
@@ -14,7 +16,9 @@ import {
   Modal,
   ModalContent,
   ModalClose,
-  ModalBackground
+  ModalBackground,
+  Columns,
+  Column
 } from 'bloomer';
 /* import assets here */
 import DiaIcon from '../../assets/dia-logo-white.png';
@@ -23,11 +27,25 @@ import * as API from '../../api';
 
 /* insert styles here */
 const style = {
+  marginTop: {
+    marginTop: '20px',
+    marginBottom: '0px'
+  },
   submit: {
     backgroundColor: 'navy',
     color: 'white',
-    width: '40%',
-    marginTop: '20px'
+    width: '100%',
+    height: '35px',
+    borderRadius: '3px',
+    border: '1px solid navy'
+  },
+  googleSubmit: {
+    backgroundColor: 'navy',
+    height: '35px',
+    borderRadius: '3px',
+    border: '1px solid navy',
+    cursor: 'pointer',
+    width: '100%'
   },
   whiteText: {
     color: 'white'
@@ -53,14 +71,14 @@ export default class Login extends Component {
     super(props);
 
     this.state = {
-      username: '',
+      email: '',
       password: '',
       logState: 'info'
     };
   }
 
-  inputUsername = e => {
-    this.setState({ username: e.target.value });
+  inputEmail = e => {
+    this.setState({ email: e.target.value });
   };
 
   inputPassword = e => {
@@ -82,18 +100,22 @@ export default class Login extends Component {
     e.preventDefault();
 
     API.login({
-      username: this.state.username,
+      email: this.state.email,
       password: this.state.password
     })
       .then(result => {
         this.setState({ logState: 'success' });
         this.props.changeLog();
-        this.props.changeUser(result.data.data.username, result.data.data.id);
+        this.props.changeUser(
+          result.data.data.firstname,
+          result.data.data.lastname,
+          result.data.data.id
+        );
 
         setTimeout(() => {
           this.props.close(e);
           /* this resets the modal */
-          this.setState({ username: '', password: '', logState: 'info' });
+          this.setState({ email: '', password: '', logState: 'info' });
         }, 350);
       })
       .catch(error => {
@@ -102,6 +124,48 @@ export default class Login extends Component {
             this.setState({ logState: 'danger' });
         }
       });
+  };
+
+  responseGoogle = res => {
+    /* if there was an error with loggin in */
+    if (res.error && res.error !== 'popup_closed_by_user') {
+      // closing the popup is considered an error, but must not show error alert
+      Alert.error('Login Error.', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
+      });
+    }
+
+    /* successfully logged in */
+    if (res.googleId) {
+      API.login({
+        email: res.profileObj.email,
+        password: res.googleId
+      })
+        .then(result => {
+          this.setState({ logState: 'success' });
+          this.props.changeLog();
+          this.props.changeUser(
+            result.data.data.firstname,
+            result.data.data.lastname,
+            result.data.data.id
+          );
+
+          setTimeout(() => {
+            this.props.closeNoEvent();
+            /* this resets the modal */
+            this.setState({ email: '', password: '', logState: 'info' });
+          }, 350);
+        })
+        .catch(error => {
+          if (error.response !== undefined) {
+            if (error.response.status === 404)
+              this.setState({ logState: 'danger' });
+          }
+        });
+    }
   };
 
   render() {
@@ -135,12 +199,12 @@ export default class Login extends Component {
               </Notification>
               <form style={style.formPadding}>
                 <Field>
-                  <Label>Username</Label>
+                  <Label>Email</Label>
                   <Control hasIcons="left">
                     <Input
-                      placeholder="Username"
-                      value={this.state.username}
-                      onChange={this.inputUsername}
+                      placeholder="Email"
+                      value={this.state.email}
+                      onChange={this.inputEmail}
                     />
                     <Icon isSize="small" isAlign="left">
                       <span className="fa fa-user" aria-hidden="true" />
@@ -164,12 +228,31 @@ export default class Login extends Component {
                 <Field>
                   <Control>
                     <center>
-                      <Button
-                        style={style.submit}
-                        onClick={this.startLogin}
-                        type="submit">
-                        LOGIN
-                      </Button>
+                      <Columns isFullWidth style={style.marginTop}>
+                        <Column isSize={'1/2'}>
+                          <Button
+                            style={style.submit}
+                            onClick={this.startLogin}
+                            type="submit">
+                            LOGIN
+                          </Button>
+                        </Column>
+                        <Column isSize={'1/2'}>
+                          <GoogleLogin
+                            style={style.googleSubmit}
+                            clientId="224633775911-d2hav5ep4grlovqrqc4ugtgtqaiub07g.apps.googleusercontent.com"
+                            onSuccess={this.responseGoogle}
+                            onFailure={this.responseGoogle}
+                            redirectUri={'localhost:3000'}
+                            buttonText={
+                              <span style={style.whiteText}>
+                                <Icon className={'fa fa-google'} />Login with
+                                Google
+                              </span>
+                            }
+                          />
+                        </Column>
+                      </Columns>
                     </center>
                   </Control>
                 </Field>

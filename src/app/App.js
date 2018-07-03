@@ -20,7 +20,7 @@ export default class App extends Component {
       /* pages: home, browse, analyze */
       activePage: 'home',
       loggedIn: false,
-      username: '',
+      currentUser: '',
       currentUserId: ''
     };
   }
@@ -42,8 +42,11 @@ export default class App extends Component {
     e.preventDefault();
   };
 
-  changeUser = (username, id) => {
-    this.setState({ username: username, currentUserId: id });
+  changeUser = (firstname, lastname, id) => {
+    this.setState({
+      currentUser: firstname + ' ' + lastname,
+      currentUserId: id
+    });
   };
 
   removeUser = () => {
@@ -60,7 +63,7 @@ export default class App extends Component {
             /* pass the props here */
             activePage: this.state.activePage,
             loggedIn: this.state.loggedIn,
-            username: this.state.username,
+            username: this.state.currentUser,
             /* pass the handlers here */
             handleLogin: this.handleLogin,
             handleChangePage: this.handleChangePage,

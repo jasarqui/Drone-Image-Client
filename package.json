@@ -12,6 +12,7 @@
     "react-document-title": "^2.0.3",
     "react-dom": "^16.4.1",
     "react-dropzone": "^4.2.12",
+    "react-google-login": "^3.2.1",
     "react-s-alert": "^1.4.1",
     "react-scripts": "1.1.4",
     "superagent": "^3.8.3"
