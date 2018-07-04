@@ -17,6 +17,7 @@ import {
   ModalContent,
   ModalClose,
   ModalBackground,
+  Progress,
   Columns,
   Column
 } from 'bloomer';
@@ -45,7 +46,8 @@ const style = {
     borderRadius: '3px',
     border: '1px solid navy',
     cursor: 'pointer',
-    width: '100%'
+    width: '100%',
+    marginTop: '5px'
   },
   whiteText: {
     color: 'white'
@@ -62,7 +64,20 @@ const style = {
   },
   formPadding: {
     marginLeft: '20px',
-    marginRight: '20px'
+    marginRight: '20px',
+    textAlign: 'center'
+  },
+  img: {
+    borderRadius: '50%',
+    width: '128px',
+    height: '128px',
+    marginTop: '20px'
+  },
+  divider: {
+    backgroundColor: 'silver'
+  },
+  info: {
+    marginTop: '32px'
   }
 };
 
@@ -71,28 +86,19 @@ export default class Login extends Component {
     super(props);
 
     this.state = {
+      name: '',
       email: '',
+      imgURL: '',
       password: '',
       logState: 'info'
     };
   }
-
-  inputEmail = e => {
-    this.setState({ email: e.target.value });
-  };
 
   inputPassword = e => {
     this.setState({ password: e.target.value });
   };
 
   handleClose = e => {
-    this.state.logState === 'danger' &&
-    !this.state.username &&
-    !this.state.password
-      ? this.setState({ logState: 'info' })
-      : {
-          /* do nothing */
-        };
     this.props.close(e);
   };
 
@@ -115,7 +121,13 @@ export default class Login extends Component {
         setTimeout(() => {
           this.props.close(e);
           /* this resets the modal */
-          this.setState({ email: '', password: '', logState: 'info' });
+          this.setState({
+            email: '',
+            name: '',
+            password: '',
+            imgURL: '',
+            logState: 'info'
+          });
         }, 350);
       })
       .catch(error => {
@@ -140,31 +152,11 @@ export default class Login extends Component {
 
     /* successfully logged in */
     if (res.googleId) {
-      API.login({
+      this.setState({
+        name: res.profileObj.name,
         email: res.profileObj.email,
-        password: res.googleId
-      })
-        .then(result => {
-          this.setState({ logState: 'success' });
-          this.props.changeLog();
-          this.props.changeUser(
-            result.data.data.firstname,
-            result.data.data.lastname,
-            result.data.data.id
-          );
-
-          setTimeout(() => {
-            this.props.closeNoEvent();
-            /* this resets the modal */
-            this.setState({ email: '', password: '', logState: 'info' });
-          }, 350);
-        })
-        .catch(error => {
-          if (error.response !== undefined) {
-            if (error.response.status === 404)
-              this.setState({ logState: 'danger' });
-          }
-        });
+        imgURL: res.profileObj.imageUrl
+      });
     }
   };
 
@@ -198,64 +190,92 @@ export default class Login extends Component {
                 </center>
               </Notification>
               <form style={style.formPadding}>
-                <Field>
-                  <Label>Email</Label>
-                  <Control hasIcons="left">
-                    <Input
-                      placeholder="Email"
-                      value={this.state.email}
-                      onChange={this.inputEmail}
+                <Progress
+                  isColor={this.state.logState}
+                  value={!this.state.email ? 1 : 2}
+                  max={2}
+                  style={style.width95}
+                  isFullWidth={false}
+                />
+                <Columns isCentered>
+                  <Column isSize="1/2">
+                    <small>
+                      <Label>Step 1</Label> Sign-in your Google Account
+                    </small>
+                    <div>
+                      <img
+                        alt={'userpic'}
+                        src={
+                          this.state.imgURL
+                            ? this.state.imgURL
+                            : 'https://www.iventa.eu/wp-content/uploads/2016/07/Person_Dummy.png'
+                        }
+                        style={style.img}
+                      />
+                    </div>
+                    <GoogleLogin
+                      style={style.googleSubmit}
+                      clientId="224633775911-d2hav5ep4grlovqrqc4ugtgtqaiub07g.apps.googleusercontent.com"
+                      onSuccess={this.responseGoogle}
+                      onFailure={this.responseGoogle}
+                      redirectUri={'localhost:3000'}
+                      buttonText={
+                        <span style={style.whiteText}>
+                          <Icon className={'fa fa-google'} />Sign-in with Google
+                        </span>
+                      }
                     />
-                    <Icon isSize="small" isAlign="left">
-                      <span className="fa fa-user" aria-hidden="true" />
-                    </Icon>
-                  </Control>
-                </Field>
-                <Field>
-                  <Label>Password</Label>
-                  <Control hasIcons="left">
-                    <Input
-                      placeholder="Password"
-                      type="password"
-                      value={this.state.password}
-                      onChange={this.inputPassword}
-                    />
-                    <Icon isSize="small" isAlign="left">
-                      <span className="fa fa-user-secret" aria-hidden="true" />
-                    </Icon>
-                  </Control>
-                </Field>
-                <Field>
-                  <Control>
-                    <center>
-                      <Columns isFullWidth style={style.marginTop}>
-                        <Column isSize={'1/2'}>
-                          <Button
-                            style={style.submit}
-                            onClick={this.startLogin}
-                            type="submit">
-                            LOGIN
-                          </Button>
-                        </Column>
-                        <Column isSize={'1/2'}>
-                          <GoogleLogin
-                            style={style.googleSubmit}
-                            clientId="224633775911-d2hav5ep4grlovqrqc4ugtgtqaiub07g.apps.googleusercontent.com"
-                            onSuccess={this.responseGoogle}
-                            onFailure={this.responseGoogle}
-                            redirectUri={'localhost:3000'}
-                            buttonText={
-                              <span style={style.whiteText}>
-                                <Icon className={'fa fa-google'} />Login with
-                                Google
-                              </span>
-                            }
-                          />
-                        </Column>
-                      </Columns>
-                    </center>
-                  </Control>
-                </Field>
+                  </Column>
+                  {this.state.email ? (
+                    <Column isSize="1/2">
+                      <small>
+                        <Label>Step 2</Label> Input your Password
+                      </small>
+                      <br />
+                      <div style={style.info}>
+                        <small>{this.state.email ? 'Log in as' : ''}</small>
+                        <p>
+                          <strong>{this.state.name}</strong>
+                          <br />
+                          <small>{this.state.email}</small>
+                          <br />
+                        </p>
+                        <br />
+                        <Field>
+                          <Label>Password</Label>
+                          <Control hasIcons="left">
+                            <center>
+                              <Input
+                                placeholder="Password"
+                                type="password"
+                                value={this.state.password}
+                                onChange={this.inputPassword}
+                              />
+                            </center>
+                            <Icon isSize="small" isAlign="left">
+                              <span
+                                className="fa fa-user-secret"
+                                aria-hidden="true"
+                              />
+                            </Icon>
+                          </Control>
+                        </Field>
+                      </div>
+                    </Column>
+                  ) : (
+                    <div />
+                  )}
+                </Columns>
+                <hr style={style.divider} />
+                <Button
+                  style={style.submit}
+                  onClick={this.startLogin}
+                  type="submit"
+                  disabled={
+                    this.state.email && this.state.password ? false : true
+                  }>
+                  <small>Login</small>
+                </Button>
               </form>
             </Box>
           </ModalContent>

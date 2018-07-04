@@ -54,7 +54,7 @@ const style = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alingItems: 'center',
+    alignItems: 'center',
     height: '500px',
     verticalAlign: 'center',
     border: '2px dashed silver',
@@ -198,7 +198,7 @@ export default class Analyze extends Component {
       attrib: this.state.attrib,
       userId: this.props.userId
     })
-      .then(result => {
+      .then(() => {
         /* this is an alert on success */
         Alert.success('Successfully saved image.', {
           beep: false,
@@ -207,7 +207,7 @@ export default class Analyze extends Component {
           timeout: 2000
         });
       })
-      .catch(error => {
+      .catch(() => {
         /* this is an alert on failure */
         Alert.error('Failed to save image.', {
           beep: false,
