@@ -123,25 +123,24 @@ export default class Analyze extends Component {
     /* upload end is when the image is finished uploading */
     upload.end((err, response) => {
       if (err) {
-        console.error(err);
         /* this is an alert on success */
-        Alert.error('Failed to save image.', {
+        Alert.error('Failed to upload image.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
           timeout: 2000
         });
-      }
-
-      if (response.body.secure_url !== '') {
-        this.setState({ fileURL: response.body.secure_url });
-        /* this is an alert on success */
-        Alert.success('Successfully uploaded image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
-        });
+      } else {
+        if (response.body.secure_url !== '') {
+          this.setState({ fileURL: response.body.secure_url });
+          /* this is an alert on success */
+          Alert.success('Successfully uploaded image.', {
+            beep: false,
+            position: 'top-right',
+            effect: 'jelly',
+            timeout: 2000
+          });
+        }
       }
     });
   };

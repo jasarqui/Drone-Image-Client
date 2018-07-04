@@ -81,6 +81,11 @@ const style = {
   }
 };
 
+/* create regex here */
+// email regex according to General Email Regex (RFC 5322 Official Standard)
+// changed to accept emails under IRRI domain only
+const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
+
 export default class Login extends Component {
   constructor(props) {
     super(props);
@@ -99,6 +104,7 @@ export default class Login extends Component {
   };
 
   handleClose = e => {
+    this.setState({ logState: 'info' });
     this.props.close(e);
   };
 
@@ -152,11 +158,22 @@ export default class Login extends Component {
 
     /* successfully logged in */
     if (res.googleId) {
-      this.setState({
-        name: res.profileObj.name,
-        email: res.profileObj.email,
-        imgURL: res.profileObj.imageUrl
-      });
+      /* change to res.profileObj.email.match(emailRegex) */
+      if (res.profileObj.email) {
+        this.setState({
+          name: res.profileObj.name,
+          email: res.profileObj.email,
+          imgURL: res.profileObj.imageUrl
+        });
+      } else {
+        this.setState({ logState: 'danger' });
+        Alert.error('Must be under IRRI domain.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      }
     }
   };
 
@@ -181,7 +198,7 @@ export default class Login extends Component {
                     ) : this.state.logState === 'danger' ? (
                       <span>
                         <Icon className="fa fa-times-circle" />
-                        {'Username and Password combination does not exist!'}
+                        {'Account information is invalid!'}
                       </span>
                     ) : (
                       ''

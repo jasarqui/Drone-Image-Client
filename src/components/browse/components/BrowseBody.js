@@ -1,13 +1,40 @@
 /* import React components here */
 import React, { Component } from 'react';
 /* import bulma components */
-import { Box } from 'bloomer';
+import {
+  Box,
+  Pagination,
+  PageControl,
+  PageList,
+  Page,
+  PageLink,
+  PageEllipsis,
+  Card,
+  CardHeader,
+  CardHeaderTitle,
+  CardHeaderIcon,
+  CardImage,
+  CardContent,
+  Image,
+  Tag,
+  Delete
+} from 'bloomer';
+
+/* create styles here */
+const style = {
+  content: {
+    marginTop: '15px'
+  },
+  leftMargin: {
+    marginLeft: '10px'
+  }
+};
 
 export default class BrowseBody extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = { activePage: 0 };
   }
 
   render() {
@@ -25,6 +52,75 @@ export default class BrowseBody extends Component {
         {this.props.category === 'all'
           ? 'all categories.'
           : 'category ' + this.props.category + '.'}
+        {this.props.images.map((image, id) => {
+          return (
+            <Card key={id} style={style.content}>
+              <CardHeader>
+                <CardHeaderTitle>{image.name}</CardHeaderTitle>
+                <CardHeaderIcon>
+                  <Delete />
+                </CardHeaderIcon>
+              </CardHeader>
+              <CardImage>
+                <Image src={image.filepath} />
+              </CardImage>
+              <CardContent>
+                <center>
+                  <Tag isColor="info" style={style.leftMargin}>
+                    Uploader
+                  </Tag>
+                  <Tag isColor="light">
+                    <small>
+                      {image.user
+                        ? image.user.firstname + ' ' + image.user.lastname
+                        : 'anonymous'}
+                    </small>
+                  </Tag>
+                  <Tag isColor="info" style={style.leftMargin}>
+                    Camera
+                  </Tag>
+                  <Tag isColor="light">
+                    <small>{image.camera}</small>
+                  </Tag>
+                  <Tag isColor="info" style={style.leftMargin}>
+                    Date
+                  </Tag>
+                  <Tag isColor="light">
+                    <small>{image.date}</small>
+                  </Tag>
+                </center>
+              </CardContent>
+            </Card>
+          );
+        })}
+
+        <Pagination isSize="small" isAlign="centered" style={style.content}>
+          <PageControl>Previous</PageControl>
+          <PageControl isNext>Next</PageControl>
+          <PageList>
+            <Page>
+              <PageLink>1</PageLink>
+            </Page>
+            <Page>
+              <PageEllipsis />
+            </Page>
+            <Page>
+              <PageLink>45</PageLink>
+            </Page>
+            <Page>
+              <PageLink isCurrent>46</PageLink>
+            </Page>
+            <Page>
+              <PageLink>47</PageLink>
+            </Page>
+            <Page>
+              <PageEllipsis />
+            </Page>
+            <Page>
+              <PageLink>86</PageLink>
+            </Page>
+          </PageList>
+        </Pagination>
       </Box>
     );
   }

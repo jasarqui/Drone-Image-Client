@@ -146,15 +146,7 @@ export default class Signup extends Component {
           })
           .then(() => {
             this.props.close();
-            /* reset the modal */
-            this.setState({
-              firstname: '',
-              lastname: '',
-              email: '',
-              password: '',
-              repeatpass: '',
-              signupState: 'info'
-            });
+            this.resetStates();
           });
       }),
         50;
@@ -175,6 +167,7 @@ export default class Signup extends Component {
 
     /* successfully logged in */
     if (response.googleId) {
+      /* change to response.profileObj.email.match(emailRegex) */
       if (response.profileObj.email) {
         this.setState({
           firstname: response.profileObj.givenName,
@@ -182,10 +175,14 @@ export default class Signup extends Component {
           email: response.profileObj.email,
           imgURL: response.profileObj.imageUrl
         });
-        this.setState({ signupState: 'success' });
+        API.getEmail(response.profileObj.email).then(result => {
+          result.data.data
+            ? this.setState({ signupState: 'warning' })
+            : this.setState({ signupState: 'success' });
+        });
       } else {
         this.setState({ signupState: 'danger' });
-        Alert.warning('Must be under IRRI domain.', {
+        Alert.error('Must be under IRRI domain.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
@@ -197,9 +194,23 @@ export default class Signup extends Component {
 
   closeModal = () => {
     if (!this.state.password && !this.state.repeatpass) {
-      this.setState({ signupState: 'info' });
+      this.resetStates();
     }
     this.props.close();
+  };
+
+  /* this resets the states on modal close */
+  resetStates = () => {
+    this.setState({
+      firstname: '',
+      lastname: '',
+      email: '',
+      imgURL: '',
+      password: '',
+      repeatpass: '',
+      signupState: 'info',
+      currentCard: 0
+    });
   };
 
   backButton = e => {
@@ -487,7 +498,9 @@ export default class Signup extends Component {
                       disabled={
                         this.state.currentCard === 0
                           ? this.state.email
-                            ? false
+                            ? this.state.signupState !== 'success'
+                              ? true
+                              : false
                             : true
                           : this.state.password.match(passRegex) &&
                             this.state.repeatpass.match(passRegex) &&

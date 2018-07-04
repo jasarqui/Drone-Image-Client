@@ -14,3 +14,8 @@ export const getImages = () => {
 export const getImage = id => {
   return axios.get(`/img/${id}`);
 };
+
+// deletes an image
+export const deleteImage = id => {
+  return axios.delete(`/img/${id}`);
+};

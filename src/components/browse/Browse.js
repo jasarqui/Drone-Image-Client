@@ -5,6 +5,8 @@ import BrowsePanel from './components/BrowsePanel';
 import BrowseBody from './components/BrowseBody';
 /* import bulma components */
 import { Columns, Column } from 'bloomer';
+/* import api here */
+import * as API from '../../api';
 
 /* create styles here */
 const style = {
@@ -18,6 +20,10 @@ export default class Browse extends Component {
     super(props);
 
     this.state = {
+      images: [],
+      currentPage: 1,
+      totalPages: 1,
+      /* these are filters */
       myUpload: false, // default is false
       category: 'all', // values: all, category name
       showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data' // values: Public and Private Data, Public Data, Private Data
@@ -48,6 +54,12 @@ export default class Browse extends Component {
     });
   };
 
+  componentDidMount = () => {
+    API.getImages().then(result => {
+      this.setState({ images: result.data.data });
+    });
+  };
+
   render() {
     return (
       <DocumentTitle title="DIA | Browse">
@@ -75,7 +87,10 @@ export default class Browse extends Component {
                   /* pass the props here */
                   myUpload: this.state.myUpload,
                   category: this.state.category,
-                  showData: this.state.showData
+                  showData: this.state.showData,
+                  images: this.state.images,
+                  currentPage: this.state.currentPage,
+                  totalPage: this.state.totalPage
                 }}
               />
             </Column>
