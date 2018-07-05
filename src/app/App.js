@@ -5,6 +5,7 @@ import Navbar from '../components/access/Navbar';
 import Homepage from '../components/home/Homepage';
 import Browse from '../components/browse/Browse';
 import Analyze from '../components/analysis/Analyze';
+import View from '../components/view/View';
 import PageNotExist from '../components/error/PageNotExist';
 
 /* import assets here */
@@ -17,7 +18,7 @@ export default class App extends Component {
     super();
 
     this.state = {
-      /* pages: home, browse, analyze */
+      /* pages: home, browse, analyze, view */
       activePage: 'home',
       loggedIn: false,
       currentUser: '',
@@ -30,8 +31,8 @@ export default class App extends Component {
   };
 
   handleChangePage = e => {
-    this.setState({ activePage: e.target.dataset.value });
     e.preventDefault();
+    this.setState({ activePage: e.target.dataset.value });
   };
 
   directChangePage = page => {
@@ -98,6 +99,14 @@ export default class App extends Component {
               {...{
                 /* pass the props here */
                 loggedIn: this.state.loggedIn,
+                /* pass the handlers here */
+                preventReload: this.preventReload
+              }}
+            />
+          ) : this.state.activePage === 'view' ? (
+            <View
+              {...{
+                /* pass the props here */
                 /* pass the handlers here */
                 preventReload: this.preventReload
               }}

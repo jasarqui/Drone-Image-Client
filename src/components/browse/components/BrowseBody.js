@@ -17,7 +17,9 @@ import {
   CardContent,
   Image,
   Tag,
-  Delete
+  Delete,
+  Columns,
+  Column
 } from 'bloomer';
 
 /* create styles here */
@@ -40,6 +42,7 @@ export default class BrowseBody extends Component {
   render() {
     return (
       <Box>
+        {/* below shows the tags */}
         {'Currently shows '}
         {this.props.showData === 'Public and Private Data'
           ? 'all data'
@@ -52,48 +55,91 @@ export default class BrowseBody extends Component {
         {this.props.category === 'all'
           ? 'all categories.'
           : 'category ' + this.props.category + '.'}
-        {this.props.images.map((image, id) => {
-          return (
-            <Card key={id} style={style.content}>
-              <CardHeader>
-                <CardHeaderTitle>{image.name}</CardHeaderTitle>
-                <CardHeaderIcon>
-                  <Delete />
-                </CardHeaderIcon>
-              </CardHeader>
-              <CardImage>
-                <Image src={image.filepath} />
-              </CardImage>
-              <CardContent>
-                <center>
-                  <Tag isColor="info" style={style.leftMargin}>
-                    Uploader
-                  </Tag>
-                  <Tag isColor="light">
-                    <small>
-                      {image.user
-                        ? image.user.firstname + ' ' + image.user.lastname
-                        : 'anonymous'}
-                    </small>
-                  </Tag>
-                  <Tag isColor="info" style={style.leftMargin}>
-                    Camera
-                  </Tag>
-                  <Tag isColor="light">
-                    <small>{image.camera}</small>
-                  </Tag>
-                  <Tag isColor="info" style={style.leftMargin}>
-                    Date
-                  </Tag>
-                  <Tag isColor="light">
-                    <small>{image.date}</small>
-                  </Tag>
-                </center>
-              </CardContent>
-            </Card>
-          );
-        })}
-
+        {/* below shows the items for that page */}
+        {this.props.images
+          ? this.props.images.map(image => {
+              return (
+                <Card key={image.id} style={style.content}>
+                  <CardHeader>
+                    <CardHeaderTitle>{image.name}</CardHeaderTitle>
+                    <CardHeaderIcon>
+                      <Delete />
+                    </CardHeaderIcon>
+                  </CardHeader>
+                  <CardImage>
+                    <Image src={image.filepath} />
+                  </CardImage>
+                  <CardContent style={{ padding: '5px' }}>
+                    <center>
+                      <Columns isGapless isHidden={'mobile'}>
+                        <Column isSize="1/3">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Uploader
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>
+                              {image.user
+                                ? image.user.firstname +
+                                  ' ' +
+                                  image.user.lastname
+                                : 'anonymous'}
+                            </small>
+                          </Tag>
+                        </Column>
+                        <Column isSize="1/3">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Camera
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.camera}</small>
+                          </Tag>
+                        </Column>
+                        <Column isSize="1/3">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Date
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.date}</small>
+                          </Tag>
+                        </Column>
+                      </Columns>
+                      <Columns isGapless isHidden={'desktop'}>
+                        <Column isSize="1/2">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Uploader
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>
+                              {image.user
+                                ? image.user.firstname +
+                                  ' ' +
+                                  image.user.lastname
+                                : 'anonymous'}
+                            </small>
+                          </Tag>
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Camera
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.camera}</small>
+                          </Tag>
+                        </Column>
+                        <Column isSize="1/2">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Date
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.date}</small>
+                          </Tag>
+                        </Column>
+                      </Columns>
+                    </center>
+                  </CardContent>
+                </Card>
+              );
+            })
+          : 'There are no images to view yet.'}
+        {/* below shows the pagination */}
         <Pagination isSize="small" isAlign="centered" style={style.content}>
           <PageControl>Previous</PageControl>
           <PageControl isNext>Next</PageControl>

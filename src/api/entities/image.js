@@ -10,12 +10,14 @@ export const getImages = () => {
   return axios.get('/img');
 };
 
-// gets one image
-export const getImage = id => {
-  return axios.get(`/img/${id}`);
+// updates an image's info
+export const updateImage = info => {
+  return axios.put('/img/update', info);
 };
 
+/*
 // deletes an image
 export const deleteImage = id => {
   return axios.delete(`/img/${id}`);
 };
+*/

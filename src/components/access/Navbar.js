@@ -12,10 +12,16 @@ import {
   NavbarLink,
   NavbarBrand,
   NavbarDropdown,
-  Icon
+  NavbarBurger,
+  Icon,
+  Image,
+  Tag,
+  Button
 } from 'bloomer';
 /* import api here */
 import * as API from '../../api';
+/* import assets here */
+import DiaIcon from '../../assets/dia-logo-white.png';
 
 /* create styles here */
 const style = {
@@ -24,7 +30,14 @@ const style = {
   navLog: { color: 'white' },
   navDrop: { marginRight: '25px' },
   navUser: { marginRight: '15px' },
-  navIcon: { marginRight: '10px' }
+  navIcon: { marginRight: '10px' },
+  whiteText: { color: 'white' },
+  navButton: {
+    backgroundColor: 'navy',
+    border: '1px solid navy',
+    color: 'white',
+    margin: '0px 5px 0px 5px'
+  }
 };
 
 export default class NavigBar extends Component {
@@ -35,7 +48,8 @@ export default class NavigBar extends Component {
       tabActive: 1,
       loginActive: false,
       logoutActive: false,
-      signupActive: false
+      signupActive: false,
+      active: false
     };
   }
 
@@ -85,40 +99,124 @@ export default class NavigBar extends Component {
     this.setState({ signupActive: false });
   };
 
+  menuDrop = () => {
+    this.setState({ active: !this.state.active });
+  };
+
   render() {
     return (
       <div style={style.nav}>
-        <Navbar style={style.nav}>
-          <NavbarMenu>
-            <NavbarBrand>
-              <NavbarItem
-                style={style.navItem}
-                href="."
-                data-value={'home'}
-                onClick={this.props.handleChangePage}>
-                Lorem Ipsum
-              </NavbarItem>
-              <NavbarItem hasDropdown isHoverable style={style.navDrop}>
-                <NavbarLink style={style.navItem}>Images</NavbarLink>
-                <NavbarDropdown>
-                  <NavbarItem
-                    data-value={'browse'}
-                    href="."
-                    onClick={this.props.handleChangePage}>
-                    <Icon style={style.navIcon} className="fa fa-search" />
-                    Browse
-                  </NavbarItem>
-                  <NavbarItem
-                    data-value={'analyze'}
-                    href="."
-                    onClick={this.props.handleChangePage}>
-                    <Icon style={style.navIcon} className="fa fa-bolt" />
-                    Analyze
-                  </NavbarItem>
-                </NavbarDropdown>
-              </NavbarItem>
-            </NavbarBrand>
-            <NavbarEnd>
+        <Navbar style={style.nav} isTransparent>
+          <NavbarBrand>
+            <NavbarItem
+              style={style.navItem}
+              href="."
+              data-value={'home'}
+              onClick={this.props.handleChangePage}>
+              <Image
+                src={DiaIcon}
+                isSize={'32x32'}
+                style={{ marginRight: '5px' }}
+              />
+              <strong>
+                D<small>IA</small>
+              </strong>
+              <Tag
+                isColor="light"
+                style={{ marginLeft: '10px' }}
+                isHidden={'desktop'}>
+                <small>MOBILE</small>
+              </Tag>
+            </NavbarItem>
+            <NavbarItem
+              hasDropdown
+              isHoverable
+              style={style.navDrop}
+              isHidden={'mobile'}>
+              <NavbarLink style={style.navItem}>Images</NavbarLink>
+              <NavbarDropdown>
+                <NavbarItem
+                  data-value={'browse'}
+                  href="."
+                  onClick={this.props.handleChangePage}>
+                  <Icon style={style.navIcon} className="fa fa-search" />
+                  Browse
+                </NavbarItem>
+                <NavbarItem
+                  data-value={'analyze'}
+                  href="."
+                  onClick={this.props.handleChangePage}>
+                  <Icon style={style.navIcon} className="fa fa-bolt" />
+                  Analyze
+                </NavbarItem>
+              </NavbarDropdown>
+            </NavbarItem>
+            <NavbarBurger
+              onClick={this.menuDrop}
+              isActive={this.state.active}
+              style={style.whiteText}
+            />
+          </NavbarBrand>
+          <NavbarMenu isActive={this.state.active} style={style.navItem}>
+            <NavbarItem hasDropdown isHoverable style={style.navDrop}>
+              <NavbarDropdown>
+                <NavbarItem isHidden={'desktop'} style={style.whiteText}>
+                  {this.props.loggedIn ? (
+                    <div>
+                      <Icon
+                        className="fa fa-user-circle fa-2x"
+                        style={style.navUser}
+                      />
+                      <Button isSize={'small'} style={style.navButton}>
+                        <strong>{this.props.username}</strong>
+                      </Button>
+                      <Button
+                        isSize={'small'}
+                        style={style.navButton}
+                        onClick={this.openLogoutModal}>
+                        <strong>Logout</strong>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Icon
+                        className="fa fa-address-card fa-2x"
+                        style={style.navDrop}
+                      />
+                      <Button
+                        isSize={'small'}
+                        style={style.navButton}
+                        onClick={this.openLoginModal}>
+                        <strong>Login</strong>
+                      </Button>
+                      <Button
+                        isSize={'small'}
+                        style={style.navButton}
+                        onClick={this.openSignupModal}>
+                        <strong>Signup</strong>
+                      </Button>
+                    </div>
+                  )}
+                </NavbarItem>
+                <NavbarItem
+                  data-value={'browse'}
+                  href="."
+                  onClick={this.props.handleChangePage}
+                  style={style.navItem}>
+                  <Icon style={style.navIcon} className="fa fa-search" />
+                  Browse
+                </NavbarItem>
+                <NavbarItem
+                  data-value={'analyze'}
+                  href="."
+                  onClick={this.props.handleChangePage}
+                  style={style.navItem}>
+                  <Icon style={style.navIcon} className="fa fa-bolt" />
+                  Analyze
+                </NavbarItem>
+              </NavbarDropdown>
+            </NavbarItem>
+            <NavbarEnd isHidden={'mobile'}>
               {this.props.loggedIn ? (
                 <NavbarItem hasDropdown isHoverable style={style.navDrop}>
                   <NavbarLink style={style.navItem}>
@@ -136,17 +234,23 @@ export default class NavigBar extends Component {
                 </NavbarItem>
               ) : (
                 <NavbarItem hasDropdown isHoverable style={style.navDrop}>
-                  <NavbarLink style={style.navItem}>
+                  <NavbarLink style={style.navItem} isHidden={'mobile'}>
                     <Icon
                       className="fa fa-address-card fa-2x"
                       style={style.navDrop}
                     />
                   </NavbarLink>
                   <NavbarDropdown>
-                    <NavbarItem href="." onClick={this.openLoginModal}>
+                    <NavbarItem
+                      href="."
+                      onClick={this.openLoginModal}
+                      isHidden={'mobile'}>
                       Login
                     </NavbarItem>
-                    <NavbarItem href="." onClick={this.openSignupModal}>
+                    <NavbarItem
+                      href="."
+                      onClick={this.openSignupModal}
+                      isHidden={'mobile'}>
                       Signup
                     </NavbarItem>
                   </NavbarDropdown>
