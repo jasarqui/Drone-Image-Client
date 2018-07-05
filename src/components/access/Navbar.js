@@ -15,7 +15,6 @@ import {
   NavbarBurger,
   Icon,
   Image,
-  Tag,
   Button
 } from 'bloomer';
 /* import api here */
@@ -121,12 +120,6 @@ export default class NavigBar extends Component {
               <strong>
                 D<small>IA</small>
               </strong>
-              <Tag
-                isColor="light"
-                style={{ marginLeft: '10px' }}
-                isHidden={'desktop'}>
-                <small>MOBILE</small>
-              </Tag>
             </NavbarItem>
             <NavbarItem
               hasDropdown
@@ -161,42 +154,44 @@ export default class NavigBar extends Component {
             <NavbarItem hasDropdown isHoverable style={style.navDrop}>
               <NavbarDropdown>
                 <NavbarItem isHidden={'desktop'} style={style.whiteText}>
-                  {this.props.loggedIn ? (
-                    <div>
-                      <Icon
-                        className="fa fa-user-circle fa-2x"
-                        style={style.navUser}
-                      />
-                      <Button isSize={'small'} style={style.navButton}>
-                        <strong>{this.props.username}</strong>
-                      </Button>
-                      <Button
-                        isSize={'small'}
-                        style={style.navButton}
-                        onClick={this.openLogoutModal}>
-                        <strong>Logout</strong>
-                      </Button>
-                    </div>
-                  ) : (
-                    <div>
-                      <Icon
-                        className="fa fa-address-card fa-2x"
-                        style={style.navDrop}
-                      />
-                      <Button
-                        isSize={'small'}
-                        style={style.navButton}
-                        onClick={this.openLoginModal}>
-                        <strong>Login</strong>
-                      </Button>
-                      <Button
-                        isSize={'small'}
-                        style={style.navButton}
-                        onClick={this.openSignupModal}>
-                        <strong>Signup</strong>
-                      </Button>
-                    </div>
-                  )}
+                  <center>
+                    {this.props.loggedIn ? (
+                      <div>
+                        <Icon
+                          className="fa fa-user-circle fa-2x"
+                          style={style.navUser}
+                        />
+                        <Button isSize={'small'} style={style.navButton}>
+                          <strong>{this.props.username}</strong>
+                        </Button>
+                        <Button
+                          isSize={'small'}
+                          style={style.navButton}
+                          onClick={this.openLogoutModal}>
+                          <strong>Logout</strong>
+                        </Button>
+                      </div>
+                    ) : (
+                      <div>
+                        <Icon
+                          className="fa fa-address-card fa-2x"
+                          style={style.navDrop}
+                        />
+                        <Button
+                          isSize={'small'}
+                          style={style.navButton}
+                          onClick={this.openLoginModal}>
+                          <strong>Login</strong>
+                        </Button>
+                        <Button
+                          isSize={'small'}
+                          style={style.navButton}
+                          onClick={this.openSignupModal}>
+                          <strong>Signup</strong>
+                        </Button>
+                      </div>
+                    )}
+                  </center>
                 </NavbarItem>
                 <NavbarItem
                   data-value={'browse'}

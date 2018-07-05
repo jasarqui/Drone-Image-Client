@@ -32,7 +32,7 @@ export default class App extends Component {
 
   handleChangePage = e => {
     e.preventDefault();
-    this.setState({ activePage: e.target.dataset.value });
+    this.setState({ activePage: e.currentTarget.dataset.value });
   };
 
   directChangePage = page => {
