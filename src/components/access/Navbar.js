@@ -14,29 +14,31 @@ import {
   NavbarDropdown,
   NavbarBurger,
   Icon,
-  Image,
-  Button
+  Button,
+  Heading
 } from 'bloomer';
 /* import api here */
 import * as API from '../../api';
-/* import assets here */
-import DiaIcon from '../../assets/dia-logo-white.png';
 
 /* create styles here */
 const style = {
-  nav: { backgroundColor: 'navy' },
-  navItem: { backgroundColor: 'navy', color: 'white' },
-  navLog: { color: 'white' },
+  nav: { borderBottom: '2px solid #015249' },
+  navItem: { color: '#015249' },
+  navLog: { color: '#015249' },
   navDrop: { marginRight: '25px' },
   navUser: { marginRight: '15px' },
   navIcon: { marginRight: '10px' },
   whiteText: { color: 'white' },
+  greenText: { color: '#015249' },
   navButton: {
-    backgroundColor: 'navy',
-    border: '1px solid navy',
+    backgroundColor: '#015249',
+    border: '1px solid #015249',
     color: 'white',
-    margin: '0px 5px 0px 5px'
-  }
+    margin: '0px 0px 0px 10px',
+    width: '40%'
+  },
+  divider: { backgroundColor: '#015249' },
+  headText: { marginLeft: '10px' }
 };
 
 export default class NavigBar extends Component {
@@ -67,17 +69,11 @@ export default class NavigBar extends Component {
     });
   };
 
-  changeLoginState = () => {
-    this.props.handleLogin();
-  };
+  changeLoginState = () => this.props.handleLogin();
 
   openLoginModal = e => {
     e.preventDefault();
     this.setState({ loginActive: true });
-  };
-
-  closeLoginModal = () => {
-    this.setState({ loginActive: false });
   };
 
   openLogoutModal = e => {
@@ -85,18 +81,14 @@ export default class NavigBar extends Component {
     this.setState({ logoutActive: true });
   };
 
-  closeLogoutModal = () => {
-    this.setState({ logoutActive: false });
-  };
-
   openSignupModal = e => {
     e.preventDefault();
     this.setState({ signupActive: true });
   };
 
-  closeSignupModal = () => {
-    this.setState({ signupActive: false });
-  };
+  closeLoginModal = () => this.setState({ loginActive: false });
+  closeLogoutModal = () => this.setState({ logoutActive: false });
+  closeSignupModal = () => this.setState({ signupActive: false });
 
   menuDrop = () => {
     this.setState({ active: !this.state.active });
@@ -104,21 +96,16 @@ export default class NavigBar extends Component {
 
   render() {
     return (
-      <div style={style.nav}>
-        <Navbar style={style.nav} isTransparent>
+      <div>
+        <Navbar isTransparent style={style.nav}>
           <NavbarBrand>
             <NavbarItem
               style={style.navItem}
               href="."
               data-value={'home'}
               onClick={this.props.handleChangePage}>
-              <Image
-                src={DiaIcon}
-                isSize={'32x32'}
-                style={{ marginRight: '5px' }}
-              />
               <strong>
-                D<small>IA</small>
+                <Heading style={style.headText}>DRONE IMAGE ANALYSIS</Heading>
               </strong>
             </NavbarItem>
             <NavbarItem
@@ -126,7 +113,9 @@ export default class NavigBar extends Component {
               isHoverable
               style={style.navDrop}
               isHidden={'mobile'}>
-              <NavbarLink style={style.navItem}>Images</NavbarLink>
+              <NavbarLink style={style.navItem}>
+                <Heading>Images</Heading>
+              </NavbarLink>
               <NavbarDropdown>
                 <NavbarItem
                   data-value={'browse'}
@@ -147,13 +136,13 @@ export default class NavigBar extends Component {
             <NavbarBurger
               onClick={this.menuDrop}
               isActive={this.state.active}
-              style={style.whiteText}
+              style={style.greenText}
             />
           </NavbarBrand>
           <NavbarMenu isActive={this.state.active} style={style.navItem}>
             <NavbarItem hasDropdown isHoverable style={style.navDrop}>
               <NavbarDropdown>
-                <NavbarItem isHidden={'desktop'} style={style.whiteText}>
+                <NavbarItem isHidden={'desktop'} style={style.greenText}>
                   <center>
                     {this.props.loggedIn ? (
                       <div>
@@ -192,6 +181,7 @@ export default class NavigBar extends Component {
                       </div>
                     )}
                   </center>
+                  <hr style={style.divider} />
                 </NavbarItem>
                 <NavbarItem
                   data-value={'browse'}
@@ -219,7 +209,9 @@ export default class NavigBar extends Component {
                       className="fa fa-user-circle fa-2x"
                       style={style.navUser}
                     />
-                    {this.props.username}
+                    <strong>
+                      <Heading>{this.props.username}</Heading>
+                    </strong>
                   </NavbarLink>
                   <NavbarDropdown>
                     <NavbarItem href="." onClick={this.openLogoutModal}>

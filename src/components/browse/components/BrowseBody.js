@@ -59,79 +59,85 @@ export default class BrowseBody extends Component {
         {this.props.images.length !== 0 ? (
           this.props.images.map(image => {
             return (
-              <Card key={image.id} style={style.content}>
-                <CardHeader>
-                  <CardHeaderTitle>{image.name}</CardHeaderTitle>
-                  <CardHeaderIcon>
-                    <Delete />
-                  </CardHeaderIcon>
-                </CardHeader>
-                <CardImage>
-                  <Image src={image.filepath} />
-                </CardImage>
-                <CardContent style={{ padding: '5px' }}>
-                  <center>
-                    <Columns isGapless isHidden={'mobile'}>
-                      <Column isSize="1/3">
-                        <Tag isColor="info" style={style.leftMargin}>
-                          Uploader
-                        </Tag>
-                        <Tag isColor="light">
-                          <small>
-                            {image.user
-                              ? image.user.firstname + ' ' + image.user.lastname
-                              : 'anonymous'}
-                          </small>
-                        </Tag>
-                      </Column>
-                      <Column isSize="1/3">
-                        <Tag isColor="info" style={style.leftMargin}>
-                          Camera
-                        </Tag>
-                        <Tag isColor="light">
-                          <small>{image.camera}</small>
-                        </Tag>
-                      </Column>
-                      <Column isSize="1/3">
-                        <Tag isColor="info" style={style.leftMargin}>
-                          Date
-                        </Tag>
-                        <Tag isColor="light">
-                          <small>{image.date}</small>
-                        </Tag>
-                      </Column>
-                    </Columns>
-                    <Columns isGapless isHidden={'desktop'}>
-                      <Column isSize="1/2">
-                        <Tag isColor="info" style={style.leftMargin}>
-                          Uploader
-                        </Tag>
-                        <Tag isColor="light">
-                          <small>
-                            {image.user
-                              ? image.user.firstname + ' ' + image.user.lastname
-                              : 'anonymous'}
-                          </small>
-                        </Tag>
-                        <Tag isColor="info" style={style.leftMargin}>
-                          Camera
-                        </Tag>
-                        <Tag isColor="light">
-                          <small>{image.camera}</small>
-                        </Tag>
-                      </Column>
-                      <Column isSize="1/2">
-                        <Tag isColor="info" style={style.leftMargin}>
-                          Date
-                        </Tag>
-                        <Tag isColor="light">
-                          <small>{image.date}</small>
-                        </Tag>
-                      </Column>
-                    </Columns>
-                  </center>
-                </CardContent>
-              </Card>
+              <a href=".">
+                <Card key={image.id} style={style.content}>
+                  <CardHeader>
+                    <CardHeaderTitle>{image.name}</CardHeaderTitle>
+                    <CardHeaderIcon>
+                      <Delete />
+                    </CardHeaderIcon>
+                  </CardHeader>
+                  <CardImage>
+                    <Image src={image.filepath} />
+                  </CardImage>
+                  <CardContent style={{ padding: '5px' }}>
+                    <center>
+                      <Columns isGapless isHidden={'mobile'}>
+                        <Column isSize="1/3">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Uploader
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>
+                              {image.user
+                                ? image.user.firstname +
+                                  ' ' +
+                                  image.user.lastname
+                                : 'anonymous'}
+                            </small>
+                          </Tag>
+                        </Column>
+                        <Column isSize="1/3">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Camera
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.camera}</small>
+                          </Tag>
+                        </Column>
+                        <Column isSize="1/3">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Date
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.date}</small>
+                          </Tag>
+                        </Column>
+                      </Columns>
+                      <Columns isGapless isHidden={'desktop'}>
+                        <Column isSize="1/2">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Uploader
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>
+                              {image.user
+                                ? image.user.firstname +
+                                  ' ' +
+                                  image.user.lastname
+                                : 'anonymous'}
+                            </small>
+                          </Tag>
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Camera
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.camera}</small>
+                          </Tag>
+                        </Column>
+                        <Column isSize="1/2">
+                          <Tag isColor="info" style={style.leftMargin}>
+                            Date
+                          </Tag>
+                          <Tag isColor="light">
+                            <small>{image.date}</small>
+                          </Tag>
+                        </Column>
+                      </Columns>
+                    </center>
+                  </CardContent>
+                </Card>
+              </a>
             );
           })
         ) : (

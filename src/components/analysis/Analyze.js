@@ -115,34 +115,33 @@ export default class Analyze extends Component {
   uploadImage = image => {
     /* this is to post to the cloudinary api,
     so that the image is uploaded to the cloud */
-    let upload = request
-      .post(CLOUDINARY_UPLOAD_URL)
-      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-      .field('file', image);
-
+    // let upload = request
+    //   .post(CLOUDINARY_UPLOAD_URL)
+    //   .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+    //   .field('file', image);
     /* upload end is when the image is finished uploading */
-    upload.end((err, response) => {
-      if (err) {
-        /* this is an alert on success */
-        Alert.error('Failed to upload image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
-        });
-      } else {
-        if (response.body.secure_url !== '') {
-          this.setState({ fileURL: response.body.secure_url });
-          /* this is an alert on success */
-          Alert.success('Successfully uploaded image.', {
-            beep: false,
-            position: 'top-right',
-            effect: 'jelly',
-            timeout: 2000
-          });
-        }
-      }
-    });
+    // upload.end((err, response) => {
+    //   if (err) {
+    //     /* this is an alert on success */
+    //     Alert.error('Failed to upload image.', {
+    //       beep: false,
+    //       position: 'top-right',
+    //       effect: 'jelly',
+    //       timeout: 2000
+    //     });
+    //   } else {
+    //     if (response.body.secure_url !== '') {
+    //       this.setState({ fileURL: response.body.secure_url });
+    //       /* this is an alert on success */
+    //       Alert.success('Successfully uploaded image.', {
+    //         beep: false,
+    //         position: 'top-right',
+    //         effect: 'jelly',
+    //         timeout: 2000
+    //       });
+    //     }
+    //   }
+    // });
   };
 
   analyzeImage = e => {

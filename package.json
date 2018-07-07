@@ -13,8 +13,10 @@
     "react-dom": "^16.4.1",
     "react-dropzone": "^4.2.12",
     "react-google-login": "^3.2.1",
+    "react-on-screen": "^2.0.4",
     "react-s-alert": "^1.4.1",
     "react-scripts": "1.1.4",
+    "react-transition-group": "^2.4.0",
     "superagent": "^3.8.3"
   },
   "scripts": {

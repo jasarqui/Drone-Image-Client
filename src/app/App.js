@@ -22,7 +22,8 @@ export default class App extends Component {
       activePage: 'home',
       loggedIn: false,
       currentUser: '',
-      currentUserId: ''
+      currentUserId: '',
+      imageDetails: []
     };
   }
 

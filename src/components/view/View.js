@@ -58,12 +58,12 @@ const style = {
     textDecoration: 'none'
   }
 };
+
 export default class View extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      selectedFile: null,
       fileURL: null,
       /* UX purpose */
       metadataOpen: true,
@@ -87,8 +87,18 @@ export default class View extends Component {
     };
   }
 
-  /* this will load the information */
-  componentDidMount = () => {};
+  componentDidMount = () => {
+    this.setState({
+      fileURL: this.props.fileURL,
+      /* these are metadata */
+      name: this.props.name,
+      camera: this.props.camera,
+      date: this.props.date,
+      private: this.props.private,
+      /* these are analyzed data */
+      attrib: this.props.attrib
+    });
+  };
 
   changeName = e => {
     this.setState({ name: e.target.value });
@@ -115,7 +125,7 @@ export default class View extends Component {
 
   render() {
     return (
-      <DocumentTitle title="DIA | Analyze">
+      <DocumentTitle title="DIA | View">
         <Columns isGapless>
           <Column isSize="2/3">
             <Card style={style.marginCard}>
