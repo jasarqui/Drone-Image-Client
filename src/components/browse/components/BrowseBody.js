@@ -2,7 +2,6 @@
 import React, { Component } from 'react';
 /* import bulma components */
 import {
-  Box,
   Pagination,
   PageControl,
   PageList,
@@ -17,18 +16,21 @@ import {
   CardContent,
   Image,
   Tag,
-  Delete,
   Columns,
-  Column
+  Column,
+  Icon
 } from 'bloomer';
 
 /* create styles here */
 const style = {
   content: {
-    marginTop: '15px'
+    marginTop: '15px',
+    borderRadius: '15px'
   },
   leftMargin: {
-    marginLeft: '10px'
+    marginLeft: '10px',
+    backgroundColor: '#57bc90',
+    color: 'white'
   }
 };
 
@@ -41,7 +43,7 @@ export default class BrowseBody extends Component {
 
   render() {
     return (
-      <Box>
+      <div style={{ padding: '30px' }}>
         {/* below shows the tags */}
         {'Currently shows '}
         {this.props.showData === 'Public and Private Data'
@@ -59,12 +61,18 @@ export default class BrowseBody extends Component {
         {this.props.images.length !== 0 ? (
           this.props.images.map(image => {
             return (
-              <a href=".">
-                <Card key={image.id} style={style.content}>
-                  <CardHeader>
-                    <CardHeaderTitle>{image.name}</CardHeaderTitle>
-                    <CardHeaderIcon>
-                      <Delete />
+              <a key={image.id} href=".">
+                <Card style={style.content}>
+                  <CardHeader
+                    style={{
+                      backgroundColor: '#77c9d4',
+                      borderRadius: '15px 15px 0px 0px'
+                    }}>
+                    <CardHeaderTitle style={{ color: 'white' }}>
+                      {image.name}
+                    </CardHeaderTitle>
+                    <CardHeaderIcon style={{ color: 'white' }}>
+                      <Icon className={'fa fa-gear fa-1x'} />
                     </CardHeaderIcon>
                   </CardHeader>
                   <CardImage>
@@ -74,9 +82,7 @@ export default class BrowseBody extends Component {
                     <center>
                       <Columns isGapless isHidden={'mobile'}>
                         <Column isSize="1/3">
-                          <Tag isColor="info" style={style.leftMargin}>
-                            Uploader
-                          </Tag>
+                          <Tag style={style.leftMargin}>Uploader</Tag>
                           <Tag isColor="light">
                             <small>
                               {image.user
@@ -88,17 +94,13 @@ export default class BrowseBody extends Component {
                           </Tag>
                         </Column>
                         <Column isSize="1/3">
-                          <Tag isColor="info" style={style.leftMargin}>
-                            Camera
-                          </Tag>
+                          <Tag style={style.leftMargin}>Camera</Tag>
                           <Tag isColor="light">
                             <small>{image.camera}</small>
                           </Tag>
                         </Column>
                         <Column isSize="1/3">
-                          <Tag isColor="info" style={style.leftMargin}>
-                            Date
-                          </Tag>
+                          <Tag style={style.leftMargin}>Date</Tag>
                           <Tag isColor="light">
                             <small>{image.date}</small>
                           </Tag>
@@ -106,9 +108,7 @@ export default class BrowseBody extends Component {
                       </Columns>
                       <Columns isGapless isHidden={'desktop'}>
                         <Column isSize="1/2">
-                          <Tag isColor="info" style={style.leftMargin}>
-                            Uploader
-                          </Tag>
+                          <Tag style={style.leftMargin}>Uploader</Tag>
                           <Tag isColor="light">
                             <small>
                               {image.user
@@ -160,7 +160,15 @@ export default class BrowseBody extends Component {
               <PageLink>45</PageLink>
             </Page>
             <Page>
-              <PageLink isCurrent>46</PageLink>
+              <PageLink
+                isCurrent
+                style={{
+                  backgroundColor: '#77c9d4',
+                  color: 'white',
+                  border: '1px solid #77c9d4'
+                }}>
+                46
+              </PageLink>
             </Page>
             <Page>
               <PageLink>47</PageLink>
@@ -173,7 +181,7 @@ export default class BrowseBody extends Component {
             </Page>
           </PageList>
         </Pagination>
-      </Box>
+      </div>
     );
   }
 }

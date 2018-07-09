@@ -33,18 +33,18 @@ const style = {
     marginBottom: '0px'
   },
   submit: {
-    backgroundColor: 'navy',
+    backgroundColor: '#015264',
     color: 'white',
     width: '100%',
     height: '35px',
     borderRadius: '3px',
-    border: '1px solid navy'
+    border: '1px solid #015264'
   },
   googleSubmit: {
-    backgroundColor: 'navy',
+    backgroundColor: '#015264',
     height: '35px',
     borderRadius: '3px',
-    border: '1px solid navy',
+    border: '1px solid #015264',
     cursor: 'pointer',
     width: '100%',
     marginTop: '5px'
@@ -78,6 +78,15 @@ const style = {
   },
   info: {
     marginTop: '32px'
+  },
+  infoBG: {
+    backgroundColor: '#77c9d4'
+  },
+  successBG: {
+    backgroundColor: '#57bc90'
+  },
+  errorBG: {
+    backgroundColor: '#ef6f6c'
   }
 };
 
@@ -184,7 +193,14 @@ export default class Login extends Component {
           <ModalBackground onClick={this.handleClose} />
           <ModalContent>
             <Box style={style.boxPadding}>
-              <Notification isColor={this.state.logState}>
+              <Notification
+                style={
+                  this.state.logState === 'info'
+                    ? style.infoBG
+                    : this.state.logState === 'success'
+                      ? style.successBG
+                      : style.errorBG
+                }>
                 <center>
                   <Image src={DiaIcon} isSize="128x128" />
                   <p style={style.whiteText}>
@@ -208,7 +224,7 @@ export default class Login extends Component {
               </Notification>
               <form style={style.formPadding}>
                 <Progress
-                  isColor={this.state.logState}
+                  isColor={'info'}
                   value={!this.state.email ? 1 : 2}
                   max={2}
                   style={style.width95}

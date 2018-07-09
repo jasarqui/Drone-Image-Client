@@ -9,8 +9,6 @@ import {
   ModalClose,
   ModalBackground
 } from 'bloomer';
-/* import api here */
-import * as API from '../../api';
 
 /* insert styles here */
 const style = {
@@ -32,21 +30,12 @@ const style = {
   }
 };
 
-export default class Logout extends Component {
+export default class RemoveModal extends Component {
   constructor(props) {
     super(props);
 
     this.state = {};
   }
-
-  handleLogout = e => {
-    e.preventDefault();
-    API.logout().then(() => {
-      this.props.changeLog();
-      this.props.removeUser();
-      this.props.close();
-    });
-  };
 
   render() {
     return (
@@ -56,8 +45,10 @@ export default class Logout extends Component {
           <ModalContent>
             <Notification>
               <center>
-                <p>Are you sure you want to log out?</p>
-                <Button style={style.successButton} onClick={this.handleLogout}>
+                <p>Are you sure you want to remove all images?</p>
+                <Button
+                  style={style.successButton}
+                  onClick={this.props.removeAll}>
                   Yes
                 </Button>
                 <Button style={style.errorButton} onClick={this.props.close}>

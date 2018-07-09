@@ -93,8 +93,7 @@ export default class About extends Component {
                     LORIA ROIE GRACE MALINGAN
                   </strong>
                 </p>
-                <p style={{ marginBottom: '-3px' }}>BS COMPUTER SCIENCE</p>
-                <p style={{ fontSize: '12px' }}>lnmalingan@up.edu.ph</p>
+                <p style={{ marginBottom: '-3px' }}>IMAGE PROCESSING</p>
               </small>
             </center>
           </Column>
@@ -107,8 +106,7 @@ export default class About extends Component {
                     JASPER IAN ARQUILITA
                   </strong>
                 </p>
-                <p style={{ marginBottom: '-3px' }}>BS COMPUTER SCIENCE</p>
-                <p style={{ fontSize: '12px' }}>jzarquilita@up.edu.ph</p>
+                <p style={{ marginBottom: '-3px' }}>WEB DEVELOPMENT</p>
               </small>
             </center>
           </Column>

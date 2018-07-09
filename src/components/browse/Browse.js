@@ -8,13 +8,6 @@ import { Columns, Column } from 'bloomer';
 /* import api here */
 import * as API from '../../api';
 
-/* create styles here */
-const style = {
-  columnPadding: {
-    padding: '20px'
-  }
-};
-
 export default class Browse extends Component {
   constructor(props) {
     super(props);
@@ -64,8 +57,8 @@ export default class Browse extends Component {
     return (
       <DocumentTitle title="DIA | Browse">
         <div>
-          <Columns isCentered style={style.columnPadding}>
-            <Column isSize="1/4">
+          <Columns isCentered isGapless style={{ minHeight: '100vh' }}>
+            <Column isSize="1/4" style={{ backgroundColor: '#015249' }}>
               <BrowsePanel
                 {...{
                   /* pass the props here */
@@ -81,7 +74,7 @@ export default class Browse extends Component {
                 }}
               />
             </Column>
-            <Column isSize="3/4">
+            <Column isSize="3/4" style={{ backgroundColor: '#F8F8F8' }}>
               <BrowseBody
                 {...{
                   /* pass the props here */

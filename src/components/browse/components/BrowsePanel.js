@@ -17,8 +17,9 @@ import {
 /* create styles here */
 const style = {
   noBorder: {
-    border: '1px solid white',
-    backgroundColor: 'white'
+    border: '1px solid #015249',
+    backgroundColor: '#015249',
+    color: 'white'
   },
   lessMargin: {
     marginTop: '-50px'
@@ -27,10 +28,10 @@ const style = {
     fontSize: '13px'
   },
   greenIcon: {
-    color: 'green'
+    color: '#57bc90'
   },
   redIcon: {
-    color: 'red'
+    color: '#ef6f6c'
   }
 };
 
@@ -46,7 +47,7 @@ export default class BrowsePanel extends Component {
       <Panel>
         <PanelHeading style={style.noBorder}>
           <strong>
-            <small>Database</small>
+            <small style={{ color: 'white' }}>Database</small>
           </strong>
         </PanelHeading>
         <PanelBlock style={style.noBorder}>

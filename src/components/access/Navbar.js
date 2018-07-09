@@ -56,16 +56,14 @@ export default class NavigBar extends Component {
 
   componentDidMount = () => {
     API.getSession().then(result => {
-      result.data.data
-        ? (this.props.handleLogin(),
-          this.props.changeUser(
-            result.data.data.firstname,
-            result.data.data.lastname,
-            result.data.data.id
-          ))
-        : {
-            /* do nothing */
-          };
+      if (result.data.data) {
+        this.props.handleLogin();
+        this.props.changeUser(
+          result.data.data.firstname,
+          result.data.data.lastname,
+          result.data.data.id
+        );
+      }
     });
   };
 

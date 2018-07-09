@@ -24,8 +24,6 @@ import {
   MenuList,
   Input
 } from 'bloomer';
-/* import api here */
-import * as API from '../../api';
 
 /* create styles here */
 const style = {

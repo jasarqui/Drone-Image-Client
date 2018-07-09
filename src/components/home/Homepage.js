@@ -71,7 +71,7 @@ export default class Homepage extends Component {
     return (
       <DocumentTitle title="DIA">
         <div>
-          <Hero style={style.greenBack}>
+          <Hero style={style.greenBack} isSize={'medium'}>
             <HeroBody>
               <Media>
                 <MediaLeft>

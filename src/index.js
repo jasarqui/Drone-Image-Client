@@ -8,6 +8,7 @@ import registerServiceWorker from './registerServiceWorker';
 import 'font-awesome/css/font-awesome.css';
 import 'bulma/css/bulma.css';
 import './assets/index.css';
+import 'react-responsive-carousel/lib/styles/carousel.css';
 
 /* render the components */
 ReactDOM.render(<App />, document.getElementById('root'));

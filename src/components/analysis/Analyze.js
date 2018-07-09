@@ -3,28 +3,26 @@ import React, { Component } from 'react';
 import DocumentTitle from 'react-document-title';
 import Dropzone from 'react-dropzone';
 import Alert from 'react-s-alert';
-
+import ReactTooltip from 'react-tooltip';
+import { Carousel } from 'react-responsive-carousel';
+import RemoveModal from './modals/RemoveModal';
 /* import bulma components */
 import {
   Columns,
   Column,
-  Card,
-  CardContent,
-  CardHeader,
-  CardHeaderTitle,
   Icon,
-  Image,
-  CardImage,
   Message,
   MessageHeader,
   MessageBody,
-  Button,
   Menu,
   MenuLabel,
   MenuLink,
   MenuList,
   Section,
-  Input
+  Input,
+  Heading,
+  Delete,
+  Button
 } from 'bloomer';
 /* import api here */
 import * as API from '../../api';
@@ -43,34 +41,57 @@ const style = {
   removeUnderline: {
     textDecoration: 'none'
   },
-  marginPanel: {
-    margin: '30px'
-  },
   imageMargin: {
     margin: '5px'
   },
-  dropzone: {
-    /* pseudo flexbox */
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '500px',
-    verticalAlign: 'center',
-    border: '2px dashed silver',
-    margin: '5px'
-  },
   switchOn: {
-    color: '#23d160',
+    color: '#57bc90',
     margin: '0px',
     padding: '0px',
     textDecoration: 'none'
   },
   switchOff: {
-    color: '#b5b5b5',
+    color: '#ef6f6c',
     margin: '0px',
     padding: '0px',
     textDecoration: 'none'
+  },
+  toolbar: {
+    textAlign: 'center',
+    padding: '15px 0px 0px 0px'
+  },
+  whiteText: {
+    color: 'white'
+  },
+  dropInitial: {
+    /* pseudo flexbox */
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    verticalAlign: 'center',
+    border: '2px dashed silver',
+    borderRadius: '30px',
+    backgroundColor: '#f8f8f8',
+    margin: '20px'
+  },
+  dataHeader: {
+    backgroundColor: '#015249',
+    color: 'white',
+    paddingTop: '0px'
+  },
+  button: {
+    backgroundColor: '#015249',
+    border: '1px solid #015249',
+    color: 'white',
+    marginTop: '0px',
+    width: '25%'
+  },
+  activeButton: {
+    color: 'white',
+    backgroundColor: '#77c9d4',
+    border: '1px solid #77c9d4'
   }
 };
 
@@ -83,29 +104,179 @@ export default class Analyze extends Component {
     super(props);
 
     this.state = {
-      selectedFile: null,
-      fileURL: null,
-      /* UX purpose */
-      metadataOpen: true,
-      attribOpen: true,
-      /* these are metadata */
-      name: '',
-      camera: '',
-      date: '',
-      private: false, // this is default
-      /* these are analyzed data */
-      attrib: [
+      carousel: [],
+      images: [
         {
-          name: 'Height',
-          value: '3ft'
+          fileURL:
+            'https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg?auto=compress&cs=tinysrgb&h=350',
+          /* UX purpose */
+          metadataOpen: true,
+          attribOpen: true,
+          /* these are metadata */
+          name: 'try1.png',
+          camera: 'RGB',
+          season: 'DRY',
+          date: '',
+          private: false, // this is default
+          /* these are analyzed data */
+          attrib: [
+            {
+              name: 'Height',
+              value: '3ft'
+            },
+            {
+              name: 'Width',
+              value: '1in'
+            }
+          ]
         },
         {
-          name: 'Width',
-          value: '1in'
+          fileURL:
+            'https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg?auto=compress&cs=tinysrgb&h=350',
+          /* UX purpose */
+          metadataOpen: true,
+          attribOpen: true,
+          /* these are metadata */
+          name: 'try2.png',
+          camera: 'Thermal',
+          season: 'WET',
+          date: '',
+          private: false, // this is default
+          /* these are analyzed data */
+          attrib: [
+            {
+              name: 'Height',
+              value: '5ft'
+            },
+            {
+              name: 'Width',
+              value: '2in'
+            }
+          ]
         }
-      ]
+      ],
+      removeModalOpen: false,
+      activeImage: 0
     };
+
+    /* since this function is not an arrow binded function */
+    this.updateImages = this.updateImages.bind(this);
   }
+
+  openRemoveModal = e => {
+    e.preventDefault();
+    this.setState({ removeModalOpen: true });
+  };
+
+  closeRemoveModal = e => {
+    e.preventDefault();
+    this.setState({ removeModalOpen: false });
+  };
+
+  removeAll = e => {
+    e.preventDefault();
+    this.setState({ removeModalOpen: false });
+    /* this will reset the images array */
+    this.setState({ images: [] });
+  };
+
+  changeActiveImg = index => {
+    this.setState({ activeImage: index });
+  };
+
+  handleMeta = e => {
+    e.preventDefault();
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].metadataOpen = !imageState[
+      this.state.activeImage
+    ].metadataOpen;
+    this.setState({ images: imageState });
+  };
+
+  handleAttrib = e => {
+    e.preventDefault();
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].attribOpen = !imageState[
+      this.state.activeImage
+    ].attribOpen;
+    this.setState({ images: imageState });
+  };
+
+  switch = e => {
+    e.preventDefault();
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].private = !imageState[
+      this.state.activeImage
+    ].private;
+    this.setState({ images: imageState });
+  };
+
+  changeName = e => {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].name = e.target.value;
+    this.setState({ images: imageState });
+  };
+
+  changeCam = e => {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].camera = e.target.value;
+    this.setState({ images: imageState });
+  };
+
+  changeSeason = e => {
+    e.preventDefault();
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].season = e.currentTarget.dataset.value;
+    this.setState({ images: imageState });
+  };
+
+  removeImage = index => {
+    // this is to prevent errors
+    if (this.state.activeImage === index && this.state.activeImage !== 0)
+      this.setState({ activeImage: index - 1 });
+
+    this.updateImages(index)
+      .then(result => {
+        /* update the state */
+        this.setState({ images: result });
+      }) /* update the carousel */
+      .then(this.renderCarousel);
+  };
+
+  /* this function returns the proper updated array */
+  async updateImages(index) {
+    return new Promise((resolve, reject) => {
+      var imageState = [...this.state.images];
+      imageState.splice(index, 1);
+      return resolve(imageState);
+    });
+  }
+
+  /* reusable carousel updater */
+  renderCarousel = () => {
+    /* restart the carousel first */
+    this.setState({ carousel: [] });
+    /* update the carousel */
+    this.setState({
+      carousel: this.state.images.map((image, index) => {
+        return (
+          <div key={index}>
+            <img src={image.fileURL} alt={`${index}`} />
+          </div>
+        );
+      })
+    });
+  };
+
+  /* for dev purposes only */
+  componentDidMount = () => {
+    /* maps the initial carousel state */
+    /* this is to avoid error, although technically
+    the images state is empty from the start */
+    this.renderCarousel();
+  };
+
+  /* below are unfinished */
 
   uploadFile = files => {
     this.setState({ selectedFile: files[0] });
@@ -113,35 +284,37 @@ export default class Analyze extends Component {
   };
 
   uploadImage = image => {
+    this.setState({ name: image.name });
     /* this is to post to the cloudinary api,
     so that the image is uploaded to the cloud */
-    // let upload = request
-    //   .post(CLOUDINARY_UPLOAD_URL)
-    //   .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    //   .field('file', image);
+    let upload = request
+      .post(CLOUDINARY_UPLOAD_URL)
+      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+      .field('file', image);
+
     /* upload end is when the image is finished uploading */
-    // upload.end((err, response) => {
-    //   if (err) {
-    //     /* this is an alert on success */
-    //     Alert.error('Failed to upload image.', {
-    //       beep: false,
-    //       position: 'top-right',
-    //       effect: 'jelly',
-    //       timeout: 2000
-    //     });
-    //   } else {
-    //     if (response.body.secure_url !== '') {
-    //       this.setState({ fileURL: response.body.secure_url });
-    //       /* this is an alert on success */
-    //       Alert.success('Successfully uploaded image.', {
-    //         beep: false,
-    //         position: 'top-right',
-    //         effect: 'jelly',
-    //         timeout: 2000
-    //       });
-    //     }
-    //   }
-    // });
+    upload.end((err, response) => {
+      if (err) {
+        /* this is an alert on success */
+        Alert.error('Failed to upload image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      } else {
+        if (response.body.secure_url !== '') {
+          this.setState({ fileURL: response.body.secure_url });
+          /* this is an alert on success */
+          Alert.success('Successfully uploaded image.', {
+            beep: false,
+            position: 'top-right',
+            effect: 'jelly',
+            timeout: 2000
+          });
+        }
+      }
+    });
   };
 
   analyzeImage = e => {
@@ -162,24 +335,6 @@ export default class Analyze extends Component {
       effect: 'jelly',
       timeout: 2000
     });
-  };
-
-  changeName = e => {
-    this.setState({ name: e.target.value });
-  };
-
-  changeCam = e => {
-    this.setState({ camera: e.target.value });
-  };
-
-  handleMeta = e => {
-    e.preventDefault();
-    this.setState({ metadataOpen: !this.state.metadataOpen });
-  };
-
-  handleAttrib = e => {
-    e.preventDefault();
-    this.setState({ attribOpen: !this.state.attribOpen });
   };
 
   // this will send the image info into the database
@@ -216,227 +371,361 @@ export default class Analyze extends Component {
       });
   };
 
-  switch = e => {
-    e.preventDefault();
-    this.setState({ private: !this.state.private });
-  };
-
   render() {
     return (
       <DocumentTitle title="DIA | Analyze">
-        <Columns isGapless>
-          <Column isSize="2/3">
-            <Card style={style.marginCard}>
-              <CardHeader>
-                <CardHeaderTitle>
-                  {!this.state.name ? 'New Image' : this.state.name}
-                </CardHeaderTitle>
-              </CardHeader>
-              <CardImage>
+        <div>
+          <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
+            <Column style={style.toolbar} isHidden={'mobile'}>
+              <a href={'.'} data-tip={'Add Image(s)'} style={style.whiteText}>
+                <Icon className={'fa fa-plus-circle fa-1x'} />
+                <Heading>ADD</Heading>
+              </a>
+            </Column>
+            <Column style={style.toolbar} isHidden={'mobile'}>
+              <a
+                href={'.'}
+                data-tip={'Analyze Image(s)'}
+                style={style.whiteText}>
+                <Icon className={'fa fa-bolt fa-1x'} />
+                <Heading>ANALYZE</Heading>
+              </a>
+            </Column>
+            <Column style={style.toolbar} isHidden={'mobile'}>
+              <a
+                href={'.'}
+                data-tip={'Save analyzed Image(s)'}
+                style={style.whiteText}>
+                <Icon className={'fa fa-save fa-1x'} />
+                <Heading>SAVE</Heading>
+              </a>
+            </Column>
+            <Column style={style.toolbar} isHidden={'mobile'}>
+              <a
+                href={'.'}
+                data-tip={'Remove all Image(s)'}
+                style={style.whiteText}
+                onClick={this.openRemoveModal}>
+                <Icon className={'fa fa-minus-circle fa-1x'} />
+                <Heading>REMOVE</Heading>
+              </a>
+            </Column>
+            <Column
+              style={{ paddingTop: '20px', textAlign: 'center' }}
+              isHidden={'desktop'}>
+              <Button style={style.button}>
                 <center>
-                  {this.state.fileURL ? (
-                    <Image
-                      isSize="4:3"
-                      src={this.state.fileURL}
-                      style={style.imageMargin}
-                    />
-                  ) : this.state.selectedFile ? (
-                    <div style={style.dropzone}>
-                      <Icon
-                        className="fa fa-cog fa-spin fa-5x"
-                        style={style.icon}
-                        isSize="large"
-                      />
-                      <br />
-                      Please wait until the upload is complete
-                    </div>
-                  ) : (
-                    <Dropzone
-                      style={style.dropzone}
-                      multiple={false}
-                      accept="image/*"
-                      onDrop={this.uploadFile}>
-                      <div>
-                        <Section isHidden="mobile">
-                          <Icon className="fa fa-download" style={style.icon} />
-                          Drop an image or{'  '}
-                          <Icon className="fa fa-upload" style={style.icon} />
-                          Click to select one.
-                        </Section>
-                        <Section isHidden="desktop">
-                          <Icon className="fa fa-upload" style={style.icon} />
-                          Click to select an image.
-                        </Section>
-                      </div>
-                    </Dropzone>
-                  )}
+                  <Icon className={'fa fa-plus-circle fa-1x'} />
+                  <small style={{ color: 'white', fontSize: '15px' }}>
+                    ADD
+                  </small>
                 </center>
-              </CardImage>
-              <CardContent>
-                <Columns>
-                  <Column isSize="1/2">
-                    <Button
-                      isFullWidth
-                      isColor="primary"
-                      onClick={this.analyzeImage}
-                      disabled={this.state.fileURL ? false : true}>
-                      <Icon className="fa fa-bolt" style={style.icon} />
-                      Analyze
-                    </Button>
-                  </Column>
-                  <Column isSize="1/2">
-                    <Button
-                      isFullWidth
-                      isColor="primary"
-                      onClick={this.save}
-                      disabled={
-                        this.state.fileURL &&
-                        this.state.name &&
-                        this.state.camera &&
-                        this.state.date
-                          ? false
-                          : true
-                      }>
-                      <Icon className="fa fa-save" style={style.icon} />
-                      Save
-                    </Button>
-                  </Column>
-                </Columns>
-              </CardContent>
-            </Card>
-          </Column>
-          <Column isSize="1/3">
-            <Message isColor="light" style={style.marginPanel}>
-              <MessageHeader>Image Data</MessageHeader>
-              <MessageBody>
-                <Menu>
-                  <MenuLabel>
-                    Metadata{' '}
-                    <a
-                      href="."
-                      onClick={this.handleMeta}
-                      style={style.removeUnderline}>
-                      <Icon
-                        className={
-                          this.state.metadataOpen
-                            ? 'fa fa-angle-up'
-                            : 'fa fa-angle-down'
-                        }
-                        isSize="small"
-                      />
-                    </a>
-                  </MenuLabel>
-                  {this.state.metadataOpen ? (
+              </Button>
+              <Button style={style.button}>
+                <center>
+                  <Icon className={'fa fa-bolt fa-1x'} />
+                  <small style={{ color: 'white' }}>ANALYZE</small>
+                </center>
+              </Button>
+              <Button style={style.button}>
+                <center>
+                  <Icon className={'fa fa-save fa-1x'} />
+                  <small style={{ color: 'white' }}>SAVE</small>
+                </center>
+              </Button>
+              <Button style={style.button} onClick={this.openRemoveModal}>
+                <center>
+                  <Icon className={'fa fa-minus-circle fa-1x'} />
+                  <small style={{ color: 'white' }}>REMOVE</small>
+                </center>
+              </Button>
+            </Column>
+          </Columns>
+          {this.state.images.length === 0 ? (
+            <Dropzone
+              style={style.dropInitial}
+              multiple={true}
+              accept="image/*"
+              onDrop={this.uploadFile}>
+              <div>
+                <Section isHidden="mobile">
+                  <Icon className="fa fa-download" style={style.icon} />
+                  Drop images or{'  '}
+                  <Icon className="fa fa-upload" style={style.icon} />
+                  Click to select them.
+                </Section>
+                <Section isHidden="desktop">
+                  <Icon className="fa fa-upload" style={style.icon} />
+                  Click to select images.
+                </Section>
+              </div>
+            </Dropzone>
+          ) : (
+            <div>
+              <Columns isFullWidth>
+                <Column
+                  isSize={'1/3'}
+                  style={{ borderRight: '2px solid #015249' }}>
+                  <Menu>
+                    <MenuLabel style={{ marginLeft: '5px' }}>
+                      Collection
+                    </MenuLabel>
                     <MenuList>
-                      <li>
-                        <MenuLink style={style.removeUnderline}>
-                          <Columns>
-                            <Column isSize="1/3">Name</Column>
-                            <Column isSize="2/3">
-                              <Input
-                                type="text"
-                                isSize="small"
-                                value={this.state.name}
-                                onChange={this.changeName}
-                              />
-                            </Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                      <li>
-                        <MenuLink style={style.removeUnderline}>
-                          <Columns>
-                            <Column isSize="1/3">Camera</Column>
-                            <Column isSize="2/3">
-                              <Input
-                                type="text"
-                                isSize="small"
-                                value={this.state.camera}
-                                onChange={this.changeCam}
-                              />
-                            </Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                      <li>
-                        <MenuLink style={style.removeUnderline}>
-                          <Columns>
-                            <Column isSize="1/3">Date</Column>
-                            <Column isSize="2/3">{this.state.date}</Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                      <li>
-                        <MenuLink
-                          style={style.removeUnderline}
-                          onClick={this.switch}>
-                          <Columns>
-                            <Column isSize="1/3">Private</Column>
-                            <Column isSize="2/3">
-                              {this.state.private ? (
-                                <i style={style.switchOn}>
-                                  <Icon
-                                    href="."
-                                    className={'fa fa-toggle-on fa-lg'}
-                                    isSize="small"
-                                  />
-                                </i>
-                              ) : (
-                                <i style={style.switchOff}>
-                                  <Icon
-                                    href="."
-                                    className={'fa fa-toggle-off fa-lg'}
-                                    isSize="small"
-                                  />
-                                </i>
-                              )}
-                            </Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                    </MenuList>
-                  ) : (
-                    <div />
-                  )}
-                  <MenuLabel>
-                    Attributes{' '}
-                    <a
-                      href="."
-                      onClick={this.handleAttrib}
-                      style={style.removeUnderline}>
-                      <Icon
-                        className={
-                          this.state.attribOpen
-                            ? 'fa fa-angle-up'
-                            : 'fa fa-angle-down'
-                        }
-                        isSize="small"
-                      />
-                    </a>
-                  </MenuLabel>
-                  {this.state.attribOpen ? (
-                    <MenuList>
-                      {this.state.attrib.map((attribute, id) => {
+                      {this.state.images.map((image, index) => {
                         return (
-                          <li key={id}>
-                            <MenuLink style={style.removeUnderline}>
-                              <Columns>
-                                <Column isSize="1/3">{attribute.name}</Column>
-                                <Column isSize="2/3">{attribute.value}</Column>
-                              </Columns>
-                            </MenuLink>
-                          </li>
+                          <MenuLink
+                            key={index}
+                            style={
+                              index === this.state.activeImage
+                                ? { backgroundColor: '#77c9d4', color: 'white' }
+                                : {}
+                            }>
+                            {image.name}
+                            <Delete
+                              style={{ float: 'right' }}
+                              onClick={() => {
+                                this.removeImage(index);
+                              }}
+                            />
+                          </MenuLink>
                         );
                       })}
                     </MenuList>
-                  ) : (
-                    <div />
-                  )}
-                </Menu>
-              </MessageBody>
-            </Message>
-          </Column>
-        </Columns>
+                  </Menu>
+                </Column>
+                <Column
+                  isSize={'2/3'}
+                  style={{ backgroundColor: '#F8F8F8', paddingLeft: '0px' }}>
+                  <center>
+                    <Carousel
+                      showStatus={false}
+                      onChange={this.changeActiveImg}>
+                      {this.state.carousel}
+                    </Carousel>
+                  </center>
+                </Column>
+              </Columns>
+              <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
+                <Column>
+                  <Message>
+                    <MessageHeader style={style.dataHeader}>
+                      <Heading
+                        style={{
+                          fontSize: '18px',
+                          paddingTop: '5px',
+                          paddingBottom: '0px'
+                        }}>
+                        Image Data
+                      </Heading>
+                      <Delete style={{ marginTop: '0px' }} />
+                    </MessageHeader>
+                    <MessageBody>
+                      <Menu>
+                        <MenuLabel>
+                          Metadata{' '}
+                          <a
+                            href="."
+                            onClick={this.handleMeta}
+                            style={style.removeUnderline}>
+                            <Icon
+                              className={
+                                this.state.images[this.state.activeImage]
+                                  .metadataOpen
+                                  ? 'fa fa-angle-up'
+                                  : 'fa fa-angle-down'
+                              }
+                              isSize="small"
+                            />
+                          </a>
+                        </MenuLabel>
+                        {this.state.images[this.state.activeImage]
+                          .metadataOpen ? (
+                          <MenuList>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
+                                  <Column isSize="1/4">Name</Column>
+                                  <Column isSize="3/4">
+                                    <Input
+                                      type="text"
+                                      isSize="small"
+                                      value={
+                                        this.state.images[
+                                          this.state.activeImage
+                                        ].name
+                                      }
+                                      onChange={this.changeName}
+                                    />
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
+                                  <Column isSize="1/4">Camera</Column>
+                                  <Column isSize="3/4">
+                                    <Input
+                                      type="text"
+                                      isSize="small"
+                                      value={
+                                        this.state.images[
+                                          this.state.activeImage
+                                        ].camera
+                                      }
+                                      onChange={this.changeCam}
+                                    />
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                            <MenuLink style={style.removeUnderline}>
+                              <Columns>
+                                <Column isSize="1/4">Season</Column>
+                                <Column isSize="3/4">
+                                  <Button
+                                    data-value={'WET'}
+                                    onClick={this.changeSeason}
+                                    isSize={'small'}
+                                    style={
+                                      this.state.images[this.state.activeImage]
+                                        .season === 'WET'
+                                        ? style.activeButton
+                                        : {}
+                                    }>
+                                    <Icon
+                                      className={'fa fa-umbrella fa-1x'}
+                                      style={{ marginRight: '5px' }}
+                                    />{' '}
+                                    WET
+                                  </Button>
+                                  <Button
+                                    data-value={'DRY'}
+                                    onClick={this.changeSeason}
+                                    isSize={'small'}
+                                    style={
+                                      this.state.images[this.state.activeImage]
+                                        .season === 'DRY'
+                                        ? style.activeButton
+                                        : {}
+                                    }>
+                                    <Icon
+                                      className={'fa fa-fire fa-1x'}
+                                      style={{ marginRight: '5px' }}
+                                    />{' '}
+                                    DRY
+                                  </Button>
+                                </Column>
+                              </Columns>
+                            </MenuLink>
+                            <li>
+                              <MenuLink
+                                style={style.removeUnderline}
+                                onClick={this.switch}>
+                                <Columns>
+                                  <Column isSize="1/4">Private</Column>
+                                  <Column
+                                    isSize="3/4"
+                                    style={{ paddingLeft: '20px' }}>
+                                    {this.state.images[this.state.activeImage]
+                                      .private ? (
+                                      <i style={style.switchOn}>
+                                        <Icon
+                                          href="."
+                                          className={'fa fa-toggle-on fa-lg'}
+                                          isSize="small"
+                                        />
+                                      </i>
+                                    ) : (
+                                      <i style={style.switchOff}>
+                                        <Icon
+                                          href="."
+                                          className={'fa fa-toggle-off fa-lg'}
+                                          isSize="small"
+                                        />
+                                      </i>
+                                    )}
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
+                                  <Column isSize="1/4">Date</Column>
+                                  <Column isSize="3/4">
+                                    {
+                                      this.state.images[this.state.activeImage]
+                                        .date
+                                    }
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                          </MenuList>
+                        ) : (
+                          <div />
+                        )}
+                        <MenuLabel>
+                          Attributes{' '}
+                          <a
+                            href="."
+                            onClick={this.handleAttrib}
+                            style={style.removeUnderline}>
+                            <Icon
+                              className={
+                                this.state.images[this.state.activeImage]
+                                  .attribOpen
+                                  ? 'fa fa-angle-up'
+                                  : 'fa fa-angle-down'
+                              }
+                              isSize="small"
+                            />
+                          </a>
+                        </MenuLabel>
+                        {this.state.images[this.state.activeImage]
+                          .attribOpen ? (
+                          <MenuList>
+                            {this.state.images[
+                              this.state.activeImage
+                            ].attrib.map((attribute, id) => {
+                              return (
+                                <li key={id}>
+                                  <MenuLink style={style.removeUnderline}>
+                                    <Columns>
+                                      <Column isSize="1/4">
+                                        {attribute.name}
+                                      </Column>
+                                      <Column isSize="3/4">
+                                        {attribute.value}
+                                      </Column>
+                                    </Columns>
+                                  </MenuLink>
+                                </li>
+                              );
+                            })}
+                          </MenuList>
+                        ) : (
+                          <div />
+                        )}
+                      </Menu>
+                    </MessageBody>
+                  </Message>
+                </Column>
+              </Columns>
+            </div>
+          )}
+          <ReactTooltip effect={'solid'} place={'bottom'} />
+          <RemoveModal
+            {...{
+              /* pass props here */
+              active: this.state.removeModalOpen,
+              /* pass handlers here */
+              close: this.closeRemoveModal,
+              removeAll: this.removeAll
+            }}
+          />
+        </div>
       </DocumentTitle>
     );
   }

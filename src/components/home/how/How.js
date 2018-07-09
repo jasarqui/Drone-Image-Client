@@ -3,15 +3,6 @@ import React, { Component } from 'react';
 /* import bulma components */
 import { Progress, Heading } from 'bloomer';
 
-const style = {
-  noMarginTop: {
-    marginTop: '-50px'
-  },
-  divider: {
-    backgroundColor: 'silver'
-  }
-};
-
 export default class How extends Component {
   constructor(props) {
     super(props);
@@ -21,7 +12,7 @@ export default class How extends Component {
 
   render() {
     return (
-      <div>
+      <div style={{ padding: '30px' }}>
         <Heading>
           <strong>DO STEP 1</strong>
         </Heading>

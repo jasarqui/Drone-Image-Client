@@ -30,10 +30,10 @@ import * as API from '../../api';
 /* insert styles here */
 const style = {
   googleSubmit: {
-    backgroundColor: 'navy',
+    backgroundColor: '#015264',
     height: '35px',
     borderRadius: '3px',
-    border: '1px solid navy',
+    border: '1px solid #015264',
     cursor: 'pointer',
     width: '50%'
   },
@@ -68,10 +68,24 @@ const style = {
     backgroundColor: 'silver'
   },
   greenText: {
-    color: '#23d160'
+    color: '#57bc90'
   },
   redText: {
-    color: '#ff3860'
+    color: '#ef6f6c'
+  },
+  infoBG: {
+    backgroundColor: '#77c9d4'
+  },
+  successBG: {
+    backgroundColor: '#57bc90'
+  },
+  errorBG: {
+    backgroundColor: '#ef6f6c'
+  },
+  buttons: {
+    backgroundColor: '#015264',
+    border: '1px solid #015264',
+    color: 'white'
   }
 };
 
@@ -148,8 +162,7 @@ export default class Signup extends Component {
             this.props.close();
             this.resetStates();
           });
-      }),
-        50;
+      }, 50);
     });
   };
 
@@ -254,7 +267,14 @@ export default class Signup extends Component {
           <ModalBackground onClick={this.closeModal} />
           <ModalContent>
             <Box style={style.boxPadding}>
-              <Notification isColor={this.state.signupState}>
+              <Notification
+                style={
+                  this.state.signupState === 'info'
+                    ? style.infoBG
+                    : this.state.signupState === 'success'
+                      ? style.successBG
+                      : style.errorBG
+                }>
                 <center>
                   <Image src={DiaIcon} isSize="128x128" />
                   <p style={style.whiteText}>
@@ -485,7 +505,7 @@ export default class Signup extends Component {
                 <Columns>
                   <Column isSize="1/2">
                     <Button
-                      isColor={'info'}
+                      style={style.buttons}
                       isFullWidth
                       onClick={this.backButton}>
                       {this.state.currentCard === 0 ? 'Cancel' : 'Back'}
@@ -493,7 +513,7 @@ export default class Signup extends Component {
                   </Column>
                   <Column isSize="1/2">
                     <Button
-                      isColor={'info'}
+                      style={style.buttons}
                       isFullWidth
                       disabled={
                         this.state.currentCard === 0
