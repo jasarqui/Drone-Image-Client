@@ -477,8 +477,8 @@ export default class Analyze extends Component {
                             key={index}
                             style={
                               index === this.state.activeImage
-                                ? { backgroundColor: '#77c9d4', color: 'white' }
-                                : {}
+                                ? { backgroundColor: '#77c9d4', color: 'white', cursor: 'default' }
+                                : { cursor: 'default'}
                             }>
                             {image.name}
                             <Delete
