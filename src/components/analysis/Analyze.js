@@ -23,7 +23,6 @@ import {
   Section,
   Input,
   Heading,
-  Delete,
   Button
 } from 'bloomer';
 /* import api here */
@@ -94,6 +93,21 @@ const style = {
     color: 'white',
     backgroundColor: '#77c9d4',
     border: '1px solid #77c9d4'
+  },
+  activeHelper: {
+    float: 'right',
+    borderRadius: '50%',
+    color: 'white',
+    backgroundColor: '#77c9d4',
+    border: 'none',
+    marginTop: '-4px'
+  },
+  inactiveHelper: {
+    float: 'right',
+    borderRadius: '50%',
+    backgroundColor: 'white',
+    border: 'none',
+    marginTop: '-4px'
   }
 };
 
@@ -120,6 +134,7 @@ export default class Analyze extends Component {
           season: 'DRY',
           date: '',
           private: false, // this is default
+          saved: false,
           /* these are analyzed data */
           attrib: [
             {
@@ -144,6 +159,7 @@ export default class Analyze extends Component {
           season: 'WET',
           date: '',
           private: false, // this is default
+          saved: false,
           /* these are analyzed data */
           attrib: [
             {
@@ -168,6 +184,7 @@ export default class Analyze extends Component {
           season: 'WET',
           date: '',
           private: true, // this is default
+          saved: false,
           /* these are analyzed data */
           attrib: [
             {
@@ -207,26 +224,6 @@ export default class Analyze extends Component {
       : e.currentTarget.dataset.value === 'save'
         ? this.setState({ saveModalOpen: false })
         : this.setState({ analyzeModalOpen: false });
-  };
-
-  removeAll = e => {
-    e.preventDefault();
-    this.setState({ removeModalOpen: false });
-    /* this will reset the images array */
-    this.setState({ images: [] });
-    this.setState({ activeImage: 0 });
-  };
-
-  saveAll = e => {
-    e.preventDefault();
-    this.setState({ saveModalOpen: false });
-    /* this will save all images to database */
-  };
-
-  analyzeAll = e => {
-    e.preventDefault();
-    this.setState({ analyzeModalOpen: false });
-    /* this will analyze all images to database */
   };
 
   changeActiveImg = index => {
@@ -279,6 +276,16 @@ export default class Analyze extends Component {
     this.setState({ images: imageState });
   };
 
+  /* removes all */
+  removeAll = e => {
+    e.preventDefault();
+    this.setState({ removeModalOpen: false });
+    /* this will reset the images array */
+    this.setState({ images: [] });
+    this.setState({ activeImage: 0 });
+  };
+
+  /* removes one */
   removeImage = index => {
     /* this is to avoid errors */
     if (this.state.activeImage !== 0) {
@@ -328,6 +335,139 @@ export default class Analyze extends Component {
     });
   };
 
+  /* analyzes one */
+  analyzeImage = index => {
+    /* this is where we put the glue */
+
+    /* update date for analyze date */
+    var imageState = [...this.state.images];
+    /* this should only get the date excluding the time */
+    imageState[index].date = new Date(Date.now())
+      .toLocaleString()
+      .split(',')[0];
+    this.setState({
+      images: imageState
+    });
+
+    // placeholder, needs glue
+    /* this is an alert on success */
+    Alert.success('Successfully analyzed image.', {
+      beep: false,
+      position: 'top-right',
+      effect: 'jelly',
+      timeout: 2000
+    });
+  };
+
+  /* analyzes all */
+  analyzeAll = e => {
+    e.preventDefault();
+    this.setState({ analyzeModalOpen: false });
+    /* this is where we put the glue */
+
+    /* this will analyze all images */
+    var imageState = [...this.state.images];
+    for (var index = 0; index < imageState.length; index++) {
+      imageState[index].date = new Date(Date.now())
+        .toLocaleString()
+        .split(',')[0];
+    }
+    this.setState({ images: imageState });
+
+    // placeholder, needs glue
+    /* this is an alert on success */
+    Alert.success('Successfully analyzed all images.', {
+      beep: false,
+      position: 'top-right',
+      effect: 'jelly',
+      timeout: 2000
+    });
+  };
+
+  /* saves one */
+  save = index => {
+    /* saves the image information */
+    var imageState = [...this.state.images];
+    imageState[index].saved = true;
+    this.setState({ images: imageState });
+
+    API.save({
+      fileURL: this.state.images[index].fileURL,
+      name: this.state.images[index].name,
+      camera: this.state.images[index].camera,
+      date: this.state.images[index].date,
+      is_private: this.state.images[index].private,
+      season: this.state.images[index].season,
+      attrib: this.state.images[index].attrib,
+      userId: this.props.userId
+    })
+      .then(() => {
+        /* this is an alert on success */
+        Alert.success('Successfully saved image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      })
+      .catch(() => {
+        /* this is an alert on failure */
+        Alert.error('Failed to save image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      });
+  };
+
+  /* saves all */
+  saveAll = e => {
+    e.preventDefault();
+    this.setState({ saveModalOpen: false });
+    /* this will save all images to database */
+
+    var imageState = [...this.state.images];
+    var imagesToSend = []; // array that holds images to send
+    try {
+      for (var index = 0; index < imageState.length; index++) {
+        if (imageState[index].date && !imageState[index].saved) {
+          // add to array
+          imagesToSend.push({
+            fileURL: imageState[index].fileURL,
+            name: imageState[index].name,
+            camera: imageState[index].camera,
+            date: imageState[index].date,
+            is_private: imageState[index].private,
+            season: imageState[index].season,
+            attrib: imageState[index].attrib,
+            userId: this.props.userId
+          });
+          imageState[index].saved = true;
+        }
+      }
+      // send the array
+      API.saveMany({images: imagesToSend}).then(() => {
+        this.setState({ images: imageState });
+        /* this is an alert on success */
+        Alert.success('Successfully saved images.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      });
+    } catch (err) {
+      /* this is an alert on failure */
+      Alert.error('Failed to save images.', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
+      });
+    }
+  };
+
   /* for dev purposes only */
   componentDidMount = () => {
     /* maps the initial carousel state */
@@ -375,60 +515,6 @@ export default class Analyze extends Component {
         }
       }
     });
-  };
-
-  analyzeImage = e => {
-    e.preventDefault();
-    /* this is where we put the glue */
-
-    /* update date for analyze date */
-    this.setState({
-      /* this should only get the date excluding the time */
-      date: new Date(Date.now()).toLocaleString().split(',')[0]
-    });
-
-    // placeholder, needs glue
-    /* this is an alert on success */
-    Alert.success('Successfully analyzed image.', {
-      beep: false,
-      position: 'top-right',
-      effect: 'jelly',
-      timeout: 2000
-    });
-  };
-
-  // this will send the image info into the database
-  save = e => {
-    e.preventDefault();
-
-    /* saves the image information */
-    API.save({
-      fileURL: this.state.fileURL,
-      name: this.state.name,
-      camera: this.state.camera,
-      date: this.state.date,
-      is_private: this.state.private,
-      attrib: this.state.attrib,
-      userId: this.props.userId
-    })
-      .then(() => {
-        /* this is an alert on success */
-        Alert.success('Successfully saved image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
-        });
-      })
-      .catch(() => {
-        /* this is an alert on failure */
-        Alert.error('Failed to save image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
-        });
-      });
   };
 
   render() {
@@ -550,12 +636,50 @@ export default class Analyze extends Component {
                                 : { cursor: 'default' }
                             }>
                             {image.name}
-                            <Delete
-                              style={{ float: 'right' }}
+                            <Button
+                              isSize={'small'}
+                              style={
+                                index === this.state.activeImage
+                                  ? style.activeHelper
+                                  : style.inactiveHelper
+                              }
                               onClick={() => {
                                 this.removeImage(index);
-                              }}
-                            />
+                              }}>
+                              <Icon className={'fa fa-times'} />
+                            </Button>
+                            <Button
+                              isSize={'small'}
+                              style={
+                                index === this.state.activeImage
+                                  ? style.activeHelper
+                                  : style.inactiveHelper
+                              }
+                              onClick={() => {
+                                this.analyzeImage(index);
+                              }}>
+                              <Icon className={'fa fa-bolt'} />
+                            </Button>
+                            {image.date ? (
+                              !image.saved ? (
+                                <Button
+                                  isSize={'small'}
+                                  style={
+                                    index === this.state.activeImage
+                                      ? style.activeHelper
+                                      : style.inactiveHelper
+                                  }
+                                  onClick={() => {
+                                    this.save(index);
+                                  }}>
+                                  <Icon className={'fa fa-save'} />
+                                </Button>
+                              ) : (
+                                <div />
+                              )
+                            ) : (
+                              <div />
+                            )}
                           </MenuLink>
                         );
                       })}
@@ -580,7 +704,6 @@ export default class Analyze extends Component {
                         }}>
                         Image Data
                       </Heading>
-                      <Delete style={{ marginTop: '0px' }} />
                     </MessageHeader>
                     <MessageBody>
                       <Menu>

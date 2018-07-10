@@ -5,6 +5,11 @@ export const save = info => {
   return axios.post('/img/save', info);
 };
 
+// saves images
+export const saveMany = images => {
+  return axios.post('/img/saveMany', images);
+};
+
 // gets the images
 export const getImages = () => {
   return axios.get('/img');
