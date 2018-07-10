@@ -122,83 +122,8 @@ export default class Analyze extends Component {
 
     this.state = {
       carousel: [],
-      images: [
-        {
-          fileURL:
-            'https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg?auto=compress&cs=tinysrgb&h=350',
-          /* UX purpose */
-          metadataOpen: true,
-          attribOpen: true,
-          /* these are metadata */
-          name: 'try1.png',
-          camera: 'RGB',
-          season: 'DRY',
-          date: '',
-          private: false, // this is default
-          saved: false,
-          /* these are analyzed data */
-          attrib: [
-            {
-              name: 'Height',
-              value: '3ft'
-            },
-            {
-              name: 'Width',
-              value: '1in'
-            }
-          ]
-        },
-        {
-          fileURL:
-            'https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg?auto=compress&cs=tinysrgb&h=350',
-          /* UX purpose */
-          metadataOpen: true,
-          attribOpen: true,
-          /* these are metadata */
-          name: 'try2.png',
-          camera: 'Thermal',
-          season: 'WET',
-          date: '',
-          private: false, // this is default
-          saved: false,
-          /* these are analyzed data */
-          attrib: [
-            {
-              name: 'Height',
-              value: '5ft'
-            },
-            {
-              name: 'Width',
-              value: '2in'
-            }
-          ]
-        },
-        {
-          fileURL:
-            'https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg?auto=compress&cs=tinysrgb&h=350',
-          /* UX purpose */
-          metadataOpen: true,
-          attribOpen: true,
-          /* these are metadata */
-          name: 'try3.png',
-          camera: 'Something',
-          season: 'WET',
-          date: '',
-          private: true, // this is default
-          saved: false,
-          /* these are analyzed data */
-          attrib: [
-            {
-              name: 'Height',
-              value: '10ft'
-            },
-            {
-              name: 'Width',
-              value: '1in'
-            }
-          ]
-        }
-      ],
+      images: [],
+      uploading: false,
       removeModalOpen: false,
       analyzeModalOpen: false,
       saveModalOpen: false,
@@ -490,53 +415,66 @@ export default class Analyze extends Component {
     }
   };
 
-  /* for dev purposes only */
-  componentDidMount = () => {
-    /* maps the initial carousel state */
-    /* this is to avoid error, although technically
-    the images state is empty from the start */
-    this.renderCarousel();
-  };
+  uploadFiles = files => {
+    this.setState({ uploading: true });
+    for (var index = 0; index < files.length; index++) {
+      /* this is to post to the cloudinary api,
+      so that the image is uploaded to the cloud */
+      let upload = request
+        .post(CLOUDINARY_UPLOAD_URL)
+        .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
+        .field('file', files[index]);
 
-  /* below are unfinished */
-
-  uploadFile = files => {
-    this.setState({ selectedFile: files[0] });
-    this.uploadImage(files[0]);
-  };
-
-  uploadImage = image => {
-    this.setState({ name: image.name });
-    /* this is to post to the cloudinary api,
-    so that the image is uploaded to the cloud */
-    let upload = request
-      .post(CLOUDINARY_UPLOAD_URL)
-      .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-      .field('file', image);
-
-    /* upload end is when the image is finished uploading */
-    upload.end((err, response) => {
-      if (err) {
-        /* this is an alert on success */
-        Alert.error('Failed to upload image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
-        });
-      } else {
-        if (response.body.secure_url !== '') {
-          this.setState({ fileURL: response.body.secure_url });
+      /* upload end is when the image is finished uploading */
+      upload.end((err, response) => {
+        this.setState({ uploading: false });
+        if (err) {
           /* this is an alert on success */
-          Alert.success('Successfully uploaded image.', {
+          Alert.error('Failed to upload image.', {
             beep: false,
             position: 'top-right',
             effect: 'jelly',
             timeout: 2000
           });
+        } else {
+          if (response.body.secure_url !== '') {
+            var imageState = [...this.state.images];
+            imageState.push({
+              /* obtained by upload */
+              fileURL: response.body.secure_url,
+              name: response.body.original_filename,
+              /* the following are defaults */
+              camera: 'RGB',
+              season: 'DRY',
+              private: false,
+              saved: false,
+              /* the following are obtained by functions */
+              date: '',
+              attrib: [
+                {
+                  name: 'Place',
+                  value: 'Holder'
+                }
+              ],
+              /* these are for UX */
+              metadataOpen: true,
+              attribOpen: true
+            });
+            this.setState({ images: imageState });
+
+            /* this is an alert on success */
+            Alert.success('Successfully uploaded image.', {
+              beep: false,
+              position: 'top-right',
+              effect: 'jelly',
+              timeout: 2000
+            });
+            /* render the carousel */
+            this.renderCarousel();
+          }
         }
-      }
-    });
+      });
+    }
   };
 
   render() {
@@ -549,12 +487,13 @@ export default class Analyze extends Component {
                 <Dropzone
                   multiple={true}
                   accept="image/*"
-                  onDrop={this.uploadFile}
+                  onDrop={this.uploadFiles}
                   style={{ width: '0px' }}>
                   <a
                     href={'.'}
                     data-tip={'Add Image(s)'}
-                    style={style.whiteText}>
+                    style={style.whiteText}
+                    onClick={e => e.preventDefault()}>
                     <Icon className={'fa fa-plus-circle fa-1x'} />
                     <Heading>ADD</Heading>
                   </a>
@@ -602,7 +541,7 @@ export default class Analyze extends Component {
                   <Dropzone
                     multiple={true}
                     accept="image/*"
-                    onDrop={this.uploadFile}
+                    onDrop={this.uploadFiles}
                     style={{
                       height: '0px',
                       marginLeft: '0px',
@@ -615,19 +554,28 @@ export default class Analyze extends Component {
                   </Dropzone>
                 </center>
               </Button>
-              <Button data-value={'analyze'} style={style.button} onClick={this.openModal}>
+              <Button
+                data-value={'analyze'}
+                style={style.button}
+                onClick={this.openModal}>
                 <center>
                   <Icon className={'fa fa-bolt fa-1x'} />
                   <small style={{ color: 'white' }}>ANALYZE</small>
                 </center>
               </Button>
-              <Button data-value={'save'} style={style.button} onClick={this.openModal}>
+              <Button
+                data-value={'save'}
+                style={style.button}
+                onClick={this.openModal}>
                 <center>
                   <Icon className={'fa fa-save fa-1x'} />
                   <small style={{ color: 'white' }}>SAVE</small>
                 </center>
               </Button>
-              <Button data-value={'remove'} style={style.button} onClick={this.openModal}>
+              <Button
+                data-value={'remove'}
+                style={style.button}
+                onClick={this.openModal}>
                 <center>
                   <Icon className={'fa fa-minus-circle fa-1x'} />
                   <small style={{ color: 'white' }}>REMOVE</small>
@@ -636,24 +584,33 @@ export default class Analyze extends Component {
             </Column>
           </Columns>
           {this.state.images.length === 0 ? (
-            <Dropzone
-              style={style.dropInitial}
-              multiple={true}
-              accept="image/*"
-              onDrop={this.uploadFile}>
-              <div>
-                <Section isHidden="mobile">
-                  <Icon className="fa fa-download" style={style.icon} />
-                  Drop images or{'  '}
-                  <Icon className="fa fa-upload" style={style.icon} />
-                  Click to select them.
-                </Section>
-                <Section isHidden="desktop">
-                  <Icon className="fa fa-upload" style={style.icon} />
-                  Click to select images.
-                </Section>
+            this.state.uploading ? (
+              <div style={style.dropInitial}>
+                <Icon className={'fa fa-gear fa-spin fa-5x'} />
+                <p style={{ marginTop: '30px' }}>
+                  Please wait while the image is uploading
+                </p>
               </div>
-            </Dropzone>
+            ) : (
+              <Dropzone
+                style={style.dropInitial}
+                multiple={true}
+                accept="image/*"
+                onDrop={this.uploadFiles}>
+                <div>
+                  <Section isHidden="mobile">
+                    <Icon className="fa fa-download" style={style.icon} />
+                    Drop images or{'  '}
+                    <Icon className="fa fa-upload" style={style.icon} />
+                    Click to select them.
+                  </Section>
+                  <Section isHidden="desktop">
+                    <Icon className="fa fa-upload" style={style.icon} />
+                    Click to select images.
+                  </Section>
+                </div>
+              </Dropzone>
+            )
           ) : (
             <div>
               <Columns isFullWidth>
@@ -726,6 +683,17 @@ export default class Analyze extends Component {
                           </MenuLink>
                         );
                       })}
+                      {this.state.uploading ? (
+                        <MenuLink>
+                          <Icon
+                            style={{ marginRight: '5px' }}
+                            className={'fa fa-gear fa-spin fa-1x'}
+                          />{' '}
+                          Please wait while the image is uploading
+                        </MenuLink>
+                      ) : (
+                        <div />
+                      )}
                     </MenuList>
                   </Menu>
                 </Column>
