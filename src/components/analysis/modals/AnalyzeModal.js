@@ -30,7 +30,7 @@ const style = {
   }
 };
 
-export default class RemoveModal extends Component {
+export default class AnalyzeModal extends Component {
   constructor(props) {
     super(props);
 
@@ -41,18 +41,18 @@ export default class RemoveModal extends Component {
     return (
       <div>
         <Modal isActive={this.props.active}>
-          <ModalBackground data-value={'remove'} onClick={this.props.close} />
+          <ModalBackground data-value={'analyze'} onClick={this.props.close} />
           <ModalContent>
             <Notification>
               <center>
-                <p>Are you sure you want to remove all images?</p>
+                <p>This will analyze all images in the collection. Continue?</p>
                 <Button
                   style={style.successButton}
-                  onClick={this.props.removeAll}>
+                  onClick={this.props.analyzeAll}>
                   Yes
                 </Button>
                 <Button
-                  data-value={'remove'}
+                  data-value={'analyze'}
                   style={style.errorButton}
                   onClick={this.props.close}>
                   No
@@ -60,7 +60,7 @@ export default class RemoveModal extends Component {
               </center>
             </Notification>
           </ModalContent>
-          <ModalClose data-value={'remove'} onClick={this.props.close} />
+          <ModalClose data-value={'analyze'} onClick={this.props.close} />
         </Modal>
       </div>
     );

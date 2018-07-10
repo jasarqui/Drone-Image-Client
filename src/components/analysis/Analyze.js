@@ -6,6 +6,8 @@ import Alert from 'react-s-alert';
 import ReactTooltip from 'react-tooltip';
 import { Carousel } from 'react-responsive-carousel';
 import RemoveModal from './modals/RemoveModal';
+import SaveModal from './modals/SaveModal';
+import AnalyzeModal from './modals/AnalyzeModal';
 /* import bulma components */
 import {
   Columns,
@@ -153,9 +155,35 @@ export default class Analyze extends Component {
               value: '2in'
             }
           ]
+        },
+        {
+          fileURL:
+            'https://images.pexels.com/photos/459225/pexels-photo-459225.jpeg?auto=compress&cs=tinysrgb&h=350',
+          /* UX purpose */
+          metadataOpen: true,
+          attribOpen: true,
+          /* these are metadata */
+          name: 'try3.png',
+          camera: 'Something',
+          season: 'WET',
+          date: '',
+          private: true, // this is default
+          /* these are analyzed data */
+          attrib: [
+            {
+              name: 'Height',
+              value: '10ft'
+            },
+            {
+              name: 'Width',
+              value: '1in'
+            }
+          ]
         }
       ],
       removeModalOpen: false,
+      analyzeModalOpen: false,
+      saveModalOpen: false,
       activeImage: 0
     };
 
@@ -163,14 +191,22 @@ export default class Analyze extends Component {
     this.updateImages = this.updateImages.bind(this);
   }
 
-  openRemoveModal = e => {
+  openModal = e => {
     e.preventDefault();
-    this.setState({ removeModalOpen: true });
+    e.currentTarget.dataset.value === 'remove'
+      ? this.setState({ removeModalOpen: true })
+      : e.currentTarget.dataset.value === 'save'
+        ? this.setState({ saveModalOpen: true })
+        : this.setState({ analyzeModalOpen: true });
   };
 
-  closeRemoveModal = e => {
+  closeModal = e => {
     e.preventDefault();
-    this.setState({ removeModalOpen: false });
+    e.currentTarget.dataset.value === 'remove'
+      ? this.setState({ removeModalOpen: false })
+      : e.currentTarget.dataset.value === 'save'
+        ? this.setState({ saveModalOpen: false })
+        : this.setState({ analyzeModalOpen: false });
   };
 
   removeAll = e => {
@@ -178,6 +214,19 @@ export default class Analyze extends Component {
     this.setState({ removeModalOpen: false });
     /* this will reset the images array */
     this.setState({ images: [] });
+    this.setState({ activeImage: 0 });
+  };
+
+  saveAll = e => {
+    e.preventDefault();
+    this.setState({ saveModalOpen: false });
+    /* this will save all images to database */
+  };
+
+  analyzeAll = e => {
+    e.preventDefault();
+    this.setState({ analyzeModalOpen: false });
+    /* this will analyze all images to database */
   };
 
   changeActiveImg = index => {
@@ -231,9 +280,13 @@ export default class Analyze extends Component {
   };
 
   removeImage = index => {
-    // this is to prevent errors
-    if (this.state.activeImage === index && this.state.activeImage !== 0)
-      this.setState({ activeImage: index - 1 });
+    /* this is to avoid errors */
+    if (this.state.activeImage !== 0) {
+      if (this.state.activeImage === index)
+        this.setState({ activeImage: this.state.activeImage - 1 });
+      else if (this.state.activeImage - 1 === index)
+        this.setState({ activeImage: this.state.activeImage - 2 });
+    }
 
     this.updateImages(index)
       .then(result => {
@@ -243,9 +296,9 @@ export default class Analyze extends Component {
       .then(this.renderCarousel);
   };
 
-  /* this function returns the proper updated array */
+  /* this function returns the properly updated array */
   async updateImages(index) {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       var imageState = [...this.state.images];
       imageState.splice(index, 1);
       return resolve(imageState);
@@ -258,13 +311,20 @@ export default class Analyze extends Component {
     this.setState({ carousel: [] });
     /* update the carousel */
     this.setState({
-      carousel: this.state.images.map((image, index) => {
-        return (
-          <div key={index}>
-            <img src={image.fileURL} alt={`${index}`} />
-          </div>
-        );
-      })
+      carousel: (
+        <Carousel
+          showStatus={false}
+          onChange={this.changeActiveImg}
+          selectedItem={this.state.activeImage}>
+          {this.state.images.map((image, index) => {
+            return (
+              <div key={index}>
+                <img src={image.fileURL} alt={`${index}`} />
+              </div>
+            );
+          })}
+        </Carousel>
+      )
     });
   };
 
@@ -385,8 +445,10 @@ export default class Analyze extends Component {
             <Column style={style.toolbar} isHidden={'mobile'}>
               <a
                 href={'.'}
+                data-value={'analyze'}
                 data-tip={'Analyze Image(s)'}
-                style={style.whiteText}>
+                style={style.whiteText}
+                onClick={this.openModal}>
                 <Icon className={'fa fa-bolt fa-1x'} />
                 <Heading>ANALYZE</Heading>
               </a>
@@ -394,8 +456,10 @@ export default class Analyze extends Component {
             <Column style={style.toolbar} isHidden={'mobile'}>
               <a
                 href={'.'}
+                data-value={'save'}
                 data-tip={'Save analyzed Image(s)'}
-                style={style.whiteText}>
+                style={style.whiteText}
+                onClick={this.openModal}>
                 <Icon className={'fa fa-save fa-1x'} />
                 <Heading>SAVE</Heading>
               </a>
@@ -403,9 +467,10 @@ export default class Analyze extends Component {
             <Column style={style.toolbar} isHidden={'mobile'}>
               <a
                 href={'.'}
+                data-value={'remove'}
                 data-tip={'Remove all Image(s)'}
                 style={style.whiteText}
-                onClick={this.openRemoveModal}>
+                onClick={this.openModal}>
                 <Icon className={'fa fa-minus-circle fa-1x'} />
                 <Heading>REMOVE</Heading>
               </a>
@@ -477,8 +542,12 @@ export default class Analyze extends Component {
                             key={index}
                             style={
                               index === this.state.activeImage
-                                ? { backgroundColor: '#77c9d4', color: 'white', cursor: 'default' }
-                                : { cursor: 'default'}
+                                ? {
+                                    backgroundColor: '#77c9d4',
+                                    color: 'white',
+                                    cursor: 'default'
+                                  }
+                                : { cursor: 'default' }
                             }>
                             {image.name}
                             <Delete
@@ -496,13 +565,7 @@ export default class Analyze extends Component {
                 <Column
                   isSize={'2/3'}
                   style={{ backgroundColor: '#F8F8F8', paddingLeft: '0px' }}>
-                  <center>
-                    <Carousel
-                      showStatus={false}
-                      onChange={this.changeActiveImg}>
-                      {this.state.carousel}
-                    </Carousel>
-                  </center>
+                  <center>{this.state.carousel}</center>
                 </Column>
               </Columns>
               <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
@@ -716,13 +779,32 @@ export default class Analyze extends Component {
             </div>
           )}
           <ReactTooltip effect={'solid'} place={'bottom'} />
+          {/* these are modals */}
           <RemoveModal
             {...{
               /* pass props here */
               active: this.state.removeModalOpen,
               /* pass handlers here */
-              close: this.closeRemoveModal,
+              close: this.closeModal,
               removeAll: this.removeAll
+            }}
+          />
+          <SaveModal
+            {...{
+              /* pass props here */
+              active: this.state.saveModalOpen,
+              /* pass handlers here */
+              close: this.closeModal,
+              saveAll: this.saveAll
+            }}
+          />
+          <AnalyzeModal
+            {...{
+              /* pass props here */
+              active: this.state.analyzeModalOpen,
+              /* pass handlers here */
+              close: this.closeModal,
+              analyzeAll: this.analyzeAll
             }}
           />
         </div>
