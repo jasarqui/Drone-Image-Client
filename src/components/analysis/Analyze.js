@@ -87,7 +87,8 @@ const style = {
     border: '1px solid #015249',
     color: 'white',
     marginTop: '0px',
-    width: '25%'
+    width: '25%',
+    textAlign: 'center'
   },
   activeButton: {
     color: 'white',
@@ -446,17 +447,38 @@ export default class Analyze extends Component {
           imageState[index].saved = true;
         }
       }
-      // send the array
-      API.saveMany({images: imagesToSend}).then(() => {
-        this.setState({ images: imageState });
-        /* this is an alert on success */
-        Alert.success('Successfully saved images.', {
+
+      if (imagesToSend.length !== 0) {
+        // send the array
+        API.saveMany({ images: imagesToSend })
+          .then(() => {
+            this.setState({ images: imageState });
+            /* this is an alert on success */
+            Alert.success('Successfully saved images.', {
+              beep: false,
+              position: 'top-right',
+              effect: 'jelly',
+              timeout: 2000
+            });
+          })
+          .catch(() => {
+            /* this is an alert on failure */
+            Alert.error('Failed to save images.', {
+              beep: false,
+              position: 'top-right',
+              effect: 'jelly',
+              timeout: 2000
+            });
+          });
+      } else {
+        /* this is an alert for no images */
+        Alert.info('No images analyzed yet.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
           timeout: 2000
         });
-      });
+      }
     } catch (err) {
       /* this is an alert on failure */
       Alert.error('Failed to save images.', {
@@ -523,10 +545,21 @@ export default class Analyze extends Component {
         <div>
           <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
             <Column style={style.toolbar} isHidden={'mobile'}>
-              <a href={'.'} data-tip={'Add Image(s)'} style={style.whiteText}>
-                <Icon className={'fa fa-plus-circle fa-1x'} />
-                <Heading>ADD</Heading>
-              </a>
+              <center>
+                <Dropzone
+                  multiple={true}
+                  accept="image/*"
+                  onDrop={this.uploadFile}
+                  style={{ width: '0px' }}>
+                  <a
+                    href={'.'}
+                    data-tip={'Add Image(s)'}
+                    style={style.whiteText}>
+                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    <Heading>ADD</Heading>
+                  </a>
+                </Dropzone>
+              </center>
             </Column>
             <Column style={style.toolbar} isHidden={'mobile'}>
               <a
@@ -566,25 +599,35 @@ export default class Analyze extends Component {
               isHidden={'desktop'}>
               <Button style={style.button}>
                 <center>
-                  <Icon className={'fa fa-plus-circle fa-1x'} />
-                  <small style={{ color: 'white', fontSize: '15px' }}>
-                    ADD
-                  </small>
+                  <Dropzone
+                    multiple={true}
+                    accept="image/*"
+                    onDrop={this.uploadFile}
+                    style={{
+                      height: '0px',
+                      marginLeft: '0px',
+                      marginBottom: '25px'
+                    }}>
+                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    <small style={{ color: 'white', fontSize: '15px' }}>
+                      ADD
+                    </small>
+                  </Dropzone>
                 </center>
               </Button>
-              <Button style={style.button}>
+              <Button data-value={'analyze'} style={style.button} onClick={this.openModal}>
                 <center>
                   <Icon className={'fa fa-bolt fa-1x'} />
                   <small style={{ color: 'white' }}>ANALYZE</small>
                 </center>
               </Button>
-              <Button style={style.button}>
+              <Button data-value={'save'} style={style.button} onClick={this.openModal}>
                 <center>
                   <Icon className={'fa fa-save fa-1x'} />
                   <small style={{ color: 'white' }}>SAVE</small>
                 </center>
               </Button>
-              <Button style={style.button} onClick={this.openRemoveModal}>
+              <Button data-value={'remove'} style={style.button} onClick={this.openModal}>
                 <center>
                   <Icon className={'fa fa-minus-circle fa-1x'} />
                   <small style={{ color: 'white' }}>REMOVE</small>
