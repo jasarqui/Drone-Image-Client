@@ -13,14 +13,19 @@ export default class Browse extends Component {
     super(props);
 
     this.state = {
+      search: '',
+      searchTag: '',
       images: [],
       currentPage: 1,
       totalPages: 1,
       /* these are filters */
       myUpload: false, // default is false
-      category: 'all', // values: all, category name
+      category: 'All Seasons', // values: all, category name
       showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data' // values: Public and Private Data, Public Data, Private Data
     };
+
+    /* since this is not an arrow binded function */
+    this.setPages = this.setPages.bind(this);
   }
 
   filterMyUpload = e => {
@@ -41,14 +46,52 @@ export default class Browse extends Component {
   resetFilters = e => {
     e.preventDefault();
     this.setState({
+      search: '',
+      searchTag: '',
       myUpload: false,
-      category: 'all',
+      category: 'All Seasons',
       showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data'
     });
   };
 
+  changeSearch = e => {
+    this.setState({ search: e.target.value });
+  };
+
+  search = e => {
+    e.preventDefault();
+    this.setState({ searchTag: this.state.search });
+    /* add search functionality here */
+  };
+
   componentDidMount = () => {
-    API.getImages().then(result => {
+    this.setPages().then(this.setImages);
+  };
+
+  /* reuseable set total pages function */
+  async setPages() {
+    API.countPages({
+      myUpload: this.state.myUpload,
+      category: this.state.category,
+      showData: this.state.showData,
+      search: this.state.search ? this.state.search : null
+    }).then(result => {
+      this.setState({
+        currentPage: 1,
+        totalPages: Math.ceil(result.data.data / 6)
+      });
+    });
+  }
+
+  /* reuseable set images function */
+  setImages = () => {
+    API.getImages({
+      myUpload: this.state.myUpload,
+      category: this.state.category,
+      showData: this.state.showData,
+      search: this.state.search ? this.state.search : null,
+      start: 6 * (this.state.currentPage - 1)
+    }).then(result => {
       this.setState({ images: result.data.data });
     });
   };
@@ -66,7 +109,10 @@ export default class Browse extends Component {
                   myUpload: this.state.myUpload,
                   showData: this.state.showData,
                   category: this.state.category,
+                  search: this.state.search,
                   /* pass the handlers here */
+                  searchImgs: this.search,
+                  changeSearch: this.changeSearch,
                   filterMyUpload: this.filterMyUpload,
                   changeCategory: this.changeCategory,
                   changeData: this.changeData,
@@ -78,6 +124,7 @@ export default class Browse extends Component {
               <BrowseBody
                 {...{
                   /* pass the props here */
+                  searchTag: this.state.searchTag,
                   myUpload: this.state.myUpload,
                   category: this.state.category,
                   showData: this.state.showData,

@@ -10,19 +10,19 @@ export const saveMany = images => {
   return axios.post('/img/saveMany', images);
 };
 
-// gets the images
-export const getImages = () => {
-  return axios.get('/img');
-};
-
 // updates an image's info
 export const updateImage = info => {
   return axios.put('/img/update', info);
 };
 
-/*
-// deletes an image
-export const deleteImage = id => {
-  return axios.delete(`/img/${id}`);
+// gets the total number of pages for pagination
+export const countPages = ({ myUpload, category, showData, search }) => {
+  return axios.get(`/img/count/${myUpload}&${category}&${showData}&${search}`);
 };
-*/
+
+// gets the images
+export const getImages = ({ myUpload, category, showData, search, start }) => {
+  return axios.get(
+    `/img/${myUpload}&${category}&${showData}&${search}&${start}`
+  );
+};

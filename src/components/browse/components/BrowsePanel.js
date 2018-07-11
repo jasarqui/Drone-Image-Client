@@ -52,10 +52,17 @@ export default class BrowsePanel extends Component {
         </PanelHeading>
         <PanelBlock style={style.noBorder}>
           <Control hasIcons="left">
-            <Input isSize="small" placeholder="Search" />
-            <Icon isSize="small" isAlign="left">
-              <span className="fa fa-search" aria-hidden="true" />
-            </Icon>
+            <form onSubmit={this.props.searchImgs}>
+              <Input
+                isSize="small"
+                placeholder="Search"
+                value={this.props.search}
+                onChange={this.props.changeSearch}
+              />
+              <Icon isSize="small" isAlign="left">
+                <span className="fa fa-search" aria-hidden="true" />
+              </Icon>
+            </form>
           </Control>
         </PanelBlock>
         {this.props.loggedIn ? (
@@ -82,16 +89,18 @@ export default class BrowsePanel extends Component {
           href="."
           isActive
           style={style.noBorder}
-          data-value={'all'}
+          data-value={'All Seasons'}
           onClick={this.props.changeCategory}>
           <PanelIcon
             className={
-              this.props.category === 'all'
+              this.props.category === 'All Seasons'
                 ? 'fa fa-check-circle'
                 : 'fa fa-times-circle'
             }
             style={
-              this.props.category === 'all' ? style.greenIcon : style.redIcon
+              this.props.category === 'All Seasons'
+                ? style.greenIcon
+                : style.redIcon
             }
           />
           All
@@ -99,53 +108,40 @@ export default class BrowsePanel extends Component {
         <PanelBlock
           href="."
           style={style.noBorder}
-          data-value={'1'}
+          data-value={'Wet Season'}
           onClick={this.props.changeCategory}>
           <PanelIcon
             className={
-              this.props.category === '1'
+              this.props.category === 'Wet Season'
                 ? 'fa fa-check-circle'
                 : 'fa fa-times-circle'
             }
             style={
-              this.props.category === '1' ? style.greenIcon : style.redIcon
+              this.props.category === 'Wet Season'
+                ? style.greenIcon
+                : style.redIcon
             }
           />
-          Category 1
+          Wet Season <Icon className={'fa fa-umbrella fa-1x'} />
         </PanelBlock>
         <PanelBlock
           href="."
           style={style.noBorder}
-          data-value={'2'}
+          data-value={'Dry Season'}
           onClick={this.props.changeCategory}>
           <PanelIcon
             className={
-              this.props.category === '2'
+              this.props.category === 'Dry Season'
                 ? 'fa fa-check-circle'
                 : 'fa fa-times-circle'
             }
             style={
-              this.props.category === '2' ? style.greenIcon : style.redIcon
+              this.props.category === 'Dry Season'
+                ? style.greenIcon
+                : style.redIcon
             }
           />
-          Category 2
-        </PanelBlock>
-        <PanelBlock
-          href="."
-          style={style.noBorder}
-          data-value={'3'}
-          onClick={this.props.changeCategory}>
-          <PanelIcon
-            className={
-              this.props.category === '3'
-                ? 'fa fa-check-circle'
-                : 'fa fa-times-circle'
-            }
-            style={
-              this.props.category === '3' ? style.greenIcon : style.redIcon
-            }
-          />
-          Category 3
+          Dry Season <Icon className={'fa fa-fire fa-1x'} />
         </PanelBlock>
         <PanelBlock
           href="."

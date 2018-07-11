@@ -18,7 +18,9 @@ import {
   Tag,
   Columns,
   Column,
-  Icon
+  Icon,
+  Breadcrumb,
+  BreadcrumbItem
 } from 'bloomer';
 
 /* create styles here */
@@ -31,6 +33,10 @@ const style = {
     marginLeft: '10px',
     backgroundColor: '#57bc90',
     color: 'white'
+  },
+  tag: {
+    backgroundColor: '#77c9d4',
+    color: 'white'
   }
 };
 
@@ -38,31 +44,41 @@ export default class BrowseBody extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { activePage: 0 };
+    this.state = {};
   }
 
   render() {
     return (
       <div style={{ padding: '30px' }}>
         {/* below shows the tags */}
-        {'Currently shows '}
-        {this.props.showData === 'Public and Private Data'
-          ? 'all data'
-          : this.props.showData === 'Public Data'
-            ? 'public data'
-            : 'private data'}
-        {' of '}
-        {this.props.myUpload ? 'your images' : "everyone's images"}
-        {' that is of '}
-        {this.props.category === 'all'
-          ? 'all categories.'
-          : 'category ' + this.props.category + '.'}
+        <Breadcrumb hasSeparator={'dot'}>
+          <ul>
+            <BreadcrumbItem>
+              <Tag style={style.tag}>{this.props.showData}</Tag>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <Tag style={style.tag}>{this.props.category}</Tag>
+            </BreadcrumbItem>
+            <BreadcrumbItem>
+              <Tag style={style.tag}>
+                {this.props.myUpload ? 'My Uploads' : 'All Uploads'}
+              </Tag>
+            </BreadcrumbItem>
+            {this.props.searchTag ? (
+              <BreadcrumbItem>
+                <Tag style={style.tag}>{this.props.searchTag}</Tag>
+              </BreadcrumbItem>
+            ) : (
+              <div />
+            )}
+          </ul>
+        </Breadcrumb>
         {/* below shows the items for that page */}
         {this.props.images.length !== 0 ? (
-          this.props.images.map(image => {
-            return (
-              <a key={image.id} href=".">
-                <Card style={style.content}>
+          <div>
+            {this.props.images.map(image => {
+              return (
+                <Card key={image.id} style={style.content}>
                   <CardHeader
                     style={{
                       backgroundColor: '#77c9d4',
@@ -76,7 +92,9 @@ export default class BrowseBody extends Component {
                     </CardHeaderIcon>
                   </CardHeader>
                   <CardImage>
-                    <Image src={image.filepath} />
+                    <a href=".">
+                      <Image src={image.filepath} />
+                    </a>
                   </CardImage>
                   <CardContent style={{ padding: '5px' }}>
                     <center>
@@ -137,50 +155,49 @@ export default class BrowseBody extends Component {
                     </center>
                   </CardContent>
                 </Card>
-              </a>
-            );
-          })
+              );
+            })}
+            <Pagination isSize="small" isAlign="centered" style={style.content}>
+              <PageControl>Previous</PageControl>
+              <PageControl isNext>Next</PageControl>
+              <PageList>
+                <Page>
+                  <PageLink>1</PageLink>
+                </Page>
+                <Page>
+                  <PageEllipsis />
+                </Page>
+                <Page>
+                  <PageLink>45</PageLink>
+                </Page>
+                <Page>
+                  <PageLink
+                    isCurrent
+                    style={{
+                      backgroundColor: '#77c9d4',
+                      color: 'white',
+                      border: '1px solid #77c9d4'
+                    }}>
+                    46
+                  </PageLink>
+                </Page>
+                <Page>
+                  <PageLink>47</PageLink>
+                </Page>
+                <Page>
+                  <PageEllipsis />
+                </Page>
+                <Page>
+                  <PageLink>86</PageLink>
+                </Page>
+              </PageList>
+            </Pagination>
+          </div>
         ) : (
           <p>
-            <small>There are no images to view yet.</small>
+            <small>There are no images found.</small>
           </p>
         )}
-        {/* below shows the pagination */}
-        <Pagination isSize="small" isAlign="centered" style={style.content}>
-          <PageControl>Previous</PageControl>
-          <PageControl isNext>Next</PageControl>
-          <PageList>
-            <Page>
-              <PageLink>1</PageLink>
-            </Page>
-            <Page>
-              <PageEllipsis />
-            </Page>
-            <Page>
-              <PageLink>45</PageLink>
-            </Page>
-            <Page>
-              <PageLink
-                isCurrent
-                style={{
-                  backgroundColor: '#77c9d4',
-                  color: 'white',
-                  border: '1px solid #77c9d4'
-                }}>
-                46
-              </PageLink>
-            </Page>
-            <Page>
-              <PageLink>47</PageLink>
-            </Page>
-            <Page>
-              <PageEllipsis />
-            </Page>
-            <Page>
-              <PageLink>86</PageLink>
-            </Page>
-          </PageList>
-        </Pagination>
       </div>
     );
   }

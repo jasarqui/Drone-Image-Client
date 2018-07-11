@@ -161,7 +161,7 @@ export default class NavigBar extends Component {
                     ) : (
                       <div>
                         <Icon
-                          className="fa fa-address-card fa-2x"
+                          className="fa fa-address-card fa-1x"
                           style={style.navDrop}
                         />
                         <Button
@@ -221,7 +221,7 @@ export default class NavigBar extends Component {
                 <NavbarItem hasDropdown isHoverable style={style.navDrop}>
                   <NavbarLink style={style.navItem} isHidden={'mobile'}>
                     <Icon
-                      className="fa fa-address-card fa-2x"
+                      className="fa fa-address-card fa-lg"
                       style={style.navDrop}
                     />
                   </NavbarLink>
