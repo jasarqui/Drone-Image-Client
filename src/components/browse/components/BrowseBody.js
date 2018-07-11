@@ -171,6 +171,20 @@ export default class BrowseBody extends Component {
                 <div />
               )}
               <PageList>
+                {this.props.totalPage > 1 && this.props.currentPage > 3 ? (
+                  <Page>
+                    <PageLink onClick={this.props.start}>1</PageLink>
+                  </Page>
+                ) : (
+                  <div />
+                )}
+                {this.props.totalPage > 1 && this.props.currentPage > 4 ? (
+                  <Page>
+                    <PageEllipsis />
+                  </Page>
+                ) : (
+                  <div />
+                )}
                 {this.props.totalPage > 1 && this.props.currentPage > 2 ? (
                   <Page>
                     <PageLink onClick={this.props.prevTwo}>
@@ -214,6 +228,23 @@ export default class BrowseBody extends Component {
                   <Page>
                     <PageLink onClick={this.props.nextTwo}>
                       {this.props.currentPage + 2}
+                    </PageLink>
+                  </Page>
+                ) : (
+                  <div />
+                )}
+                {this.props.totalPage > 1 &&
+                this.props.currentPage + 3 < this.props.totalPage ? (
+                  <Page>
+                    <PageEllipsis />
+                  </Page>
+                ) : (
+                  <div />
+                )}
+                {this.props.currentPage + 2 < this.props.totalPage ? (
+                  <Page>
+                    <PageLink onClick={this.props.last}>
+                      {this.props.totalPage}
                     </PageLink>
                   </Page>
                 ) : (
