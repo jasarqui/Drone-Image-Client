@@ -28,19 +28,27 @@ export default class Browse extends Component {
     this.setPages = this.setPages.bind(this);
   }
 
+  /* reusable function for setting the page */
+  newSearch = page => {
+    this.setPages(page).then(this.setImages);
+  };
+
   filterMyUpload = e => {
     e.preventDefault();
     this.setState({ myUpload: !this.state.myUpload });
+    this.newSearch(1);
   };
 
   changeCategory = e => {
     e.preventDefault();
     this.setState({ category: e.target.dataset.value });
+    this.newSearch(1);
   };
 
   changeData = e => {
     e.preventDefault();
     this.setState({ showData: e.target.value });
+    this.newSearch(1);
   };
 
   resetFilters = e => {
@@ -52,6 +60,7 @@ export default class Browse extends Component {
       category: 'All Seasons',
       showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data'
     });
+    this.newSearch(1);
   };
 
   changeSearch = e => {
@@ -61,15 +70,70 @@ export default class Browse extends Component {
   search = e => {
     e.preventDefault();
     this.setState({ searchTag: this.state.search });
-    /* add search functionality here */
+    this.setPages(1).then(this.setImages);
   };
 
+  /* this will go back one page */
+  prev = e => {
+    e.preventDefault();
+    if (this.state.currentPage !== 1) {
+      this.newSearch(this.state.currentPage - 1);
+      this.setState({ currentPage: this.state.currentPage - 1 });
+    }
+  };
+
+  /* this will go to the next page */
+  next = e => {
+    e.preventDefault();
+    if (this.state.currentPage !== this.state.totalPages) {
+      this.newSearch(this.state.currentPage + 1);
+      this.setState({ currentPage: this.state.currentPage + 1 });
+    }
+  };
+
+  /* this will go back two pages */
+  prevTwo = e => {
+    e.preventDefault();
+    if (this.state.currentPage > 2) {
+      this.newSearch(this.state.currentPage - 2);
+      this.setState({ currentPage: this.state.currentPage - 2 });
+    }
+  };
+
+  /* this will go to up two pages */
+  nextTwo = e => {
+    e.preventDefault();
+    if (this.state.currentPage < this.state.totalPages - 1) {
+      this.newSearch(this.state.currentPage + 2);
+      this.setState({ currentPage: this.state.currentPage + 2 });
+    }
+  };
+
+  /* this will go back to the start */
+  start = e => {
+    e.preventDefault();
+    if (this.state.currentPage !== 1) {
+      this.newSearch(1);
+      this.setState({ currentPage: 1 });
+    }
+  };
+
+  /* this will go the last */
+  last = e => {
+    e.preventDefault();
+    if (this.state.currentPage !== this.state.totalPages) {
+      this.newSearch(this.state.totalPages);
+      this.setState({ currentPage: this.state.totalPages });
+    }
+  };
+
+  /* load the first images */
   componentDidMount = () => {
-    this.setPages().then(this.setImages);
+    this.newSearch(1);
   };
 
   /* reuseable set total pages function */
-  async setPages() {
+  async setPages(page) {
     API.countPages({
       myUpload: this.state.myUpload,
       category: this.state.category,
@@ -77,7 +141,7 @@ export default class Browse extends Component {
       search: this.state.search ? this.state.search : null
     }).then(result => {
       this.setState({
-        currentPage: 1,
+        currentPage: page,
         totalPages: Math.ceil(result.data.data / 6)
       });
     });
@@ -89,7 +153,7 @@ export default class Browse extends Component {
       myUpload: this.state.myUpload,
       category: this.state.category,
       showData: this.state.showData,
-      search: this.state.search ? this.state.search : null,
+      search: this.state.searchTag ? this.state.searchTag : null,
       start: 6 * (this.state.currentPage - 1)
     }).then(result => {
       this.setState({ images: result.data.data });
@@ -130,7 +194,14 @@ export default class Browse extends Component {
                   showData: this.state.showData,
                   images: this.state.images,
                   currentPage: this.state.currentPage,
-                  totalPage: this.state.totalPage
+                  totalPage: this.state.totalPages,
+                  /* pass the handlers here */
+                  next: this.next,
+                  prev: this.prev,
+                  nextTwo: this.nextTwo,
+                  prevTwo: this.prevTwo,
+                  start: this.start,
+                  last: this.last
                 }}
               />
             </Column>

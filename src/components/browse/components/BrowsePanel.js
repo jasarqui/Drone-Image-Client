@@ -122,7 +122,7 @@ export default class BrowsePanel extends Component {
                 : style.redIcon
             }
           />
-          Wet Season <Icon className={'fa fa-umbrella fa-1x'} />
+          Wet Season
         </PanelBlock>
         <PanelBlock
           href="."
@@ -141,20 +141,26 @@ export default class BrowsePanel extends Component {
                 : style.redIcon
             }
           />
-          Dry Season <Icon className={'fa fa-fire fa-1x'} />
+          Dry Season
         </PanelBlock>
-        <PanelBlock
-          href="."
-          style={style.noBorder}
-          onClick={this.props.filterMyUpload}>
-          <PanelIcon
-            className={
-              this.props.myUpload ? 'fa fa-check-circle' : 'fa fa-times-circle'
-            }
-            style={this.props.myUpload ? style.greenIcon : style.redIcon}
-          />
-          Show only my images
-        </PanelBlock>
+        {this.props.loggedIn ? (
+          <PanelBlock
+            href="."
+            style={style.noBorder}
+            onClick={this.props.filterMyUpload}>
+            <PanelIcon
+              className={
+                this.props.myUpload
+                  ? 'fa fa-check-circle'
+                  : 'fa fa-times-circle'
+              }
+              style={this.props.myUpload ? style.greenIcon : style.redIcon}
+            />
+            Show only my images
+          </PanelBlock>
+        ) : (
+          <div />
+        )}
         <PanelBlock style={style.noBorder}>
           <Button isOutlined isFullWidth onClick={this.props.resetFilters}>
             {' '}

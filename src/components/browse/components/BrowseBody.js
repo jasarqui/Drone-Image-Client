@@ -158,38 +158,67 @@ export default class BrowseBody extends Component {
               );
             })}
             <Pagination isSize="small" isAlign="centered" style={style.content}>
-              <PageControl>Previous</PageControl>
-              <PageControl isNext>Next</PageControl>
+              {this.props.totalPage > 1 ? (
+                <PageControl onClick={this.props.prev}>Previous</PageControl>
+              ) : (
+                <div />
+              )}
+              {this.props.totalPage > 1 ? (
+                <PageControl onClick={this.props.next} isNext>
+                  Next
+                </PageControl>
+              ) : (
+                <div />
+              )}
               <PageList>
-                <Page>
-                  <PageLink>1</PageLink>
-                </Page>
-                <Page>
-                  <PageEllipsis />
-                </Page>
-                <Page>
-                  <PageLink>45</PageLink>
-                </Page>
+                {this.props.totalPage > 1 && this.props.currentPage > 2 ? (
+                  <Page>
+                    <PageLink onClick={this.props.prevTwo}>
+                      {this.props.currentPage - 2}
+                    </PageLink>
+                  </Page>
+                ) : (
+                  <div />
+                )}
+                {this.props.totalPage > 1 && this.props.currentPage > 1 ? (
+                  <Page>
+                    <PageLink onClick={this.props.prev}>
+                      {this.props.currentPage - 1}
+                    </PageLink>
+                  </Page>
+                ) : (
+                  <div />
+                )}
                 <Page>
                   <PageLink
-                    isCurrent
                     style={{
                       backgroundColor: '#77c9d4',
                       color: 'white',
                       border: '1px solid #77c9d4'
                     }}>
-                    46
+                    {this.props.currentPage}
                   </PageLink>
                 </Page>
-                <Page>
-                  <PageLink>47</PageLink>
-                </Page>
-                <Page>
-                  <PageEllipsis />
-                </Page>
-                <Page>
-                  <PageLink>86</PageLink>
-                </Page>
+                {this.props.totalPage > 1 &&
+                this.props.currentPage < this.props.totalPage ? (
+                  <Page>
+                    <PageLink onClick={this.props.next}>
+                      {this.props.currentPage + 1}
+                    </PageLink>
+                  </Page>
+                ) : (
+                  <div />
+                )}
+                {this.props.totalPage > 1 &&
+                this.props.currentPage + 1 < this.props.totalPage ? (
+                  <Page>
+                    <PageLink onClick={this.props.nextTwo}>
+                      {this.props.currentPage + 2}
+                    </PageLink>
+                  </Page>
+                ) : (
+                  <div />
+                )}
               </PageList>
             </Pagination>
           </div>
