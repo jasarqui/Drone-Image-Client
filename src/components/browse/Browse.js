@@ -23,9 +23,6 @@ export default class Browse extends Component {
       category: 'All Seasons', // values: all, category name
       showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data' // values: Public and Private Data, Public Data, Private Data
     };
-
-    /* since this is not an arrow binded function */
-    this.setPages = this.setPages.bind(this);
   }
 
   /* reusable function for setting the page */
@@ -33,26 +30,55 @@ export default class Browse extends Component {
     this.setPages(page).then(this.setImages);
   };
 
+  /* these are for change to current user uploads */
   filterMyUpload = e => {
     e.preventDefault();
-    this.setState({ myUpload: !this.state.myUpload });
-    this.newSearch(1);
+    this.changeMyUpload().then(() => this.newSearch(1));
   };
 
+  async changeMyUpload() {
+    this.setState({ myUpload: !this.state.myUpload });
+  }
+
+  /* these are for change category */
   changeCategory = e => {
     e.preventDefault();
-    this.setState({ category: e.target.dataset.value });
-    this.newSearch(1);
+    this.onChangeCategory(e).then(() => this.newSearch(1));
   };
 
+  async onChangeCategory(e) {
+    this.setState({ category: e.target.dataset.value });
+  }
+
+  /* these are for changing data privacy */
   changeData = e => {
     e.preventDefault();
-    this.setState({ showData: e.target.value });
-    this.newSearch(1);
+    this.onChangeData(e).then(() => this.newSearch(1));
   };
 
+  async onChangeData(e) {
+    this.setState({ showData: e.target.value });
+  }
+
+  /* these are for resetting filters when user logs out */
+  resetFilterOnLogout = () => {
+    this.changeFilterOnLogout().then(() => this.newSearch(1));
+  };
+
+  async changeFilterOnLogout() {
+    this.setState({
+      myUpload: false,
+      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data'
+    });
+  }
+
+  /* these are for resetting filters */
   resetFilters = e => {
     e.preventDefault();
+    this.onResetFilter().then(() => this.newSearch(1));
+  };
+
+  async onResetFilter() {
     this.setState({
       search: '',
       searchTag: '',
@@ -60,77 +86,67 @@ export default class Browse extends Component {
       category: 'All Seasons',
       showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data'
     });
-    this.newSearch(1);
-  };
+  }
 
+  /* these are for searching */
   changeSearch = e => {
     this.setState({ search: e.target.value });
   };
 
   search = e => {
     e.preventDefault();
+    this.onSearch().then(() => this.newSearch(1));
+  };
+
+  async onSearch() {
     this.setState({ searchTag: this.state.search });
-    this.setPages(1).then(this.setImages);
+  }
+
+  /* page handling */
+  changePage = offset => {
+    this.newSearch(this.state.currentPage + offset);
+    this.setState({ currentPage: this.state.currentPage + offset });
   };
 
   /* this will go back one page */
   prev = e => {
     e.preventDefault();
-    if (this.state.currentPage !== 1) {
-      this.newSearch(this.state.currentPage - 1);
-      this.setState({ currentPage: this.state.currentPage - 1 });
-    }
+    if (this.state.currentPage !== 1) this.changePage(-1);
   };
 
   /* this will go to the next page */
   next = e => {
     e.preventDefault();
-    if (this.state.currentPage !== this.state.totalPages) {
-      this.newSearch(this.state.currentPage + 1);
-      this.setState({ currentPage: this.state.currentPage + 1 });
-    }
+    if (this.state.currentPage !== this.state.totalPages) this.changePage(1);
   };
 
   /* this will go back two pages */
   prevTwo = e => {
     e.preventDefault();
-    if (this.state.currentPage > 2) {
-      this.newSearch(this.state.currentPage - 2);
-      this.setState({ currentPage: this.state.currentPage - 2 });
-    }
+    if (this.state.currentPage > 2) this.changePage(-2);
   };
 
   /* this will go to up two pages */
   nextTwo = e => {
     e.preventDefault();
-    if (this.state.currentPage < this.state.totalPages - 1) {
-      this.newSearch(this.state.currentPage + 2);
-      this.setState({ currentPage: this.state.currentPage + 2 });
-    }
+    if (this.state.currentPage < this.state.totalPages - 1) this.changePage(2);
   };
 
   /* this will go back to the start */
   start = e => {
     e.preventDefault();
-    if (this.state.currentPage !== 1) {
-      this.newSearch(1);
-      this.setState({ currentPage: 1 });
-    }
+    if (this.state.currentPage !== 1) this.changePage(1 - this.currentPage);
   };
 
   /* this will go the last */
   last = e => {
     e.preventDefault();
-    if (this.state.currentPage !== this.state.totalPages) {
-      this.newSearch(this.state.totalPages);
-      this.setState({ currentPage: this.state.totalPages });
-    }
+    if (this.state.currentPage !== this.state.totalPages)
+      this.changePage(this.state.totalPages - this.state.currentPage);
   };
 
   /* load the first images */
-  componentDidMount = () => {
-    this.newSearch(1);
-  };
+  componentDidMount = () => this.newSearch(1);
 
   /* reuseable set total pages function */
   async setPages(page) {
@@ -159,6 +175,11 @@ export default class Browse extends Component {
       this.setState({ images: result.data.data });
     });
   };
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.loggedIn === false && nextProps.loggedIn === false)
+      this.resetFilterOnLogout();
+  }
 
   render() {
     return (
