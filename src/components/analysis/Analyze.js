@@ -416,7 +416,8 @@ export default class Analyze extends Component {
   };
 
   uploadFiles = files => {
-    this.setState({ uploading: true });
+    var countUploading = files.length;
+    this.setState({uploading: true});
     for (var index = 0; index < files.length; index++) {
       /* this is to post to the cloudinary api,
       so that the image is uploaded to the cloud */
@@ -427,7 +428,9 @@ export default class Analyze extends Component {
 
       /* upload end is when the image is finished uploading */
       upload.end((err, response) => {
-        this.setState({ uploading: false });
+        countUploading--;
+        if (countUploading === 0) this.setState({uploading: false});
+
         if (err) {
           /* this is an alert on success */
           Alert.error('Failed to upload image.', {
