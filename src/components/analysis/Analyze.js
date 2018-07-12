@@ -331,7 +331,7 @@ export default class Analyze extends Component {
       fileURL: this.state.images[index].fileURL,
       name: this.state.images[index].name,
       camera: this.state.images[index].camera,
-      date: this.state.images[index].date,
+      date: this.state.images[index].date ? this.state.images[index].date : 'unanalyzed',
       is_private: this.state.images[index].private,
       season: this.state.images[index].season,
       attrib: this.state.images[index].attrib,
@@ -367,13 +367,13 @@ export default class Analyze extends Component {
     var imagesToSend = []; // array that holds images to send
     try {
       for (var index = 0; index < imageState.length; index++) {
-        if (imageState[index].date && !imageState[index].saved) {
+        if (!imageState[index].saved) {
           // add to array
           imagesToSend.push({
             fileURL: imageState[index].fileURL,
             name: imageState[index].name,
             camera: imageState[index].camera,
-            date: imageState[index].date,
+            date: imageState[index].date ? imageState[index].date : 'unanalyzed',
             is_private: imageState[index].private,
             season: imageState[index].season,
             attrib: imageState[index].attrib,
@@ -674,7 +674,7 @@ export default class Analyze extends Component {
                               }}>
                               <Icon className={'fa fa-bolt'} />
                             </Button>
-                            {image.date ? (
+                            {(
                               !image.saved ? (
                                 <Button
                                   isSize={'small'}
@@ -691,8 +691,6 @@ export default class Analyze extends Component {
                               ) : (
                                 <div />
                               )
-                            ) : (
-                              <div />
                             )}
                           </MenuLink>
                         );
