@@ -291,6 +291,15 @@ export default class Analyze extends Component {
     this.setState({ analyzeModalOpen: false });
     /* this is where we put the glue */
 
+    if (this.state.images.length === 0) {
+      /* this is an alert on success */
+      Alert.info('No images in the collection.', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
+      });
+    } else {
     /* this will analyze all images */
     var imageState = [...this.state.images];
     for (var index = 0; index < imageState.length; index++) {
@@ -302,12 +311,13 @@ export default class Analyze extends Component {
 
     // placeholder, needs glue
     /* this is an alert on success */
-    Alert.success('Successfully analyzed all images.', {
+    Alert.success('Successfully analyzed all image(s).', {
       beep: false,
       position: 'top-right',
       effect: 'jelly',
       timeout: 2000
     });
+  }
   };
 
   /* saves one */
@@ -379,7 +389,7 @@ export default class Analyze extends Component {
           .then(() => {
             this.setState({ images: imageState });
             /* this is an alert on success */
-            Alert.success('Successfully saved images.', {
+            Alert.success('Successfully saved image(s).', {
               beep: false,
               position: 'top-right',
               effect: 'jelly',
@@ -388,7 +398,7 @@ export default class Analyze extends Component {
           })
           .catch(() => {
             /* this is an alert on failure */
-            Alert.error('Failed to save images.', {
+            Alert.error('Failed to save image(s).', {
               beep: false,
               position: 'top-right',
               effect: 'jelly',
@@ -406,7 +416,7 @@ export default class Analyze extends Component {
       }
     } catch (err) {
       /* this is an alert on failure */
-      Alert.error('Failed to save images.', {
+      Alert.error('Failed to save image(s).', {
         beep: false,
         position: 'top-right',
         effect: 'jelly',
@@ -428,6 +438,7 @@ export default class Analyze extends Component {
 
       /* upload end is when the image is finished uploading */
       upload.end((err, response) => {
+        /* this will help in the image uploading UX */
         countUploading--;
         if (countUploading === 0) this.setState({uploading: false});
 

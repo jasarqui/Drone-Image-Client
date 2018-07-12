@@ -1,5 +1,6 @@
 /* import React components here */
 import React, { Component } from 'react';
+import Archive from '../modals/Archive';
 /* import bulma components */
 import {
   Pagination,
@@ -20,7 +21,12 @@ import {
   Column,
   Icon,
   Breadcrumb,
-  BreadcrumbItem
+  BreadcrumbItem,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  DropdownContent
 } from 'bloomer';
 
 /* create styles here */
@@ -44,8 +50,24 @@ export default class BrowseBody extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = { archiveModalOpen: false };
   }
+
+  /* archive functions */
+  archive = e => {
+    e.preventDefault();
+    this.setState({ archiveModalOpen: false });
+  };
+
+  openModal = e => {
+    e.preventDefault();
+    this.setState({ archiveModalOpen: true });
+  };
+
+  closeModal = e => {
+    e.preventDefault();
+    this.setState({ archiveModalOpen: false });
+  };
 
   render() {
     return (
@@ -88,7 +110,17 @@ export default class BrowseBody extends Component {
                       {image.name}
                     </CardHeaderTitle>
                     <CardHeaderIcon style={{ color: 'white' }}>
-                      <Icon className={'fa fa-gear fa-1x'} />
+                      <Dropdown isHoverable isAlign={'right'}>
+                        <DropdownTrigger>
+                          <Icon className={'fa fa-gear fa-1x'} />
+                        </DropdownTrigger>
+                        <DropdownMenu>
+                          <DropdownContent>
+                            <DropdownItem onClick={this.openModal}>Archive</DropdownItem>
+                            <DropdownItem>View</DropdownItem>
+                          </DropdownContent>
+                        </DropdownMenu>
+                      </Dropdown>
                     </CardHeaderIcon>
                   </CardHeader>
                   <CardImage>
@@ -258,6 +290,15 @@ export default class BrowseBody extends Component {
             <small>There are no images found.</small>
           </p>
         )}
+        <Archive
+          {...{
+            /* pass the props here */
+            active: this.state.archiveModalOpen,
+            /* pass the handlers here */
+            close: this.closeModal,
+            archive: this.archive
+          }}
+        />
       </div>
     );
   }

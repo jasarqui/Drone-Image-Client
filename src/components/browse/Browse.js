@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import DocumentTitle from 'react-document-title';
 import BrowsePanel from './components/BrowsePanel';
 import BrowseBody from './components/BrowseBody';
+import Archive from './modals/Archive';
 /* import bulma components */
 import { Columns, Column } from 'bloomer';
 /* import api here */
@@ -84,9 +85,26 @@ export default class Browse extends Component {
       searchTag: '',
       myUpload: false,
       category: 'All Seasons',
-      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data'
+      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data',
+      archiveModalOpen: false
     });
   }
+
+  /* archive functions */
+  archive = e => {
+    e.preventDefault();
+    this.setState({ archiveModalOpen: false });
+  };
+
+  openModal = e => {
+    e.preventDefault();
+    this.setState({ archiveModalOpen: true });
+  };
+
+  closeModal = e => {
+    e.preventDefault();
+    this.setState({ archiveModalOpen: false });
+  };
 
   /* these are for searching */
   changeSearch = e => {
@@ -227,6 +245,15 @@ export default class Browse extends Component {
               />
             </Column>
           </Columns>
+          <Archive
+            {...{
+              /* pass the props here */
+              active: this.state.archiveModalOpen,
+              /* pass the handlers here */
+              close: this.closeModal,
+              archive: this.archive
+            }}
+          />
         </div>
       </DocumentTitle>
     );
