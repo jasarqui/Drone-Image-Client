@@ -121,9 +121,12 @@ export default class App extends Component {
             <View
               {...{
                 /* pass the props here */
+                loggedIn: this.state.loggedIn,
+                userID: this.state.currentUserId,
                 imageID: this.state.imageID,
                 /* pass the handlers here */
-                preventReload: this.preventReload
+                preventReload: this.preventReload,
+                changePage: this.directChangePage
               }}
             />
           ) : (

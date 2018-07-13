@@ -117,7 +117,8 @@ export default class View extends Component {
       metadataOpen: true,
       attribOpen: true,
       archiveModalOpen: false,
-      unarchiveModalOpen: false
+      unarchiveModalOpen: false,
+      userID: ''
     };
   }
 
@@ -191,6 +192,16 @@ export default class View extends Component {
     this.setState({ season: e.currentTarget.dataset.value });
   };
 
+  /* when user logs out */
+  componentWillReceiveProps(nextProps) {
+    if (
+      this.props.loggedIn === false &&
+      nextProps.loggedIn === false &&
+      (this.state.private || this.state.archived)
+    )
+      this.props.changePage('browse');
+  }
+
   /* loads the image info */
   componentDidMount = () => {
     this.loadInfo('all');
@@ -208,7 +219,8 @@ export default class View extends Component {
           private: result.data.data.private,
           date: result.data.data.date,
           attrib: result.data.data.data,
-          archived: result.data.data.archived
+          archived: result.data.data.archived,
+          userID: result.data.data.user_id
         });
       });
     } else {
@@ -277,26 +289,34 @@ export default class View extends Component {
       <DocumentTitle title="DIA | View">
         <div>
           <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
-            <Column style={style.toolbar} isHidden={'mobile'}>
-              <a
-                href={'.'}
-                data-tip={'Analyze Image'}
-                style={style.whiteText}
-                onClick={this.analyze}>
-                <Icon className={'fa fa-bolt fa-1x'} />
-                <Heading>ANALYZE</Heading>
-              </a>
-            </Column>
-            <Column style={style.toolbar} isHidden={'mobile'}>
-              <a
-                href={'.'}
-                data-tip={'Save Image'}
-                style={style.whiteText}
-                onClick={this.save}>
-                <Icon className={'fa fa-save fa-1x'} />
-                <Heading>SAVE</Heading>
-              </a>
-            </Column>
+            {this.props.userID === this.state.userID ? (
+              <Column style={style.toolbar} isHidden={'mobile'}>
+                <a
+                  href={'.'}
+                  data-tip={'Analyze Image'}
+                  style={style.whiteText}
+                  onClick={this.analyze}>
+                  <Icon className={'fa fa-bolt fa-1x'} />
+                  <Heading>ANALYZE</Heading>
+                </a>
+              </Column>
+            ) : (
+              <div />
+            )}
+            {this.props.userID === this.state.userID ? (
+              <Column style={style.toolbar} isHidden={'mobile'}>
+                <a
+                  href={'.'}
+                  data-tip={'Save Image'}
+                  style={style.whiteText}
+                  onClick={this.save}>
+                  <Icon className={'fa fa-save fa-1x'} />
+                  <Heading>SAVE</Heading>
+                </a>
+              </Column>
+            ) : (
+              <div />
+            )}
             {this.state.archived ? (
               <Column style={style.toolbar} isHidden={'mobile'}>
                 <a
@@ -325,18 +345,26 @@ export default class View extends Component {
             <Column
               style={{ paddingTop: '20px', textAlign: 'center' }}
               isHidden={'desktop'}>
-              <Button style={style.button} onClick={this.analyze}>
-                <center>
-                  <Icon className={'fa fa-bolt fa-1x'} />
-                  <small style={{ color: 'white' }}>ANALYZE</small>
-                </center>
-              </Button>
-              <Button style={style.button} onClick={this.save}>
-                <center>
-                  <Icon className={'fa fa-save fa-1x'} />
-                  <small style={{ color: 'white' }}>SAVE</small>
-                </center>
-              </Button>
+              {this.props.userID === this.state.userID ? (
+                <Button style={style.button} onClick={this.analyze}>
+                  <center>
+                    <Icon className={'fa fa-bolt fa-1x'} />
+                    <small style={{ color: 'white' }}>ANALYZE</small>
+                  </center>
+                </Button>
+              ) : (
+                <div />
+              )}
+              {this.props.userID === this.state.userID ? (
+                <Button style={style.button} onClick={this.save}>
+                  <center>
+                    <Icon className={'fa fa-save fa-1x'} />
+                    <small style={{ color: 'white' }}>SAVE</small>
+                  </center>
+                </Button>
+              ) : (
+                <div />
+              )}
               {this.state.archived ? (
                 <Button
                   data-value={'unarchive'}
