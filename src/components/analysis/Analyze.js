@@ -407,7 +407,7 @@ export default class Analyze extends Component {
           });
       } else {
         /* this is an alert for no images */
-        Alert.info('No images analyzed yet.', {
+        Alert.info('No images to save.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',

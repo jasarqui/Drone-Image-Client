@@ -26,3 +26,8 @@ export const getImages = ({ myUpload, category, showData, search, start }) => {
     `/img/${myUpload}&${category}&${showData}&${search}&${start}`
   );
 };
+
+// archives an image
+export const archiveImg = id => {
+  return axios.put(`/img/archive`, id);
+};

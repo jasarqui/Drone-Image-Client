@@ -79,6 +79,7 @@ export default class BrowsePanel extends Component {
                 </option>
                 <option value="Public Data">Public Data</option>
                 <option value="Private Data">Private Data</option>
+                <option value="Archived Data">Archived Data</option>
               </Select>
             </Control>
           </PanelTabs>

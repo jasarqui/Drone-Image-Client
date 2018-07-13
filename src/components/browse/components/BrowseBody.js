@@ -50,18 +50,22 @@ export default class BrowseBody extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { archiveModalOpen: false };
+    this.state = { archiveModalOpen: false, archiveId: '' };
   }
 
   /* archive functions */
   archive = e => {
     e.preventDefault();
     this.setState({ archiveModalOpen: false });
+    this.props.archive(this.state.archiveId);
   };
 
   openModal = e => {
     e.preventDefault();
-    this.setState({ archiveModalOpen: true });
+    this.setState({
+      archiveModalOpen: true,
+      archiveId: e.currentTarget.dataset.value
+    });
   };
 
   closeModal = e => {
@@ -116,7 +120,11 @@ export default class BrowseBody extends Component {
                         </DropdownTrigger>
                         <DropdownMenu>
                           <DropdownContent>
-                            <DropdownItem onClick={this.openModal}>Archive</DropdownItem>
+                            <DropdownItem
+                              data-value={image.id}
+                              onClick={this.openModal}>
+                              Archive
+                            </DropdownItem>
                             <DropdownItem>View</DropdownItem>
                           </DropdownContent>
                         </DropdownMenu>
@@ -130,7 +138,10 @@ export default class BrowseBody extends Component {
                   </CardImage>
                   <CardContent style={{ padding: '5px' }}>
                     <center>
-                      <Columns isGapless isHidden={'mobile'}>
+                      <Columns
+                        isGapless
+                        isHidden={'mobile'}
+                        style={{ marginBottom: '0px' }}>
                         <Column isSize="1/3">
                           <Tag style={style.leftMargin}>Uploader</Tag>
                           <Tag isColor="light">
@@ -294,6 +305,7 @@ export default class BrowseBody extends Component {
           {...{
             /* pass the props here */
             active: this.state.archiveModalOpen,
+            id: this.state.archiveId,
             /* pass the handlers here */
             close: this.closeModal,
             archive: this.archive

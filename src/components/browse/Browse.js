@@ -176,10 +176,16 @@ export default class Browse extends Component {
     });
   };
 
+  /* when a logout occurs */
   componentWillReceiveProps(nextProps) {
     if (this.props.loggedIn === false && nextProps.loggedIn === false)
       this.resetFilterOnLogout();
   }
+
+  /* archive an image */
+  archive = id => {
+    API.archiveImg({ id: id }).then(() => this.newSearch(1));
+  };
 
   render() {
     return (
@@ -222,7 +228,8 @@ export default class Browse extends Component {
                   nextTwo: this.nextTwo,
                   prevTwo: this.prevTwo,
                   start: this.start,
-                  last: this.last
+                  last: this.last,
+                  archive: this.archive
                 }}
               />
             </Column>
