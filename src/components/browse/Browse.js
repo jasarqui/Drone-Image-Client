@@ -229,7 +229,8 @@ export default class Browse extends Component {
                   prevTwo: this.prevTwo,
                   start: this.start,
                   last: this.last,
-                  archive: this.archive
+                  archive: this.archive,
+                  viewImage: this.props.viewImage
                 }}
               />
             </Column>

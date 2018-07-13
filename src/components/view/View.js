@@ -2,28 +2,27 @@
 import React, { Component } from 'react';
 import DocumentTitle from 'react-document-title';
 import Alert from 'react-s-alert';
-
+import ReactTooltip from 'react-tooltip';
+import ArchiveModal from './modals/ArchiveModal';
+import UnarchiveModal from './modals/UnarchiveModal';
 /* import bulma components */
 import {
   Columns,
   Column,
-  Card,
-  CardContent,
-  CardHeader,
-  CardHeaderTitle,
   Icon,
-  Image,
-  CardImage,
   Message,
   MessageHeader,
   MessageBody,
-  Button,
   Menu,
   MenuLabel,
   MenuLink,
   MenuList,
-  Input
+  Input,
+  Heading,
+  Button
 } from 'bloomer';
+/* import api here */
+import * as API from '../../api';
 
 /* create styles here */
 const style = {
@@ -37,23 +36,67 @@ const style = {
   removeUnderline: {
     textDecoration: 'none'
   },
-  marginPanel: {
-    margin: '30px'
-  },
-  imageMargin: {
-    margin: '5px'
-  },
   switchOn: {
-    color: '#23d160',
+    color: '#57bc90',
     margin: '0px',
     padding: '0px',
     textDecoration: 'none'
   },
   switchOff: {
-    color: '#b5b5b5',
+    color: '#ef6f6c',
     margin: '0px',
     padding: '0px',
     textDecoration: 'none'
+  },
+  toolbar: {
+    textAlign: 'center',
+    padding: '15px 0px 0px 0px'
+  },
+  whiteText: {
+    color: 'white'
+  },
+  dataHeader: {
+    backgroundColor: '#015249',
+    color: 'white',
+    paddingTop: '0px'
+  },
+  button: {
+    backgroundColor: '#015249',
+    border: '1px solid #015249',
+    color: 'white',
+    marginTop: '0px',
+    width: '25%',
+    textAlign: 'center'
+  },
+  activeButton: {
+    color: 'white',
+    backgroundColor: '#77c9d4',
+    border: '1px solid #77c9d4'
+  },
+  activeHelper: {
+    float: 'right',
+    borderRadius: '50%',
+    color: 'white',
+    backgroundColor: '#77c9d4',
+    border: 'none',
+    marginTop: '-4px'
+  },
+  inactiveHelper: {
+    float: 'right',
+    borderRadius: '50%',
+    backgroundColor: 'white',
+    border: 'none',
+    marginTop: '-4px'
+  },
+  imageColumn: {
+    /* pseudo flexbox */
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    verticalAlign: 'center',
+    backgroundColor: '#f8f8f8',
+    paddingLeft: '0px'
   }
 };
 
@@ -62,50 +105,64 @@ export default class View extends Component {
     super(props);
 
     this.state = {
-      fileURL: null,
-      /* UX purpose */
-      metadataOpen: true,
-      attribOpen: true,
-      /* these are metadata */
+      fileURL: '',
       name: '',
       camera: '',
+      season: '',
+      private: '',
       date: '',
-      private: false, // this is default
-      /* these are analyzed data */
-      attrib: [
-        {
-          name: 'Height',
-          value: '3ft'
-        },
-        {
-          name: 'Width',
-          value: '1in'
-        }
-      ]
+      archived: '',
+      attrib: [],
+      /* these are for UX */
+      metadataOpen: true,
+      attribOpen: true,
+      archiveModalOpen: false,
+      unarchiveModalOpen: false
     };
   }
 
-  componentDidMount = () => {
-    this.setState({
-      fileURL: this.props.fileURL,
-      /* these are metadata */
-      name: this.props.name,
-      camera: this.props.camera,
-      date: this.props.date,
-      private: this.props.private,
-      /* these are analyzed data */
-      attrib: this.props.attrib
+  /* modal functions */
+  openModal = e => {
+    e.preventDefault();
+    e.currentTarget.dataset.value === 'archive'
+      ? this.setState({ archiveModalOpen: true })
+      : this.setState({ unarchiveModalOpen: true });
+  };
+
+  closeModal = e => {
+    e.preventDefault();
+    e.currentTarget.dataset.value === 'archive'
+      ? this.setState({ archiveModalOpen: false })
+      : this.setState({ unarchiveModal: false });
+  };
+
+  /* this is to archive an image */
+  archive = e => {
+    e.preventDefault();
+    this.archiveImage().then(() => {
+      this.loadInfo('archive');
+      this.setState({ archiveModalOpen: false });
     });
   };
 
-  changeName = e => {
-    this.setState({ name: e.target.value });
+  async archiveImage() {
+    API.archiveImg({ id: this.props.imageID });
+  }
+
+  /* this is to unarchive an image */
+  unarchive = e => {
+    e.preventDefault();
+    this.unarchiveImage().then(() => {
+      this.loadInfo('unarchive');
+      this.setState({ unarchiveModalOpen: false });
+    });
   };
 
-  changeCam = e => {
-    this.setState({ camera: e.target.value });
-  };
+  async unarchiveImage() {
+    API.unarchiveImg({ id: this.props.imageID });
+  }
 
+  /* handlers */
   handleMeta = e => {
     e.preventDefault();
     this.setState({ metadataOpen: !this.state.metadataOpen });
@@ -121,66 +178,196 @@ export default class View extends Component {
     this.setState({ private: !this.state.private });
   };
 
+  changeName = e => {
+    this.setState({ name: e.target.value });
+  };
+
+  changeCam = e => {
+    this.setState({ camera: e.target.value });
+  };
+
+  changeSeason = e => {
+    e.preventDefault();
+    this.setState({ season: e.currentTarget.dataset.value });
+  };
+
+  /* loads the image info */
+  componentDidMount = () => {
+    this.loadInfo('all');
+  };
+
+  /* reusable load info */
+  loadInfo = params => {
+    if (params === 'all') {
+      API.getImage(this.props.imageID).then(result => {
+        this.setState({
+          fileURL: result.data.data.filepath,
+          name: result.data.data.name,
+          camera: result.data.data.camera,
+          season: result.data.data.season,
+          private: result.data.data.private,
+          date: result.data.data.date,
+          attrib: result.data.data.data,
+          archived: result.data.data.archived
+        });
+      });
+    } else {
+      API.getImage(this.props.imageID).then(result => {
+        this.setState({
+          archived: result.data.data.archived
+        });
+      });
+    }
+  };
+
+  /* analyzes one */
+  analyzeImage = e => {
+    e.preventDefault();
+    /* this is where we put the glue */
+
+    /* this should only get the date excluding the time */
+    this.setState({
+      date: new Date(Date.now()).toLocaleString().split(',')[0]
+    });
+
+    // placeholder, needs glue
+    /* this is an alert on success */
+    Alert.success('Successfully analyzed image.', {
+      beep: false,
+      position: 'top-right',
+      effect: 'jelly',
+      timeout: 2000
+    });
+  };
+
+  /* saves one */
+  save = e => {
+    e.preventDefault();
+    API.update({
+      name: this.state.name,
+      camera: this.state.camera,
+      date: this.state.date ? this.state.date : 'unanalyzed',
+      is_private: this.state.private,
+      season: this.state.season,
+      attrib: this.state.attrib,
+      id: this.props.imageID
+    })
+      .then(() => {
+        /* this is an alert on success */
+        Alert.success('Successfully saved image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      })
+      .catch(() => {
+        /* this is an alert on failure */
+        Alert.error('Failed to save image.', {
+          beep: false,
+          position: 'top-right',
+          effect: 'jelly',
+          timeout: 2000
+        });
+      });
+  };
+
   render() {
     return (
       <DocumentTitle title="DIA | View">
-        <Columns isGapless>
-          <Column isSize="2/3">
-            <Card style={style.marginCard}>
-              <CardHeader>
-                <CardHeaderTitle>
-                  {!this.state.name ? 'New Image' : this.state.name}
-                </CardHeaderTitle>
-              </CardHeader>
-              <CardImage>
+        <div>
+          <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
+            <Column style={style.toolbar} isHidden={'mobile'}>
+              <a
+                href={'.'}
+                data-tip={'Analyze Image'}
+                style={style.whiteText}
+                onClick={this.analyze}>
+                <Icon className={'fa fa-bolt fa-1x'} />
+                <Heading>ANALYZE</Heading>
+              </a>
+            </Column>
+            <Column style={style.toolbar} isHidden={'mobile'}>
+              <a
+                href={'.'}
+                data-tip={'Save Image'}
+                style={style.whiteText}
+                onClick={this.save}>
+                <Icon className={'fa fa-save fa-1x'} />
+                <Heading>SAVE</Heading>
+              </a>
+            </Column>
+            {this.state.archived ? (
+              <Column style={style.toolbar} isHidden={'mobile'}>
+                <a
+                  href={'.'}
+                  data-value={'unarchive'}
+                  data-tip={'Remove from Archive'}
+                  style={style.whiteText}
+                  onClick={this.openModal}>
+                  <Icon className={'fa fa-plus-circle fa-1x'} />
+                  <Heading>UNARCHIVE</Heading>
+                </a>
+              </Column>
+            ) : (
+              <Column style={style.toolbar} isHidden={'mobile'}>
+                <a
+                  href={'.'}
+                  data-value={'archive'}
+                  data-tip={'Archive Image'}
+                  style={style.whiteText}
+                  onClick={this.openModal}>
+                  <Icon className={'fa fa-minus-circle fa-1x'} />
+                  <Heading>ARCHIVE</Heading>
+                </a>
+              </Column>
+            )}
+            <Column
+              style={{ paddingTop: '20px', textAlign: 'center' }}
+              isHidden={'desktop'}>
+              <Button style={style.button} onClick={this.analyze}>
                 <center>
-                  <Image
-                    isSize="4:3"
-                    src={this.state.fileURL}
-                    style={style.imageMargin}
-                  />
+                  <Icon className={'fa fa-bolt fa-1x'} />
+                  <small style={{ color: 'white' }}>ANALYZE</small>
                 </center>
-              </CardImage>
-              <CardContent>
-                <Columns>
-                  <Column isSize="1/2">
-                    <Button
-                      isFullWidth
-                      isColor="primary"
-                      onClick={this.analyzeImage}
-                      disabled={this.state.fileURL ? false : true}>
-                      <Icon className="fa fa-bolt" style={style.icon} />
-                      Analyze
-                    </Button>
-                  </Column>
-                  <Column isSize="1/2">
-                    <Button
-                      isFullWidth
-                      isColor="primary"
-                      onClick={this.save}
-                      disabled={
-                        this.state.fileURL &&
-                        this.state.name &&
-                        this.state.camera &&
-                        this.state.date
-                          ? false
-                          : true
-                      }>
-                      <Icon className="fa fa-save" style={style.icon} />
-                      Save
-                    </Button>
-                  </Column>
-                </Columns>
-              </CardContent>
-            </Card>
-          </Column>
-          <Column isSize="1/3">
-            <Message isColor="light" style={style.marginPanel}>
-              <MessageHeader>Image Data</MessageHeader>
-              <MessageBody>
+              </Button>
+              <Button style={style.button} onClick={this.save}>
+                <center>
+                  <Icon className={'fa fa-save fa-1x'} />
+                  <small style={{ color: 'white' }}>SAVE</small>
+                </center>
+              </Button>
+              {this.state.archived ? (
+                <Button
+                  data-value={'unarchive'}
+                  style={style.button}
+                  onClick={this.openModal}>
+                  <center>
+                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    <small style={{ color: 'white' }}>UNARCHIVE</small>
+                  </center>
+                </Button>
+              ) : (
+                <Button
+                  data-value={'archive'}
+                  style={style.button}
+                  onClick={this.openModal}>
+                  <center>
+                    <Icon className={'fa fa-minus-circle fa-1x'} />
+                    <small style={{ color: 'white' }}>ARCHIVE</small>
+                  </center>
+                </Button>
+              )}
+            </Column>
+          </Columns>
+          <div>
+            <Columns isFullWidth style={{ minHeight: '40vh' }}>
+              <Column
+                isSize={'1/3'}
+                style={{ borderRight: '2px solid #015249' }}>
                 <Menu>
-                  <MenuLabel>
-                    Metadata{' '}
+                  <MenuLabel style={{ marginLeft: '10px' }}>
+                    Metadata
                     <a
                       href="."
                       onClick={this.handleMeta}
@@ -200,8 +387,8 @@ export default class View extends Component {
                       <li>
                         <MenuLink style={style.removeUnderline}>
                           <Columns>
-                            <Column isSize="1/3">Name</Column>
-                            <Column isSize="2/3">
+                            <Column isSize="1/4">Name</Column>
+                            <Column isSize="3/4">
                               <Input
                                 type="text"
                                 isSize="small"
@@ -215,8 +402,8 @@ export default class View extends Component {
                       <li>
                         <MenuLink style={style.removeUnderline}>
                           <Columns>
-                            <Column isSize="1/3">Camera</Column>
-                            <Column isSize="2/3">
+                            <Column isSize="1/4">Camera</Column>
+                            <Column isSize="3/4">
                               <Input
                                 type="text"
                                 isSize="small"
@@ -227,21 +414,52 @@ export default class View extends Component {
                           </Columns>
                         </MenuLink>
                       </li>
-                      <li>
-                        <MenuLink style={style.removeUnderline}>
-                          <Columns>
-                            <Column isSize="1/3">Date</Column>
-                            <Column isSize="2/3">{this.state.date}</Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
+                      <MenuLink style={style.removeUnderline}>
+                        <Columns>
+                          <Column isSize="1/4">Season</Column>
+                          <Column isSize="3/4">
+                            <Button
+                              data-value={'WET'}
+                              onClick={this.changeSeason}
+                              isSize={'small'}
+                              style={
+                                this.state.season === 'WET'
+                                  ? style.activeButton
+                                  : {}
+                              }>
+                              <Icon
+                                className={'fa fa-umbrella fa-1x'}
+                                style={{ marginRight: '5px' }}
+                              />{' '}
+                              WET
+                            </Button>
+                            <Button
+                              data-value={'DRY'}
+                              onClick={this.changeSeason}
+                              isSize={'small'}
+                              style={
+                                this.state.season === 'DRY'
+                                  ? style.activeButton
+                                  : {}
+                              }>
+                              <Icon
+                                className={'fa fa-fire fa-1x'}
+                                style={{ marginRight: '5px' }}
+                              />{' '}
+                              DRY
+                            </Button>
+                          </Column>
+                        </Columns>
+                      </MenuLink>
                       <li>
                         <MenuLink
                           style={style.removeUnderline}
                           onClick={this.switch}>
                           <Columns>
-                            <Column isSize="1/3">Private</Column>
-                            <Column isSize="2/3">
+                            <Column isSize="1/4">Private</Column>
+                            <Column
+                              isSize="3/4"
+                              style={{ paddingLeft: '20px' }}>
                               {this.state.private ? (
                                 <i style={style.switchOn}>
                                   <Icon
@@ -263,49 +481,103 @@ export default class View extends Component {
                           </Columns>
                         </MenuLink>
                       </li>
-                    </MenuList>
-                  ) : (
-                    <div />
-                  )}
-                  <MenuLabel>
-                    Attributes{' '}
-                    <a
-                      href="."
-                      onClick={this.handleAttrib}
-                      style={style.removeUnderline}>
-                      <Icon
-                        className={
-                          this.state.attribOpen
-                            ? 'fa fa-angle-up'
-                            : 'fa fa-angle-down'
-                        }
-                        isSize="small"
-                      />
-                    </a>
-                  </MenuLabel>
-                  {this.state.attribOpen ? (
-                    <MenuList>
-                      {this.state.attrib.map((attribute, id) => {
-                        return (
-                          <li key={id}>
-                            <MenuLink style={style.removeUnderline}>
-                              <Columns>
-                                <Column isSize="1/3">{attribute.name}</Column>
-                                <Column isSize="2/3">{attribute.value}</Column>
-                              </Columns>
-                            </MenuLink>
-                          </li>
-                        );
-                      })}
+                      <li>
+                        <MenuLink style={style.removeUnderline}>
+                          <Columns>
+                            <Column isSize="1/4">Date</Column>
+                            <Column isSize="3/4">{this.state.date}</Column>
+                          </Columns>
+                        </MenuLink>
+                      </li>
                     </MenuList>
                   ) : (
                     <div />
                   )}
                 </Menu>
-              </MessageBody>
-            </Message>
-          </Column>
-        </Columns>
+              </Column>
+              <Column isSize={'2/3'} style={style.imageColumn}>
+                <img alt={`${this.state.name}`} src={this.state.fileURL} />
+              </Column>
+            </Columns>
+            <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
+              <Column>
+                <Message>
+                  <MessageHeader style={style.dataHeader}>
+                    <Heading
+                      style={{
+                        fontSize: '18px',
+                        paddingTop: '5px',
+                        paddingBottom: '0px'
+                      }}>
+                      Image Data
+                    </Heading>
+                  </MessageHeader>
+                  <MessageBody>
+                    <Menu style={{ minHeight: '35vh' }}>
+                      <MenuLabel>
+                        Attributes{' '}
+                        <a
+                          href="."
+                          onClick={this.handleAttrib}
+                          style={style.removeUnderline}>
+                          <Icon
+                            className={
+                              this.state.attribOpen
+                                ? 'fa fa-angle-up'
+                                : 'fa fa-angle-down'
+                            }
+                            isSize="small"
+                          />
+                        </a>
+                      </MenuLabel>
+                      {this.state.attribOpen ? (
+                        <MenuList>
+                          {this.state.attrib.map((attribute, id) => {
+                            return (
+                              <li key={id}>
+                                <MenuLink style={style.removeUnderline}>
+                                  <Columns>
+                                    <Column isSize="1/4">
+                                      {attribute.name}
+                                    </Column>
+                                    <Column isSize="3/4">
+                                      {attribute.value}
+                                    </Column>
+                                  </Columns>
+                                </MenuLink>
+                              </li>
+                            );
+                          })}
+                        </MenuList>
+                      ) : (
+                        <div />
+                      )}
+                    </Menu>
+                  </MessageBody>
+                </Message>
+              </Column>
+            </Columns>
+          </div>
+          <ReactTooltip effect={'solid'} place={'bottom'} />
+          <ArchiveModal
+            {...{
+              /* pass props here */
+              active: this.state.archiveModalOpen,
+              /* pass handlers here */
+              close: this.closeModal,
+              archive: this.archive
+            }}
+          />
+          <UnarchiveModal
+            {...{
+              /* pass props here */
+              active: this.state.unarchiveModalOpen,
+              /* pass the handlers here */
+              close: this.closeModal,
+              unarchive: this.unarchive
+            }}
+          />
+        </div>
       </DocumentTitle>
     );
   }

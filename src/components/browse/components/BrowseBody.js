@@ -113,26 +113,34 @@ export default class BrowseBody extends Component {
                     <CardHeaderTitle style={{ color: 'white' }}>
                       {image.name}
                     </CardHeaderTitle>
-                    <CardHeaderIcon style={{ color: 'white' }}>
-                      <Dropdown isHoverable isAlign={'right'}>
-                        <DropdownTrigger>
-                          <Icon className={'fa fa-gear fa-1x'} />
-                        </DropdownTrigger>
-                        <DropdownMenu>
-                          <DropdownContent>
-                            <DropdownItem
-                              data-value={image.id}
-                              onClick={this.openModal}>
-                              Archive
-                            </DropdownItem>
-                            <DropdownItem>View</DropdownItem>
-                          </DropdownContent>
-                        </DropdownMenu>
-                      </Dropdown>
-                    </CardHeaderIcon>
+                    {!image.archived ? (
+                      <CardHeaderIcon style={{ color: 'white' }}>
+                        <Dropdown isHoverable isAlign={'right'}>
+                          <DropdownTrigger>
+                            <Icon className={'fa fa-gear fa-1x'} />
+                          </DropdownTrigger>
+                          <DropdownMenu>
+                            <DropdownContent>
+                              <DropdownItem
+                                data-value={image.id}
+                                onClick={this.openModal}>
+                                Archive
+                              </DropdownItem>
+                              <DropdownItem
+                                data-value={image.id}
+                                onClick={this.props.viewImage}>
+                                View
+                              </DropdownItem>
+                            </DropdownContent>
+                          </DropdownMenu>
+                        </Dropdown>
+                      </CardHeaderIcon>
+                    ) : (
+                      <div />
+                    )}
                   </CardHeader>
                   <CardImage>
-                    <a href=".">
+                    <a href="." data-value={image.id} onClick={this.props.viewImage}>
                       <Image src={image.filepath} />
                     </a>
                   </CardImage>

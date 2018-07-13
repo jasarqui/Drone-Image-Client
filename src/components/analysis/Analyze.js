@@ -129,9 +129,6 @@ export default class Analyze extends Component {
       saveModalOpen: false,
       activeImage: 0
     };
-
-    /* since this function is not an arrow binded function */
-    this.updateImages = this.updateImages.bind(this);
   }
 
   openModal = e => {

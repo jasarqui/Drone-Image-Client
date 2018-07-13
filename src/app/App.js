@@ -23,7 +23,8 @@ export default class App extends Component {
       loggedIn: false,
       currentUser: '',
       currentUserId: '',
-      imageDetails: []
+      currentUserPic: '',
+      imageID: ''
     };
   }
 
@@ -40,19 +41,28 @@ export default class App extends Component {
     this.setState({ activePage: page });
   };
 
+  viewImage = e => {
+    e.preventDefault();
+    this.setState({
+      activePage: 'view',
+      imageID: e.currentTarget.dataset.value
+    });
+  };
+
   preventReload = e => {
     e.preventDefault();
   };
 
-  changeUser = (firstname, lastname, id) => {
+  changeUser = (firstname, lastname, id, pic) => {
     this.setState({
       currentUser: firstname + ' ' + lastname,
-      currentUserId: id
+      currentUserId: id,
+      currentUserPic: pic
     });
   };
 
   removeUser = () => {
-    this.setState({ username: '', currentUserId: '' });
+    this.setState({ currentUser: '', currentUserId: '', currentUserPic: '' });
   };
 
   render() {
@@ -66,6 +76,7 @@ export default class App extends Component {
             activePage: this.state.activePage,
             loggedIn: this.state.loggedIn,
             username: this.state.currentUser,
+            pic: this.state.currentUserPic,
             /* pass the handlers here */
             handleLogin: this.handleLogin,
             handleChangePage: this.handleChangePage,
@@ -100,7 +111,9 @@ export default class App extends Component {
               {...{
                 /* pass the props here */
                 loggedIn: this.state.loggedIn,
+                imageID: this.state.imageID,
                 /* pass the handlers here */
+                viewImage: this.viewImage,
                 preventReload: this.preventReload
               }}
             />
@@ -108,6 +121,7 @@ export default class App extends Component {
             <View
               {...{
                 /* pass the props here */
+                imageID: this.state.imageID,
                 /* pass the handlers here */
                 preventReload: this.preventReload
               }}

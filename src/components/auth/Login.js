@@ -77,7 +77,7 @@ const style = {
     backgroundColor: 'silver'
   },
   info: {
-    marginTop: '32px'
+    marginTop: '30px'
   },
   infoBG: {
     backgroundColor: '#77c9d4'
@@ -130,7 +130,8 @@ export default class Login extends Component {
         this.props.changeUser(
           result.data.data.firstname,
           result.data.data.lastname,
-          result.data.data.id
+          result.data.data.id,
+          result.data.data.pic
         );
 
         setTimeout(() => {

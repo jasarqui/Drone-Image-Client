@@ -138,12 +138,13 @@ export default class Signup extends Component {
     }, 50);
   };
 
-  signup = (firstname, lastname, email, password) => {
+  signup = (firstname, lastname, email, password, pic) => {
     API.signup({
       firstname: firstname,
       lastname: lastname,
       email: email,
-      password: password
+      password: password,
+      pic: pic
     }).then(() => {
       /* set timeout is added because
       login is faster than signing up */
@@ -156,7 +157,7 @@ export default class Signup extends Component {
           .then(res => {
             this.setState({ logState: 'success' });
             this.props.changeLog();
-            this.props.changeUser(firstname, lastname, res.data.data.id);
+            this.props.changeUser(firstname, lastname, res.data.data.id, pic);
           })
           .then(() => {
             this.props.close();
@@ -255,7 +256,8 @@ export default class Signup extends Component {
         this.state.firstname,
         this.state.lastname,
         this.state.email,
-        this.state.password
+        this.state.password,
+        this.state.imgURL
       );
     }
   };

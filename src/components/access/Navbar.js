@@ -26,7 +26,13 @@ const style = {
   navItem: { color: '#015249' },
   navLog: { color: '#015249' },
   navDrop: { marginRight: '25px' },
-  navUser: { marginRight: '15px' },
+  navUser: {
+    marginRight: '10px',
+    borderRadius: '50%',
+    width: '28px',
+    height: '28px',
+    border: '2px solid #015249'
+  },
   navIcon: { marginRight: '10px' },
   whiteText: { color: 'white' },
   greenText: { color: '#015249' },
@@ -61,7 +67,8 @@ export default class NavigBar extends Component {
         this.props.changeUser(
           result.data.data.firstname,
           result.data.data.lastname,
-          result.data.data.id
+          result.data.data.id,
+          result.data.data.pic
         );
       }
     });
@@ -144,8 +151,9 @@ export default class NavigBar extends Component {
                   <center>
                     {this.props.loggedIn ? (
                       <div>
-                        <Icon
-                          className="fa fa-user-circle fa-2x"
+                        <img
+                          alt={'user'}
+                          src={this.props.pic}
                           style={style.navUser}
                         />
                         <Button isSize={'small'} style={style.navButton}>
@@ -203,8 +211,9 @@ export default class NavigBar extends Component {
               {this.props.loggedIn ? (
                 <NavbarItem hasDropdown isHoverable style={style.navDrop}>
                   <NavbarLink style={style.navItem}>
-                    <Icon
-                      className="fa fa-user-circle fa-2x"
+                    <img
+                      alt={'user'}
+                      src={this.props.pic}
                       style={style.navUser}
                     />
                     <strong>

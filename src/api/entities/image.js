@@ -11,7 +11,7 @@ export const saveMany = images => {
 };
 
 // updates an image's info
-export const updateImage = info => {
+export const update = info => {
   return axios.put('/img/update', info);
 };
 
@@ -30,4 +30,14 @@ export const getImages = ({ myUpload, category, showData, search, start }) => {
 // archives an image
 export const archiveImg = id => {
   return axios.put(`/img/archive`, id);
+};
+
+// unarchives an image
+export const unarchiveImg = id => {
+  return axios.put(`/img/unarchive`, id);
+};
+
+// gets an image
+export const getImage = id => {
+  return axios.get(`/img/view/${id}`);
 };
