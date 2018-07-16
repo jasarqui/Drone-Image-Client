@@ -289,7 +289,18 @@ export default class View extends Component {
       <DocumentTitle title="DIA | View">
         <div>
           <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
-            {this.props.userID === this.state.userID ? (
+            {this.state.userID && this.props.userID === this.state.userID ? (
+              <Column style={style.toolbar} isHidden={'mobile'}>
+                <a
+                  href={'.'}
+                  data-tip={'Analyze Image'}
+                  style={style.whiteText}
+                  onClick={this.analyze}>
+                  <Icon className={'fa fa-bolt fa-1x'} />
+                  <Heading>ANALYZE</Heading>
+                </a>
+              </Column>
+            ) : !this.state.userID ? (
               <Column style={style.toolbar} isHidden={'mobile'}>
                 <a
                   href={'.'}
@@ -303,7 +314,18 @@ export default class View extends Component {
             ) : (
               <div />
             )}
-            {this.props.userID === this.state.userID ? (
+            {this.state.userID && this.props.userID === this.state.userID ? (
+              <Column style={style.toolbar} isHidden={'mobile'}>
+                <a
+                  href={'.'}
+                  data-tip={'Save Image'}
+                  style={style.whiteText}
+                  onClick={this.save}>
+                  <Icon className={'fa fa-save fa-1x'} />
+                  <Heading>SAVE</Heading>
+                </a>
+              </Column>
+            ) : !this.state.userID ? (
               <Column style={style.toolbar} isHidden={'mobile'}>
                 <a
                   href={'.'}
@@ -317,35 +339,74 @@ export default class View extends Component {
             ) : (
               <div />
             )}
-            {this.state.archived ? (
-              <Column style={style.toolbar} isHidden={'mobile'}>
-                <a
-                  href={'.'}
-                  data-value={'unarchive'}
-                  data-tip={'Remove from Archive'}
-                  style={style.whiteText}
-                  onClick={this.openModal}>
-                  <Icon className={'fa fa-plus-circle fa-1x'} />
-                  <Heading>UNARCHIVE</Heading>
-                </a>
-              </Column>
+            {this.state.userID && this.props.userID === this.state.userID ? (
+              this.state.archived ? (
+                <Column style={style.toolbar} isHidden={'mobile'}>
+                  <a
+                    href={'.'}
+                    data-value={'unarchive'}
+                    data-tip={'Remove from Archive'}
+                    style={style.whiteText}
+                    onClick={this.openModal}>
+                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    <Heading>UNARCHIVE</Heading>
+                  </a>
+                </Column>
+              ) : (
+                <Column style={style.toolbar} isHidden={'mobile'}>
+                  <a
+                    href={'.'}
+                    data-value={'archive'}
+                    data-tip={'Archive Image'}
+                    style={style.whiteText}
+                    onClick={this.openModal}>
+                    <Icon className={'fa fa-minus-circle fa-1x'} />
+                    <Heading>ARCHIVE</Heading>
+                  </a>
+                </Column>
+              )
+            ) : !this.state.userID ? (
+              this.state.archived ? (
+                <Column style={style.toolbar} isHidden={'mobile'}>
+                  <a
+                    href={'.'}
+                    data-value={'unarchive'}
+                    data-tip={'Remove from Archive'}
+                    style={style.whiteText}
+                    onClick={this.openModal}>
+                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    <Heading>UNARCHIVE</Heading>
+                  </a>
+                </Column>
+              ) : (
+                <Column style={style.toolbar} isHidden={'mobile'}>
+                  <a
+                    href={'.'}
+                    data-value={'archive'}
+                    data-tip={'Archive Image'}
+                    style={style.whiteText}
+                    onClick={this.openModal}>
+                    <Icon className={'fa fa-minus-circle fa-1x'} />
+                    <Heading>ARCHIVE</Heading>
+                  </a>
+                </Column>
+              )
             ) : (
               <Column style={style.toolbar} isHidden={'mobile'}>
-                <a
-                  href={'.'}
-                  data-value={'archive'}
-                  data-tip={'Archive Image'}
-                  style={style.whiteText}
-                  onClick={this.openModal}>
-                  <Icon className={'fa fa-minus-circle fa-1x'} />
-                  <Heading>ARCHIVE</Heading>
-                </a>
+                <Heading style={style.whiteText}>NO USER PRIVILEGES</Heading>
               </Column>
             )}
             <Column
               style={{ paddingTop: '20px', textAlign: 'center' }}
               isHidden={'desktop'}>
-              {this.props.userID === this.state.userID ? (
+              {this.state.userID && this.props.userID === this.state.userID ? (
+                <Button style={style.button} onClick={this.analyze}>
+                  <center>
+                    <Icon className={'fa fa-bolt fa-1x'} />
+                    <small style={{ color: 'white' }}>ANALYZE</small>
+                  </center>
+                </Button>
+              ) : !this.state.userID ? (
                 <Button style={style.button} onClick={this.analyze}>
                   <center>
                     <Icon className={'fa fa-bolt fa-1x'} />
@@ -355,7 +416,14 @@ export default class View extends Component {
               ) : (
                 <div />
               )}
-              {this.props.userID === this.state.userID ? (
+              {this.state.userID && this.props.userID === this.state.userID ? (
+                <Button style={style.button} onClick={this.save}>
+                  <center>
+                    <Icon className={'fa fa-save fa-1x'} />
+                    <small style={{ color: 'white' }}>SAVE</small>
+                  </center>
+                </Button>
+              ) : !this.state.userID ? (
                 <Button style={style.button} onClick={this.save}>
                   <center>
                     <Icon className={'fa fa-save fa-1x'} />
@@ -365,26 +433,52 @@ export default class View extends Component {
               ) : (
                 <div />
               )}
-              {this.state.archived ? (
-                <Button
-                  data-value={'unarchive'}
-                  style={style.button}
-                  onClick={this.openModal}>
-                  <center>
-                    <Icon className={'fa fa-plus-circle fa-1x'} />
-                    <small style={{ color: 'white' }}>UNARCHIVE</small>
-                  </center>
-                </Button>
+              {this.state.userID && this.props.userID === this.state.userID ? (
+                this.state.archived ? (
+                  <Button
+                    data-value={'unarchive'}
+                    style={style.button}
+                    onClick={this.openModal}>
+                    <center>
+                      <Icon className={'fa fa-plus-circle fa-1x'} />
+                      <small style={{ color: 'white' }}>UNARCHIVE</small>
+                    </center>
+                  </Button>
+                ) : (
+                  <Button
+                    data-value={'archive'}
+                    style={style.button}
+                    onClick={this.openModal}>
+                    <center>
+                      <Icon className={'fa fa-minus-circle fa-1x'} />
+                      <small style={{ color: 'white' }}>ARCHIVE</small>
+                    </center>
+                  </Button>
+                )
+              ) : !this.state.userID ? (
+                this.state.archived ? (
+                  <Button
+                    data-value={'unarchive'}
+                    style={style.button}
+                    onClick={this.openModal}>
+                    <center>
+                      <Icon className={'fa fa-plus-circle fa-1x'} />
+                      <small style={{ color: 'white' }}>UNARCHIVE</small>
+                    </center>
+                  </Button>
+                ) : (
+                  <Button
+                    data-value={'archive'}
+                    style={style.button}
+                    onClick={this.openModal}>
+                    <center>
+                      <Icon className={'fa fa-minus-circle fa-1x'} />
+                      <small style={{ color: 'white' }}>ARCHIVE</small>
+                    </center>
+                  </Button>
+                )
               ) : (
-                <Button
-                  data-value={'archive'}
-                  style={style.button}
-                  onClick={this.openModal}>
-                  <center>
-                    <Icon className={'fa fa-minus-circle fa-1x'} />
-                    <small style={{ color: 'white' }}>ARCHIVE</small>
-                  </center>
-                </Button>
+                <Heading style={style.whiteText}>NO USER PRIVILEGES</Heading>
               )}
             </Column>
           </Columns>
@@ -417,12 +511,24 @@ export default class View extends Component {
                           <Columns>
                             <Column isSize="1/4">Name</Column>
                             <Column isSize="3/4">
-                              <Input
-                                type="text"
-                                isSize="small"
-                                value={this.state.name}
-                                onChange={this.changeName}
-                              />
+                              {this.state.userID &&
+                              this.props.userID === this.state.userID ? (
+                                <Input
+                                  type="text"
+                                  isSize="small"
+                                  value={this.state.name}
+                                  onChange={this.changeName}
+                                />
+                              ) : !this.state.userID ? (
+                                <Input
+                                  type="text"
+                                  isSize="small"
+                                  value={this.state.name}
+                                  onChange={this.changeName}
+                                />
+                              ) : (
+                                this.state.name
+                              )}
                             </Column>
                           </Columns>
                         </MenuLink>
@@ -432,12 +538,24 @@ export default class View extends Component {
                           <Columns>
                             <Column isSize="1/4">Camera</Column>
                             <Column isSize="3/4">
-                              <Input
-                                type="text"
-                                isSize="small"
-                                value={this.state.camera}
-                                onChange={this.changeCam}
-                              />
+                              {this.state.userID &&
+                              this.props.userID === this.state.userID ? (
+                                <Input
+                                  type="text"
+                                  isSize="small"
+                                  value={this.state.camera}
+                                  onChange={this.changeCam}
+                                />
+                              ) : !this.state.userID ? (
+                                <Input
+                                  type="text"
+                                  isSize="small"
+                                  value={this.state.camera}
+                                  onChange={this.changeCam}
+                                />
+                              ) : (
+                                this.state.camera
+                              )}
                             </Column>
                           </Columns>
                         </MenuLink>
@@ -448,7 +566,14 @@ export default class View extends Component {
                           <Column isSize="3/4">
                             <Button
                               data-value={'WET'}
-                              onClick={this.changeSeason}
+                              onClick={
+                                this.state.userID &&
+                                this.state.userID === this.props.userID
+                                  ? this.changeSeason
+                                  : !this.state.userID
+                                    ? this.changeSeason
+                                    : e => e.preventDefault()
+                              }
                               isSize={'small'}
                               style={
                                 this.state.season === 'WET'
@@ -463,7 +588,14 @@ export default class View extends Component {
                             </Button>
                             <Button
                               data-value={'DRY'}
-                              onClick={this.changeSeason}
+                              onClick={
+                                this.state.userID &&
+                                this.state.userID === this.props.userID
+                                  ? this.changeSeason
+                                  : !this.state.userID
+                                    ? this.changeSeason
+                                    : e => e.preventDefault()
+                              }
                               isSize={'small'}
                               style={
                                 this.state.season === 'DRY'
@@ -482,7 +614,7 @@ export default class View extends Component {
                       <li>
                         <MenuLink
                           style={style.removeUnderline}
-                          onClick={this.switch}>
+                          onClick={this.state.userID && this.props.userID === this.state.userID ? this.switch : !this.state.userID ? this.switch : e => e.preventDefault()}>
                           <Columns>
                             <Column isSize="1/4">Private</Column>
                             <Column

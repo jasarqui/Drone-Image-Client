@@ -223,6 +223,7 @@ export default class Browse extends Component {
                   images: this.state.images,
                   currentPage: this.state.currentPage,
                   totalPage: this.state.totalPages,
+                  userID: this.props.userID,
                   /* pass the handlers here */
                   next: this.next,
                   prev: this.prev,

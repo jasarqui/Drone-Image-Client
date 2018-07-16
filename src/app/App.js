@@ -112,6 +112,7 @@ export default class App extends Component {
                 /* pass the props here */
                 loggedIn: this.state.loggedIn,
                 imageID: this.state.imageID,
+                userID: this.state.currentUserId,
                 /* pass the handlers here */
                 viewImage: this.viewImage,
                 preventReload: this.preventReload

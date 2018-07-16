@@ -113,28 +113,54 @@ export default class BrowseBody extends Component {
                     <CardHeaderTitle style={{ color: 'white' }}>
                       {image.name}
                     </CardHeaderTitle>
-                    {!image.archived && this.props.loggedIn ? (
-                      <CardHeaderIcon style={{ color: 'white' }}>
-                        <Dropdown isHoverable isAlign={'right'}>
-                          <DropdownTrigger>
-                            <Icon className={'fa fa-gear fa-1x'} />
-                          </DropdownTrigger>
-                          <DropdownMenu>
-                            <DropdownContent>
-                              <DropdownItem
-                                data-value={image.id}
-                                onClick={this.openModal}>
-                                Archive
-                              </DropdownItem>
-                              <DropdownItem
-                                data-value={image.id}
-                                onClick={this.props.viewImage}>
-                                View
-                              </DropdownItem>
-                            </DropdownContent>
-                          </DropdownMenu>
-                        </Dropdown>
-                      </CardHeaderIcon>
+                    {!image.archived ? (
+                      image.user_id && this.props.userID === image.user_id ? (
+                        <CardHeaderIcon style={{ color: 'white' }}>
+                          <Dropdown isHoverable isAlign={'right'}>
+                            <DropdownTrigger>
+                              <Icon className={'fa fa-gear fa-1x'} />
+                            </DropdownTrigger>
+                            <DropdownMenu>
+                              <DropdownContent>
+                                <DropdownItem
+                                  data-value={image.id}
+                                  onClick={this.openModal}>
+                                  Archive
+                                </DropdownItem>
+                                <DropdownItem
+                                  data-value={image.id}
+                                  onClick={this.props.viewImage}>
+                                  View
+                                </DropdownItem>
+                              </DropdownContent>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </CardHeaderIcon>
+                      ) : !image.user_id ? (
+                        <CardHeaderIcon style={{ color: 'white' }}>
+                          <Dropdown isHoverable isAlign={'right'}>
+                            <DropdownTrigger>
+                              <Icon className={'fa fa-gear fa-1x'} />
+                            </DropdownTrigger>
+                            <DropdownMenu>
+                              <DropdownContent>
+                                <DropdownItem
+                                  data-value={image.id}
+                                  onClick={this.openModal}>
+                                  Archive
+                                </DropdownItem>
+                                <DropdownItem
+                                  data-value={image.id}
+                                  onClick={this.props.viewImage}>
+                                  View
+                                </DropdownItem>
+                              </DropdownContent>
+                            </DropdownMenu>
+                          </Dropdown>
+                        </CardHeaderIcon>
+                      ) : (
+                        <div />
+                      )
                     ) : (
                       <div />
                     )}
