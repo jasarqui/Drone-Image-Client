@@ -113,7 +113,7 @@ export default class BrowseBody extends Component {
                     <CardHeaderTitle style={{ color: 'white' }}>
                       {image.name}
                     </CardHeaderTitle>
-                    {!image.archived ? (
+                    {!image.archived && this.props.loggedIn ? (
                       <CardHeaderIcon style={{ color: 'white' }}>
                         <Dropdown isHoverable isAlign={'right'}>
                           <DropdownTrigger>
@@ -140,7 +140,10 @@ export default class BrowseBody extends Component {
                     )}
                   </CardHeader>
                   <CardImage>
-                    <a href="." data-value={image.id} onClick={this.props.viewImage}>
+                    <a
+                      href="."
+                      data-value={image.id}
+                      onClick={this.props.viewImage}>
                       <Image src={image.filepath} />
                     </a>
                   </CardImage>

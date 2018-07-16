@@ -215,6 +215,7 @@ export default class Browse extends Component {
               <BrowseBody
                 {...{
                   /* pass the props here */
+                  loggedIn: this.props.loggedIn,
                   searchTag: this.state.searchTag,
                   myUpload: this.state.myUpload,
                   category: this.state.category,
