@@ -83,10 +83,9 @@ export default class Homepage extends Component {
                       Drone Image Analysis
                     </Title>
                     <Subtitle isSize={6} style={style.whiteText}>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Curabitur sodales eu risus quis ultrices. Donec facilisis
-                      neque ac enim pellentesque, et interdum libero mollis.
-                      Morbi ac scelerisque massa, id mattis quam
+                      A web application that uses deep learning to process drone
+                      images and extract important information about rice
+                      fields.
                     </Subtitle>
                   </Content>
                 </MediaContent>

@@ -4,3 +4,4 @@
 export * from './entities/auth';
 export * from './entities/user';
 export * from './entities/image';
+export * from './entities/folder';

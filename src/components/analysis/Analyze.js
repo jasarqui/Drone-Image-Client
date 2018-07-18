@@ -109,6 +109,12 @@ const style = {
     backgroundColor: 'white',
     border: 'none',
     marginTop: '-4px'
+  },
+  greenText: {
+    color: '#57bc90'
+  },
+  redText: {
+    color: '#ef6f6c'
   }
 };
 
@@ -127,7 +133,8 @@ export default class Analyze extends Component {
       removeModalOpen: false,
       analyzeModalOpen: false,
       saveModalOpen: false,
-      activeImage: 0
+      activeImage: 0,
+      folders: []
     };
   }
 
@@ -186,16 +193,82 @@ export default class Analyze extends Component {
     this.setState({ images: imageState });
   };
 
+  changeDrone = e => {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].drone = e.target.value;
+    this.setState({ images: imageState });
+  };
+
+  changeLocation = e => {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].location = e.target.value;
+    this.setState({ images: imageState });
+  };
+
+  changeImage = e => {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].image = e.target.value;
+    this.setState({ images: imageState });
+  };
+
+  changeEnvCond = e => {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].env_condition = e.target.value;
+    this.setState({ images: imageState });
+  };
+
   changeCam = e => {
     var imageState = [...this.state.images];
     imageState[this.state.activeImage].camera = e.target.value;
     this.setState({ images: imageState });
   };
 
+  changeDay = e => {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].day = e.target.value;
+    this.setState({ images: imageState });
+  };
+
   changeSeason = e => {
     e.preventDefault();
+    this.onSeasonChange(e).then(this.checkFolder);
+  };
+
+  async onSeasonChange(e) {
     var imageState = [...this.state.images];
     imageState[this.state.activeImage].season = e.currentTarget.dataset.value;
+    this.setState({ images: imageState });
+  }
+
+  changeDate = e => {
+    this.onDateChange(e).then(this.checkFolder);
+  };
+
+  async onDateChange(e) {
+    var imageState = [...this.state.images];
+    imageState[this.state.activeImage].date = e.target.value;
+    this.setState({ images: imageState });
+  }
+
+  checkFolder = () => {
+    var imageState = [...this.state.images];
+    /* check if folder generated is located in folders loaded */
+    imageState[this.state.activeImage].folder_exists =
+      this.state.folders.filter(
+        folder =>
+          folder.name ===
+          (this.state.images[this.state.activeImage].season === 'WET'
+            ? 'WS'
+            : 'DS') +
+            this.state.images[this.state.activeImage].date
+      ).length > 0
+        ? true
+        : false;
+    /* change state name */
+    imageState[this.state.activeImage].folder_name =
+      (this.state.images[this.state.activeImage].season === 'WET'
+        ? 'WS'
+        : 'DS') + this.state.images[this.state.activeImage].date;
     this.setState({ images: imageState });
   };
 
@@ -262,17 +335,6 @@ export default class Analyze extends Component {
   analyzeImage = index => {
     /* this is where we put the glue */
 
-    /* update date for analyze date */
-    var imageState = [...this.state.images];
-    /* this should only get the date excluding the time */
-    imageState[index].date = new Date(Date.now())
-      .toLocaleString()
-      .split(',')[0];
-    this.setState({
-      images: imageState
-    });
-
-    // placeholder, needs glue
     /* this is an alert on success */
     Alert.success('Successfully analyzed image.', {
       beep: false,
@@ -286,7 +348,6 @@ export default class Analyze extends Component {
   analyzeAll = e => {
     e.preventDefault();
     this.setState({ analyzeModalOpen: false });
-    /* this is where we put the glue */
 
     if (this.state.images.length === 0) {
       /* this is an alert on success */
@@ -297,24 +358,16 @@ export default class Analyze extends Component {
         timeout: 2000
       });
     } else {
-    /* this will analyze all images */
-    var imageState = [...this.state.images];
-    for (var index = 0; index < imageState.length; index++) {
-      imageState[index].date = new Date(Date.now())
-        .toLocaleString()
-        .split(',')[0];
-    }
-    this.setState({ images: imageState });
+      /* this is where we put the glue */
 
-    // placeholder, needs glue
-    /* this is an alert on success */
-    Alert.success('Successfully analyzed all image(s).', {
-      beep: false,
-      position: 'top-right',
-      effect: 'jelly',
-      timeout: 2000
-    });
-  }
+      /* this is an alert on success */
+      Alert.success('Successfully analyzed all image(s).', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
+      });
+    }
   };
 
   /* saves one */
@@ -327,11 +380,15 @@ export default class Analyze extends Component {
     API.save({
       fileURL: this.state.images[index].fileURL,
       name: this.state.images[index].name,
+      date: this.state.images[index].day,
       camera: this.state.images[index].camera,
-      date: this.state.images[index].date ? this.state.images[index].date : 'unanalyzed',
+      drone: this.state.images[index].drone,
+      image: this.state.images[index].image,
+      location: this.state.images[index].location,
       is_private: this.state.images[index].private,
-      season: this.state.images[index].season,
+      env_cond: this.state.images[index].env_condition,
       attrib: this.state.images[index].attrib,
+      folder: this.state.images[index].folder_name,
       userId: this.props.userId
     })
       .then(() => {
@@ -369,11 +426,15 @@ export default class Analyze extends Component {
           imagesToSend.push({
             fileURL: imageState[index].fileURL,
             name: imageState[index].name,
+            date: imageState[index].day,
             camera: imageState[index].camera,
-            date: imageState[index].date ? imageState[index].date : 'unanalyzed',
+            drone: imageState[index].drone,
+            image: imageState[index].image,
+            location: imageState[index].location,
             is_private: imageState[index].private,
-            season: imageState[index].season,
+            env_cond: imageState[index].env_condition,
             attrib: imageState[index].attrib,
+            folder: imageState[index].folder_name,
             userId: this.props.userId
           });
           imageState[index].saved = true;
@@ -424,7 +485,7 @@ export default class Analyze extends Component {
 
   uploadFiles = files => {
     var countUploading = files.length;
-    this.setState({uploading: true});
+    this.setState({ uploading: true });
     for (var index = 0; index < files.length; index++) {
       /* this is to post to the cloudinary api,
       so that the image is uploaded to the cloud */
@@ -437,7 +498,7 @@ export default class Analyze extends Component {
       upload.end((err, response) => {
         /* this will help in the image uploading UX */
         countUploading--;
-        if (countUploading === 0) this.setState({uploading: false});
+        if (countUploading === 0) this.setState({ uploading: false });
 
         if (err) {
           /* this is an alert on success */
@@ -455,12 +516,19 @@ export default class Analyze extends Component {
               fileURL: response.body.secure_url,
               name: response.body.original_filename,
               /* the following are defaults */
-              camera: 'RGB',
-              season: 'DRY',
+              camera: '',
+              season: 'WET',
               private: false,
               saved: false,
-              /* the following are obtained by functions */
               date: '',
+              drone: '',
+              location: '',
+              image: '',
+              env_condition: '',
+              day: '',
+              /* the following are obtained by functions */
+              folder_exists: '',
+              folder_name: '',
               attrib: [
                 {
                   name: 'Place',
@@ -486,6 +554,13 @@ export default class Analyze extends Component {
         }
       });
     }
+  };
+
+  componentDidMount = () => {
+    /* load the folders */
+    API.getAllFolders().then(result => {
+      this.setState({ folders: result.data.data });
+    });
   };
 
   render() {
@@ -671,23 +746,21 @@ export default class Analyze extends Component {
                               }}>
                               <Icon className={'fa fa-bolt'} />
                             </Button>
-                            {(
-                              !image.saved ? (
-                                <Button
-                                  isSize={'small'}
-                                  style={
-                                    index === this.state.activeImage
-                                      ? style.activeHelper
-                                      : style.inactiveHelper
-                                  }
-                                  onClick={() => {
-                                    this.save(index);
-                                  }}>
-                                  <Icon className={'fa fa-save'} />
-                                </Button>
-                              ) : (
-                                <div />
-                              )
+                            {!image.saved ? (
+                              <Button
+                                isSize={'small'}
+                                style={
+                                  index === this.state.activeImage
+                                    ? style.activeHelper
+                                    : style.inactiveHelper
+                                }
+                                onClick={() => {
+                                  this.save(index);
+                                }}>
+                                <Icon className={'fa fa-save'} />
+                              </Button>
+                            ) : (
+                              <div />
                             )}
                           </MenuLink>
                         );
@@ -755,6 +828,7 @@ export default class Analyze extends Component {
                                     <Input
                                       type="text"
                                       isSize="small"
+                                      placeholder="IMAGE1..."
                                       value={
                                         this.state.images[
                                           this.state.activeImage
@@ -769,11 +843,72 @@ export default class Analyze extends Component {
                             <li>
                               <MenuLink style={style.removeUnderline}>
                                 <Columns>
+                                  <Column isSize="1/4">Date</Column>
+                                  <Column isSize="3/4">
+                                    <Input
+                                      type="text"
+                                      isSize="small"
+                                      placeholder="06312018..."
+                                      value={
+                                        this.state.images[
+                                          this.state.activeImage
+                                        ].day
+                                      }
+                                      onChange={this.changeDay}
+                                    />
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
+                                  <Column isSize="1/4">Location</Column>
+                                  <Column isSize="3/4">
+                                    <Input
+                                      type="text"
+                                      isSize="small"
+                                      placeholder="B500..."
+                                      value={
+                                        this.state.images[
+                                          this.state.activeImage
+                                        ].location
+                                      }
+                                      onChange={this.changeLocation}
+                                    />
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
+                                  <Column isSize="1/4">Drone</Column>
+                                  <Column isSize="3/4">
+                                    <Input
+                                      type="text"
+                                      isSize="small"
+                                      placeholder="Sensefly eBee, DJI M100..."
+                                      value={
+                                        this.state.images[
+                                          this.state.activeImage
+                                        ].drone
+                                      }
+                                      onChange={this.changeDrone}
+                                    />
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
                                   <Column isSize="1/4">Camera</Column>
                                   <Column isSize="3/4">
                                     <Input
                                       type="text"
                                       isSize="small"
+                                      placeholder="RGB, NIR, MS..."
                                       value={
                                         this.state.images[
                                           this.state.activeImage
@@ -785,45 +920,112 @@ export default class Analyze extends Component {
                                 </Columns>
                               </MenuLink>
                             </li>
-                            <MenuLink style={style.removeUnderline}>
-                              <Columns>
-                                <Column isSize="1/4">Season</Column>
-                                <Column isSize="3/4">
-                                  <Button
-                                    data-value={'WET'}
-                                    onClick={this.changeSeason}
-                                    isSize={'small'}
-                                    style={
-                                      this.state.images[this.state.activeImage]
-                                        .season === 'WET'
-                                        ? style.activeButton
-                                        : {}
-                                    }>
-                                    <Icon
-                                      className={'fa fa-umbrella fa-1x'}
-                                      style={{ marginRight: '5px' }}
-                                    />{' '}
-                                    WET
-                                  </Button>
-                                  <Button
-                                    data-value={'DRY'}
-                                    onClick={this.changeSeason}
-                                    isSize={'small'}
-                                    style={
-                                      this.state.images[this.state.activeImage]
-                                        .season === 'DRY'
-                                        ? style.activeButton
-                                        : {}
-                                    }>
-                                    <Icon
-                                      className={'fa fa-fire fa-1x'}
-                                      style={{ marginRight: '5px' }}
-                                    />{' '}
-                                    DRY
-                                  </Button>
-                                </Column>
-                              </Columns>
-                            </MenuLink>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
+                                  <Column isSize="1/4">Image Type</Column>
+                                  <Column isSize="3/4">
+                                    <Input
+                                      type="text"
+                                      isSize="small"
+                                      placeholder="Mosaic, Index, DSM..."
+                                      value={
+                                        this.state.images[
+                                          this.state.activeImage
+                                        ].image
+                                      }
+                                      onChange={this.changeImage}
+                                    />
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
+                            <li>
+                              <MenuLink style={style.removeUnderline}>
+                                <Columns>
+                                  <Column isSize="1/4">Folder</Column>
+                                  <Column isSize="1/4">
+                                    <Columns>
+                                      <Column isSize="1/2">
+                                        <Button
+                                          data-value={'WET'}
+                                          onClick={this.changeSeason}
+                                          isSize={'small'}
+                                          style={
+                                            this.state.images[
+                                              this.state.activeImage
+                                            ].season === 'WET'
+                                              ? style.activeButton
+                                              : {}
+                                          }>
+                                          <Icon
+                                            className={'fa fa-umbrella fa-1x'}
+                                            style={{ marginRight: '5px' }}
+                                          />{' '}
+                                          WET
+                                        </Button>
+                                        <Button
+                                          data-value={'DRY'}
+                                          onClick={this.changeSeason}
+                                          isSize={'small'}
+                                          style={
+                                            this.state.images[
+                                              this.state.activeImage
+                                            ].season === 'DRY'
+                                              ? style.activeButton
+                                              : {}
+                                          }>
+                                          <Icon
+                                            className={'fa fa-fire fa-1x'}
+                                            style={{ marginRight: '5px' }}
+                                          />{' '}
+                                          DRY
+                                        </Button>
+                                      </Column>
+                                      <Column isSize="1/2">
+                                        <Input
+                                          isSize="small"
+                                          type="text"
+                                          placeholder="Year"
+                                          value={
+                                            this.state.images[
+                                              this.state.activeImage
+                                            ].date
+                                          }
+                                          onChange={this.changeDate}
+                                        />
+                                      </Column>
+                                    </Columns>
+                                  </Column>
+                                  <Column isSize="1/4">
+                                    <small>
+                                      {this.state.images[this.state.activeImage]
+                                        .folder_exists === '' ? (
+                                        <div />
+                                      ) : this.state.images[
+                                        this.state.activeImage
+                                      ].folder_exists ? (
+                                        <p style={style.greenText}>
+                                          <Icon
+                                            className={
+                                              'fa fa-check-circle fa-xs'
+                                            }
+                                          />Folder exists
+                                        </p>
+                                      ) : (
+                                        <p style={style.redText}>
+                                          <Icon
+                                            className={
+                                              'fa fa-times-circle fa-xs'
+                                            }
+                                          />Folder does not exist
+                                        </p>
+                                      )}
+                                    </small>
+                                  </Column>
+                                </Columns>
+                              </MenuLink>
+                            </li>
                             <li>
                               <MenuLink
                                 style={style.removeUnderline}
@@ -851,19 +1053,6 @@ export default class Analyze extends Component {
                                         />
                                       </i>
                                     )}
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Date</Column>
-                                  <Column isSize="3/4">
-                                    {
-                                      this.state.images[this.state.activeImage]
-                                        .date
-                                    }
                                   </Column>
                                 </Columns>
                               </MenuLink>

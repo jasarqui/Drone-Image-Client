@@ -46,7 +46,7 @@ const style = {
   }
 };
 
-export default class BrowseBody extends Component {
+export default class BrowseFolders extends Component {
   constructor(props) {
     super(props);
 

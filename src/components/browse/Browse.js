@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import DocumentTitle from 'react-document-title';
 import BrowsePanel from './components/BrowsePanel';
 import BrowseBody from './components/BrowseBody';
+import BrowseFolders from './components/BrowseFolders';
 /* import bulma components */
 import { Columns, Column } from 'bloomer';
 /* import api here */
@@ -16,8 +17,13 @@ export default class Browse extends Component {
       search: '',
       searchTag: '',
       images: [],
+      folders: [],
       currentPage: 1,
       totalPages: 1,
+      currentFolderPage: 1,
+      totalFolderPages: 1,
+      currentFolder: 1,
+      currentBrowse: 'folder',
       /* these are filters */
       myUpload: false, // default is false
       category: 'All Seasons', // values: all, category name
@@ -33,7 +39,11 @@ export default class Browse extends Component {
   /* these are for change to current user uploads */
   filterMyUpload = e => {
     e.preventDefault();
-    this.changeMyUpload().then(() => this.newSearch(1));
+    this.changeMyUpload().then(
+      this.state.currentBrowse === 'image'
+        ? () => this.newSearch(1)
+        : () => this.newFolderSearch(1)
+    );
   };
 
   async changeMyUpload() {
@@ -43,7 +53,11 @@ export default class Browse extends Component {
   /* these are for change category */
   changeCategory = e => {
     e.preventDefault();
-    this.onChangeCategory(e).then(() => this.newSearch(1));
+    this.onChangeCategory(e).then(
+      this.state.currentBrowse === 'image'
+        ? () => this.newSearch(1)
+        : () => this.newFolderSearch(1)
+    );
   };
 
   async onChangeCategory(e) {
@@ -53,7 +67,11 @@ export default class Browse extends Component {
   /* these are for changing data privacy */
   changeData = e => {
     e.preventDefault();
-    this.onChangeData(e).then(() => this.newSearch(1));
+    this.onChangeData(e).then(
+      this.state.currentBrowse === 'image'
+        ? () => this.newSearch(1)
+        : () => this.newFolderSearch(1)
+    );
   };
 
   async onChangeData(e) {
@@ -62,7 +80,11 @@ export default class Browse extends Component {
 
   /* these are for resetting filters when user logs out */
   resetFilterOnLogout = () => {
-    this.changeFilterOnLogout().then(() => this.newSearch(1));
+    this.changeFilterOnLogout().then(
+      this.state.currentBrowse === 'image'
+        ? () => this.newSearch(1)
+        : () => this.newFolderSearch(1)
+    );
   };
 
   async changeFilterOnLogout() {
@@ -95,7 +117,11 @@ export default class Browse extends Component {
 
   search = e => {
     e.preventDefault();
-    this.onSearch().then(() => this.newSearch(1));
+    this.onSearch().then(
+      this.state.currentBrowse === 'image'
+        ? () => this.newSearch(1)
+        : () => this.newFolderSearch(1)
+    );
   };
 
   async onSearch() {
@@ -104,49 +130,83 @@ export default class Browse extends Component {
 
   /* page handling */
   changePage = offset => {
-    this.newSearch(this.state.currentPage + offset);
-    this.setState({ currentPage: this.state.currentPage + offset });
+    this.state.currentBrowse === 'image'
+      ? (this.newSearch(this.state.currentPage + offset),
+        this.setState({ currentPage: this.state.currentPage + offset }))
+      : (this.newFolderSearch(this.state.currentPage + offset),
+        this.setState({
+          currentFolderPage: this.state.currentFolderPage + offset
+        }));
   };
 
   /* this will go back one page */
   prev = e => {
     e.preventDefault();
-    if (this.state.currentPage !== 1) this.changePage(-1);
+    if (
+      (this.state.currentBrowse === 'image' && this.state.currentPage !== 1) ||
+      (this.state.currentBrowse === 'folder' &&
+        this.state.currentFolderPage !== 1)
+    )
+      this.changePage(-1);
   };
 
   /* this will go to the next page */
   next = e => {
     e.preventDefault();
-    if (this.state.currentPage !== this.state.totalPages) this.changePage(1);
+    if (
+      (this.state.currentBrowse === 'image' &&
+        this.state.currentPage !== this.state.totalPages) ||
+      (this.state.currentBrowse === 'folder' &&
+        this.state.currentFolderPage !== this.state.totalFolderPages)
+    )
+      this.changePage(1);
   };
 
   /* this will go back two pages */
   prevTwo = e => {
     e.preventDefault();
-    if (this.state.currentPage > 2) this.changePage(-2);
+    if (
+      (this.state.currentBrowse === 'image' && this.state.currentPage > 2) ||
+      (this.state.currentFolderBrowse === 'folder' &&
+        this.state.currentFolderPage > 2)
+    )
+      this.changePage(-2);
   };
 
   /* this will go to up two pages */
   nextTwo = e => {
     e.preventDefault();
-    if (this.state.currentPage < this.state.totalPages - 1) this.changePage(2);
+    if (
+      (this.state.currentBrowse === 'image' &&
+        this.state.currentPage < this.state.totalPages - 1) ||
+      (this.state.currentBrowse === 'folder' &&
+        this.state.currentFolderPage < this.state.totalFolderPages - 1)
+    )
+      this.changePage(2);
   };
 
   /* this will go back to the start */
   start = e => {
     e.preventDefault();
-    if (this.state.currentPage !== 1) this.changePage(1 - this.currentPage);
+    if (
+      (this.state.currentBrowse === 'image' && this.state.currentPage !== 1) ||
+      (this.state.currentBrowse === 'folder' &&
+        this.state.currentFolderPage !== 1)
+    )
+      this.changePage(1 - this.currentPage);
   };
 
   /* this will go the last */
   last = e => {
     e.preventDefault();
-    if (this.state.currentPage !== this.state.totalPages)
+    if (
+      (this.state.currentBrowse === 'image' &&
+        this.state.currentPage !== this.state.totalPages) ||
+      (this.state.currentBrowse === 'folder' &&
+        this.state.currentFolderPage !== this.state.totalFolderPages)
+    )
       this.changePage(this.state.totalPages - this.state.currentPage);
   };
-
-  /* load the first images */
-  componentDidMount = () => this.newSearch(1);
 
   /* reuseable set total pages function */
   async setPages(page) {
@@ -187,6 +247,44 @@ export default class Browse extends Component {
     API.archiveImg({ id: id }).then(() => this.newSearch(1));
   };
 
+  /* below are folder functions ================================== */
+
+  /* load the first images */
+  componentDidMount = () => this.newFolderSearch(1);
+
+  /* reusable function for setting the page */
+  newFolderSearch = page => {
+    this.setFolderPages(page).then(this.setFolders);
+  };
+
+  /* reuseable set total folder pages function */
+  async setFolderPages(page) {
+    API.countFolderPages({
+      myUpload: this.state.myUpload,
+      category: this.state.category,
+      showData: this.state.showData,
+      search: this.state.search ? this.state.search : null
+    }).then(result => {
+      this.setState({
+        currentFolderPage: page,
+        totalFolderPages: Math.ceil(result.data.data / 10)
+      });
+    });
+  }
+
+  /* reuseable set folders function */
+  setFolders = () => {
+    API.getFolders({
+      myUpload: this.state.myUpload,
+      category: this.state.category,
+      showData: this.state.showData,
+      search: this.state.searchTag ? this.state.searchTag : null,
+      start: 10 * (this.state.currentFolderPage - 1)
+    }).then(result => {
+      this.setState({ folders: result.data.data });
+    });
+  };
+
   render() {
     return (
       <DocumentTitle title="DIA | Browse">
@@ -212,29 +310,55 @@ export default class Browse extends Component {
               />
             </Column>
             <Column isSize="3/4" style={{ backgroundColor: '#F8F8F8' }}>
-              <BrowseBody
-                {...{
-                  /* pass the props here */
-                  loggedIn: this.props.loggedIn,
-                  searchTag: this.state.searchTag,
-                  myUpload: this.state.myUpload,
-                  category: this.state.category,
-                  showData: this.state.showData,
-                  images: this.state.images,
-                  currentPage: this.state.currentPage,
-                  totalPage: this.state.totalPages,
-                  userID: this.props.userID,
-                  /* pass the handlers here */
-                  next: this.next,
-                  prev: this.prev,
-                  nextTwo: this.nextTwo,
-                  prevTwo: this.prevTwo,
-                  start: this.start,
-                  last: this.last,
-                  archive: this.archive,
-                  viewImage: this.props.viewImage
-                }}
-              />
+              {this.state.currentBrowse === 'folder' ? (
+                <BrowseFolders
+                  {...{
+                    /* pass the props here */
+                    loggedIn: this.props.loggedIn,
+                    searchTag: this.state.searchTag,
+                    myUpload: this.state.myUpload,
+                    category: this.state.category,
+                    showData: this.state.showData,
+                    folders: this.state.folders,
+                    currentPage: this.state.currentFolderPage,
+                    totalPage: this.state.totalFolderPages,
+                    userID: this.props.userID,
+                    /* pass the handlers here */
+                    next: this.next,
+                    prev: this.prev,
+                    nextTwo: this.nextTwo,
+                    prevTwo: this.prevTwo,
+                    start: this.start,
+                    last: this.last,
+                    viewFolder: this.props.viewFolder,
+                    newFolderSearch: this.newFolderSearch
+                  }}
+                />
+              ) : (
+                <BrowseBody
+                  {...{
+                    /* pass the props here */
+                    loggedIn: this.props.loggedIn,
+                    searchTag: this.state.searchTag,
+                    myUpload: this.state.myUpload,
+                    category: this.state.category,
+                    showData: this.state.showData,
+                    images: this.state.images,
+                    currentPage: this.state.currentPage,
+                    totalPage: this.state.totalPages,
+                    userID: this.props.userID,
+                    /* pass the handlers here */
+                    next: this.next,
+                    prev: this.prev,
+                    nextTwo: this.nextTwo,
+                    prevTwo: this.prevTwo,
+                    start: this.start,
+                    last: this.last,
+                    archive: this.archive,
+                    viewImage: this.props.viewImage
+                  }}
+                />
+              )}
             </Column>
           </Columns>
         </div>
