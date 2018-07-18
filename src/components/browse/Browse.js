@@ -31,6 +31,26 @@ export default class Browse extends Component {
     };
   }
 
+  /* this will open current folder */
+  openFolder = index => {
+    this.setState({
+      currentFolder: index,
+      currentBrowse: 'image',
+      currentPage: 1
+    });
+    this.newSearch(1);
+  };
+
+  /* this will close current folder */
+  closeFolder = e => {
+    e.preventDefault();
+    this.setState({
+      currentBrowse: 'folder',
+      currentPage: 1
+    });
+    this.newFolderSearch(this.state.currentFolderPage);
+  }
+
   /* reusable function for setting the page */
   newSearch = page => {
     this.setPages(page).then(this.setImages);
@@ -214,7 +234,8 @@ export default class Browse extends Component {
       myUpload: this.state.myUpload,
       category: this.state.category,
       showData: this.state.showData,
-      search: this.state.search ? this.state.search : null
+      search: this.state.search ? this.state.search : null,
+      folder_id: this.state.currentFolder
     }).then(result => {
       this.setState({
         currentPage: page,
@@ -230,6 +251,7 @@ export default class Browse extends Component {
       category: this.state.category,
       showData: this.state.showData,
       search: this.state.searchTag ? this.state.searchTag : null,
+      folder_id: this.state.currentFolder,
       start: 6 * (this.state.currentPage - 1)
     }).then(result => {
       this.setState({ images: result.data.data });
@@ -330,7 +352,7 @@ export default class Browse extends Component {
                     prevTwo: this.prevTwo,
                     start: this.start,
                     last: this.last,
-                    viewFolder: this.props.viewFolder,
+                    openFolder: this.openFolder,
                     newFolderSearch: this.newFolderSearch
                   }}
                 />
@@ -348,6 +370,7 @@ export default class Browse extends Component {
                     totalPage: this.state.totalPages,
                     userID: this.props.userID,
                     /* pass the handlers here */
+                    closeFolder: this.closeFolder,
                     next: this.next,
                     prev: this.prev,
                     nextTwo: this.nextTwo,

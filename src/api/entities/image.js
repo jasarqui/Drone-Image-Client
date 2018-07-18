@@ -16,14 +16,29 @@ export const update = info => {
 };
 
 // gets the total number of pages for pagination
-export const countPages = ({ myUpload, category, showData, search }) => {
-  return axios.get(`/img/count/${myUpload}&${category}&${showData}&${search}`);
+export const countPages = ({
+  myUpload,
+  category,
+  showData,
+  search,
+  folder_id
+}) => {
+  return axios.get(
+    `/img/count/${myUpload}&${category}&${showData}&${search}&${folder_id}`
+  );
 };
 
 // gets the images
-export const getImages = ({ myUpload, category, showData, search, start }) => {
+export const getImages = ({
+  myUpload,
+  category,
+  showData,
+  search,
+  folder_id,
+  start
+}) => {
   return axios.get(
-    `/img/${myUpload}&${category}&${showData}&${search}&${start}`
+    `/img/${myUpload}&${category}&${showData}&${search}&${folder_id}&${start}`
   );
 };
 

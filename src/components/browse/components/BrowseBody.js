@@ -26,7 +26,8 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  DropdownContent
+  DropdownContent,
+  Button
 } from 'bloomer';
 
 /* create styles here */
@@ -43,6 +44,10 @@ const style = {
   tag: {
     backgroundColor: '#77c9d4',
     color: 'white'
+  },
+  back: {
+    color: '#015249',
+    borderColor: '#015249'
   }
 };
 
@@ -77,28 +82,58 @@ export default class BrowseFolders extends Component {
     return (
       <div style={{ padding: '30px' }}>
         {/* below shows the tags */}
-        <Breadcrumb hasSeparator={'dot'}>
-          <ul>
-            <BreadcrumbItem>
-              <Tag style={style.tag}>{this.props.showData}</Tag>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <Tag style={style.tag}>{this.props.category}</Tag>
-            </BreadcrumbItem>
-            <BreadcrumbItem>
-              <Tag style={style.tag}>
-                {this.props.myUpload ? 'My Uploads' : 'All Uploads'}
-              </Tag>
-            </BreadcrumbItem>
-            {this.props.searchTag ? (
-              <BreadcrumbItem>
-                <Tag style={style.tag}>{this.props.searchTag}</Tag>
-              </BreadcrumbItem>
-            ) : (
-              <div />
-            )}
-          </ul>
-        </Breadcrumb>
+        <Columns>
+          <Column>
+            <Breadcrumb hasSeparator={'dot'}>
+              <ul>
+                <BreadcrumbItem>
+                  <Tag style={style.tag}>{this.props.showData}</Tag>
+                </BreadcrumbItem>
+                <BreadcrumbItem>
+                  <Tag style={style.tag}>{this.props.category}</Tag>
+                </BreadcrumbItem>
+                <BreadcrumbItem>
+                  <Tag style={style.tag}>
+                    {this.props.myUpload ? 'My Uploads' : 'All Uploads'}
+                  </Tag>
+                </BreadcrumbItem>
+                {this.props.searchTag ? (
+                  <BreadcrumbItem>
+                    <Tag style={style.tag}>{this.props.searchTag}</Tag>
+                  </BreadcrumbItem>
+                ) : (
+                  <div />
+                )}
+              </ul>
+            </Breadcrumb>
+          </Column>
+          <Column isHidden={'mobile'}>
+            <Button
+              style={{ ...style.back, float: 'right' }}
+              isSize={'small'}
+              onClick={this.props.closeFolder}>
+              <Icon
+                className={'fa fa-chevron-left fa-1x'}
+                style={{ marginRight: '5px' }}
+              />{' '}
+              Back to Folders
+            </Button>
+          </Column>
+          <Column isHidden={'desktop'}>
+            <center>
+              <Button
+                style={style.back}
+                isSize={'small'}
+                onClick={this.props.closeFolder}>
+                <Icon
+                  className={'fa fa-chevron-left fa-1x'}
+                  style={{ marginRight: '5px' }}
+                />{' '}
+                Back to Folders
+              </Button>
+            </center>
+          </Column>
+        </Columns>
         {/* below shows the items for that page */}
         {this.props.images.length !== 0 ? (
           <div>

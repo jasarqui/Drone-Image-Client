@@ -387,6 +387,7 @@ export default class Analyze extends Component {
       location: this.state.images[index].location,
       is_private: this.state.images[index].private,
       env_cond: this.state.images[index].env_condition,
+      season: this.state.images[index].season,
       attrib: this.state.images[index].attrib,
       folder: this.state.images[index].folder_name,
       userId: this.props.userId
@@ -433,6 +434,7 @@ export default class Analyze extends Component {
             location: imageState[index].location,
             is_private: imageState[index].private,
             env_cond: imageState[index].env_condition,
+            season: imageState[index].season,
             attrib: imageState[index].attrib,
             folder: imageState[index].folder_name,
             userId: this.props.userId

@@ -43,7 +43,6 @@ const style = {
   },
   add: {
     color: '#015249',
-    cursor: 'pointer',
     borderColor: '#015249'
   },
   flex: {
@@ -123,7 +122,10 @@ export default class BrowseBody extends Component {
           </Column>
           <Column isHidden={'desktop'}>
             <center>
-              <Button style={style.add} isSize={'small'}>
+              <Button
+                style={style.add}
+                isSize={'small'}
+                onClick={this.openModal}>
                 <Icon
                   className={'fa fa-folder fa-1x'}
                   style={{ marginRight: '5px' }}
@@ -174,7 +176,12 @@ export default class BrowseBody extends Component {
                             <Button style={style.folderButton} isSize={'small'}>
                               <Icon className={'fa fa-edit fa-sm'} />
                             </Button>
-                            <Button style={style.folderButton} isSize={'small'}>
+                            <Button
+                              style={style.folderButton}
+                              isSize={'small'}
+                              onClick={() => {
+                                this.props.openFolder(folder.id);
+                              }}>
                               <Icon className={'fa fa-eye fa-sm'} />
                             </Button>
                           </div>
