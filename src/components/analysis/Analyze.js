@@ -115,6 +115,9 @@ const style = {
   },
   redText: {
     color: '#ef6f6c'
+  },
+  blueText: {
+    color: '#77c9d4'
   }
 };
 
@@ -372,6 +375,7 @@ export default class Analyze extends Component {
 
   /* saves one */
   save = index => {
+    if (this.state.images[index].folder_exists) {
     /* saves the image information */
     var imageState = [...this.state.images];
     imageState[index].saved = true;
@@ -410,6 +414,14 @@ export default class Analyze extends Component {
           timeout: 2000
         });
       });
+    } else {
+      Alert.error('Must have a folder.', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
+      });
+    }
   };
 
   /* saves all */
@@ -422,7 +434,7 @@ export default class Analyze extends Component {
     var imagesToSend = []; // array that holds images to send
     try {
       for (var index = 0; index < imageState.length; index++) {
-        if (!imageState[index].saved) {
+        if (!imageState[index].saved && imageState[index].folder_exists) {
           // add to array
           imagesToSend.push({
             fileURL: imageState[index].fileURL,
@@ -440,6 +452,13 @@ export default class Analyze extends Component {
             userId: this.props.userId
           });
           imageState[index].saved = true;
+        } else if (!imageState[index].saved && imageState[index].folder_exists) {
+          Alert.error(`${imageState[index].name} must have a folder`, {
+            beep: false,
+            position: 'top-right',
+            effect: 'jelly',
+            timeout: 2000
+          });
         }
       }
 
@@ -467,7 +486,7 @@ export default class Analyze extends Component {
           });
       } else {
         /* this is an alert for no images */
-        Alert.info('No images to save.', {
+        Alert.info('No valid image(s) to be saved.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
@@ -822,243 +841,274 @@ export default class Analyze extends Component {
                         {this.state.images[this.state.activeImage]
                           .metadataOpen ? (
                           <MenuList>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Name</Column>
-                                  <Column isSize="3/4">
-                                    <Input
-                                      type="text"
-                                      isSize="small"
-                                      placeholder="IMAGE1..."
-                                      value={
-                                        this.state.images[
+                            <MenuLink style={style.removeUnderline}>
+                              <Columns isMultiline>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Name</Column>
+                                    <Column isSize="3/4">
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        placeholder="IMAGE1..."
+                                        value={
+                                          this.state.images[
+                                            this.state.activeImage
+                                          ].name
+                                        }
+                                        onChange={this.changeName}
+                                      />
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Date</Column>
+                                    <Column isSize="3/4">
+                                      <Input
+                                        type="date"
+                                        isSize="small"
+                                        value={
+                                          this.state.images[
+                                            this.state.activeImage
+                                          ].day
+                                        }
+                                        onChange={this.changeDay}
+                                      />
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Location</Column>
+                                    <Column isSize="3/4">
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        placeholder="B500..."
+                                        value={
+                                          this.state.images[
+                                            this.state.activeImage
+                                          ].location
+                                        }
+                                        onChange={this.changeLocation}
+                                      />
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Drone</Column>
+                                    <Column isSize="3/4">
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        placeholder="Sensefly eBee, DJI M100..."
+                                        value={
+                                          this.state.images[
+                                            this.state.activeImage
+                                          ].drone
+                                        }
+                                        onChange={this.changeDrone}
+                                      />
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Camera</Column>
+                                    <Column isSize="3/4">
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        placeholder="RGB, NIR, MS..."
+                                        value={
+                                          this.state.images[
+                                            this.state.activeImage
+                                          ].camera
+                                        }
+                                        onChange={this.changeCam}
+                                      />
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column>
+                                  <Columns>
+                                    <Column isSize="1/4">Image Type</Column>
+                                    <Column isSize="3/4">
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        placeholder="Mosaic, Index, DSM..."
+                                        value={
+                                          this.state.images[
+                                            this.state.activeImage
+                                          ].image
+                                        }
+                                        onChange={this.changeImage}
+                                      />
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Environment</Column>
+                                    <Column isSize="3/4">
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        placeholder="Was it rainy?"
+                                        value={
+                                          this.state.images[
+                                            this.state.activeImage
+                                          ].env_condition
+                                        }
+                                        onChange={this.changeEnvCond}
+                                      />
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Folder</Column>
+                                    <Column isSize="2/4">
+                                      <Columns>
+                                        <Column isSize="1/2">
+                                          <Button
+                                            data-value={'WET'}
+                                            onClick={this.changeSeason}
+                                            isSize={'small'}
+                                            style={
+                                              this.state.images[
+                                                this.state.activeImage
+                                              ].season === 'WET'
+                                                ? style.activeButton
+                                                : {}
+                                            }>
+                                            <Icon
+                                              className={'fa fa-umbrella fa-1x'}
+                                              style={{ marginRight: '5px' }}
+                                            />{' '}
+                                            WET
+                                          </Button>
+                                          <Button
+                                            data-value={'DRY'}
+                                            onClick={this.changeSeason}
+                                            isSize={'small'}
+                                            style={
+                                              this.state.images[
+                                                this.state.activeImage
+                                              ].season === 'DRY'
+                                                ? style.activeButton
+                                                : {}
+                                            }>
+                                            <Icon
+                                              className={'fa fa-fire fa-1x'}
+                                              style={{ marginRight: '5px' }}
+                                            />{' '}
+                                            DRY
+                                          </Button>
+                                        </Column>
+                                        <Column isSize="1/2">
+                                          <Input
+                                            isSize="small"
+                                            type="text"
+                                            placeholder="Year"
+                                            value={
+                                              this.state.images[
+                                                this.state.activeImage
+                                              ].date
+                                            }
+                                            onChange={this.changeDate}
+                                          />
+                                        </Column>
+                                      </Columns>
+                                    </Column>
+                                    <Column isSize="1/4">
+                                      <small>
+                                        {this.state.images[
                                           this.state.activeImage
-                                        ].name
-                                      }
-                                      onChange={this.changeName}
-                                    />
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Date</Column>
-                                  <Column isSize="3/4">
-                                    <Input
-                                      type="text"
-                                      isSize="small"
-                                      placeholder="06312018..."
-                                      value={
-                                        this.state.images[
+                                        ].folder_exists === '' ? (
+                                          <p style={style.blueText}>
+                                            <Icon
+                                              className={
+                                                'fa fa-info-circle fa-xs'
+                                              }
+                                            />Required
+                                          </p>
+                                        ) : this.state.images[
                                           this.state.activeImage
-                                        ].day
-                                      }
-                                      onChange={this.changeDay}
-                                    />
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Location</Column>
-                                  <Column isSize="3/4">
-                                    <Input
-                                      type="text"
-                                      isSize="small"
-                                      placeholder="B500..."
-                                      value={
-                                        this.state.images[
-                                          this.state.activeImage
-                                        ].location
-                                      }
-                                      onChange={this.changeLocation}
-                                    />
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Drone</Column>
-                                  <Column isSize="3/4">
-                                    <Input
-                                      type="text"
-                                      isSize="small"
-                                      placeholder="Sensefly eBee, DJI M100..."
-                                      value={
-                                        this.state.images[
-                                          this.state.activeImage
-                                        ].drone
-                                      }
-                                      onChange={this.changeDrone}
-                                    />
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Camera</Column>
-                                  <Column isSize="3/4">
-                                    <Input
-                                      type="text"
-                                      isSize="small"
-                                      placeholder="RGB, NIR, MS..."
-                                      value={
-                                        this.state.images[
-                                          this.state.activeImage
-                                        ].camera
-                                      }
-                                      onChange={this.changeCam}
-                                    />
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Image Type</Column>
-                                  <Column isSize="3/4">
-                                    <Input
-                                      type="text"
-                                      isSize="small"
-                                      placeholder="Mosaic, Index, DSM..."
-                                      value={
-                                        this.state.images[
-                                          this.state.activeImage
-                                        ].image
-                                      }
-                                      onChange={this.changeImage}
-                                    />
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink style={style.removeUnderline}>
-                                <Columns>
-                                  <Column isSize="1/4">Folder</Column>
-                                  <Column isSize="1/4">
-                                    <Columns>
-                                      <Column isSize="1/2">
-                                        <Button
-                                          data-value={'WET'}
-                                          onClick={this.changeSeason}
-                                          isSize={'small'}
-                                          style={
-                                            this.state.images[
-                                              this.state.activeImage
-                                            ].season === 'WET'
-                                              ? style.activeButton
-                                              : {}
-                                          }>
-                                          <Icon
-                                            className={'fa fa-umbrella fa-1x'}
-                                            style={{ marginRight: '5px' }}
-                                          />{' '}
-                                          WET
-                                        </Button>
-                                        <Button
-                                          data-value={'DRY'}
-                                          onClick={this.changeSeason}
-                                          isSize={'small'}
-                                          style={
-                                            this.state.images[
-                                              this.state.activeImage
-                                            ].season === 'DRY'
-                                              ? style.activeButton
-                                              : {}
-                                          }>
-                                          <Icon
-                                            className={'fa fa-fire fa-1x'}
-                                            style={{ marginRight: '5px' }}
-                                          />{' '}
-                                          DRY
-                                        </Button>
-                                      </Column>
-                                      <Column isSize="1/2">
-                                        <Input
-                                          isSize="small"
-                                          type="text"
-                                          placeholder="Year"
-                                          value={
-                                            this.state.images[
-                                              this.state.activeImage
-                                            ].date
-                                          }
-                                          onChange={this.changeDate}
-                                        />
-                                      </Column>
-                                    </Columns>
-                                  </Column>
-                                  <Column isSize="1/4">
-                                    <small>
+                                        ].folder_exists ? (
+                                          <p style={style.greenText}>
+                                            <Icon
+                                              className={
+                                                'fa fa-check-circle fa-xs'
+                                              }
+                                            />Exists
+                                          </p>
+                                        ) : (
+                                          <p style={style.redText}>
+                                            <Icon
+                                              className={
+                                                'fa fa-times-circle fa-xs'
+                                              }
+                                            />Doesn't Exist
+                                          </p>
+                                        )}
+                                      </small>
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">Private</Column>
+                                    <Column
+                                      isSize="3/4"
+                                      style={{ padding: '0px', paddingLeft: '5px' }}>
                                       {this.state.images[this.state.activeImage]
-                                        .folder_exists === '' ? (
-                                        <div />
-                                      ) : this.state.images[
-                                        this.state.activeImage
-                                      ].folder_exists ? (
-                                        <p style={style.greenText}>
-                                          <Icon
-                                            className={
-                                              'fa fa-check-circle fa-xs'
-                                            }
-                                          />Folder exists
-                                        </p>
+                                        .private ? (
+                                        <a
+                                          href="."
+                                          onClick={this.switch}
+                                          style={style.removeUnderline}>
+                                          <i style={style.switchOn}>
+                                            <Icon
+                                              href="."
+                                              className={
+                                                'fa fa-toggle-on fa-lg'
+                                              }
+                                              isSize="small"
+                                            />
+                                          </i>
+                                        </a>
                                       ) : (
-                                        <p style={style.redText}>
-                                          <Icon
-                                            className={
-                                              'fa fa-times-circle fa-xs'
-                                            }
-                                          />Folder does not exist
-                                        </p>
+                                        <a
+                                          href="."
+                                          onClick={this.switch}
+                                          style={style.removeUnderline}>
+                                          <i style={style.switchOff}>
+                                            <Icon
+                                              href="."
+                                              className={
+                                                'fa fa-toggle-off fa-lg'
+                                              }
+                                              isSize="small"
+                                            />
+                                          </i>
+                                        </a>
                                       )}
-                                    </small>
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
-                            <li>
-                              <MenuLink
-                                style={style.removeUnderline}
-                                onClick={this.switch}>
-                                <Columns>
-                                  <Column isSize="1/4">Private</Column>
-                                  <Column
-                                    isSize="3/4"
-                                    style={{ paddingLeft: '20px' }}>
-                                    {this.state.images[this.state.activeImage]
-                                      .private ? (
-                                      <i style={style.switchOn}>
-                                        <Icon
-                                          href="."
-                                          className={'fa fa-toggle-on fa-lg'}
-                                          isSize="small"
-                                        />
-                                      </i>
-                                    ) : (
-                                      <i style={style.switchOff}>
-                                        <Icon
-                                          href="."
-                                          className={'fa fa-toggle-off fa-lg'}
-                                          isSize="small"
-                                        />
-                                      </i>
-                                    )}
-                                  </Column>
-                                </Columns>
-                              </MenuLink>
-                            </li>
+                                    </Column>
+                                  </Columns>
+                                </Column>
+                              </Columns>
+                            </MenuLink>
+                            <MenuLink
+                              style={style.removeUnderline}
+                              onClick={this.switch}>
+                              <Columns>
+                                <Column isSize="1/2" />
+                              </Columns>
+                            </MenuLink>
                           </MenuList>
                         ) : (
                           <div />

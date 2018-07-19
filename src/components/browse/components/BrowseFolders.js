@@ -16,7 +16,6 @@ import {
   Media,
   MediaLeft,
   MediaContent,
-  MediaRight,
   Icon,
   Columns,
   Column,

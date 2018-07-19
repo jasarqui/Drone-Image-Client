@@ -229,13 +229,13 @@ export default class BrowseFolders extends Component {
                         <Column isSize="1/3">
                           <Tag style={style.leftMargin}>Camera</Tag>
                           <Tag isColor="light">
-                            <small>{image.camera}</small>
+                            <small>{image.camera ? image.camera : 'n/a'}</small>
                           </Tag>
                         </Column>
                         <Column isSize="1/3">
                           <Tag style={style.leftMargin}>Date</Tag>
                           <Tag isColor="light">
-                            <small>{image.date}</small>
+                            <small>{image.date ? image.date : 'n/a'}</small>
                           </Tag>
                         </Column>
                       </Columns>
@@ -255,7 +255,7 @@ export default class BrowseFolders extends Component {
                             Camera
                           </Tag>
                           <Tag isColor="light">
-                            <small>{image.camera}</small>
+                            <small>{image.camera ? image.camera : 'n/a'}</small>
                           </Tag>
                         </Column>
                         <Column isSize="1/2">
@@ -263,7 +263,7 @@ export default class BrowseFolders extends Component {
                             Date
                           </Tag>
                           <Tag isColor="light">
-                            <small>{image.date}</small>
+                            <small>{image.date ? image.date : 'n/a'}</small>
                           </Tag>
                         </Column>
                       </Columns>

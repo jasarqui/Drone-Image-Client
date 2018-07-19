@@ -49,7 +49,7 @@ export default class Browse extends Component {
       currentPage: 1
     });
     this.newFolderSearch(this.state.currentFolderPage);
-  }
+  };
 
   /* reusable function for setting the page */
   newSearch = page => {
@@ -150,13 +150,15 @@ export default class Browse extends Component {
 
   /* page handling */
   changePage = offset => {
-    this.state.currentBrowse === 'image'
-      ? (this.newSearch(this.state.currentPage + offset),
-        this.setState({ currentPage: this.state.currentPage + offset }))
-      : (this.newFolderSearch(this.state.currentPage + offset),
-        this.setState({
-          currentFolderPage: this.state.currentFolderPage + offset
-        }));
+    if (this.state.currentBrowse === 'image') {
+      this.newSearch(this.state.currentPage + offset);
+      this.setState({ currentPage: this.state.currentPage + offset });
+    } else {
+      this.newFolderSearch(this.state.currentPage + offset);
+      this.setState({
+        currentFolderPage: this.state.currentFolderPage + offset
+      });
+    }
   };
 
   /* this will go back one page */
