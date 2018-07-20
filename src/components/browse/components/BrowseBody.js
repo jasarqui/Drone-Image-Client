@@ -109,6 +109,16 @@ export default class BrowseFolders extends Component {
           </Column>
           <Column isHidden={'mobile'}>
             <Button
+              style={{ ...style.back, float: 'right', marginLeft: '5px' }}
+              isSize={'small'}
+              onClick={this.props.closeFolder}>
+              <Icon
+                className={'fa fa-file-text fa-1x'}
+                style={{ marginRight: '5px' }}
+              />{' '}
+              Report and Layouts
+            </Button>
+            <Button
               style={{ ...style.back, float: 'right' }}
               isSize={'small'}
               onClick={this.props.closeFolder}>
@@ -130,6 +140,16 @@ export default class BrowseFolders extends Component {
                   style={{ marginRight: '5px' }}
                 />{' '}
                 Back to Folders
+              </Button>
+              <Button
+                style={{ ...style.back, marginLeft: '5px' }}
+                isSize={'small'}
+                onClick={this.props.closeFolder}>
+                <Icon
+                  className={'fa fa-file-text fa-1x'}
+                  style={{ marginRight: '5px' }}
+                />{' '}
+                Report and Layouts
               </Button>
             </center>
           </Column>
