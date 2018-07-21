@@ -154,7 +154,7 @@ export default class Browse extends Component {
       this.newSearch(this.state.currentPage + offset);
       this.setState({ currentPage: this.state.currentPage + offset });
     } else {
-      this.newFolderSearch(this.state.currentPage + offset);
+      this.newFolderSearch(this.state.currentFolderPage + offset);
       this.setState({
         currentFolderPage: this.state.currentFolderPage + offset
       });
@@ -210,24 +210,30 @@ export default class Browse extends Component {
   /* this will go back to the start */
   start = e => {
     e.preventDefault();
-    if (
-      (this.state.currentBrowse === 'image' && this.state.currentPage !== 1) ||
-      (this.state.currentBrowse === 'folder' &&
-        this.state.currentFolderPage !== 1)
+    if (this.state.currentBrowse === 'image' && this.state.currentPage !== 1)
+      this.changePage(1 - this.state.currentPage);
+    else if (
+      this.state.currentBrowse === 'folder' &&
+      this.state.currentFolderPage !== 1
     )
-      this.changePage(1 - this.currentPage);
+      this.changePage(1 - this.state.currentFolderPage);
   };
 
   /* this will go the last */
   last = e => {
     e.preventDefault();
     if (
-      (this.state.currentBrowse === 'image' &&
-        this.state.currentPage !== this.state.totalPages) ||
-      (this.state.currentBrowse === 'folder' &&
-        this.state.currentFolderPage !== this.state.totalFolderPages)
+      this.state.currentBrowse === 'image' &&
+      this.state.currentPage !== this.state.totalPages
     )
       this.changePage(this.state.totalPages - this.state.currentPage);
+    else if (
+      this.state.currentBrowse === 'folder' &&
+      this.state.currentFolderPage !== this.state.totalFolderPages
+    )
+      this.changePage(
+        this.state.totalFolderPages - this.state.currentFolderPage
+      );
   };
 
   /* reuseable set total pages function */
