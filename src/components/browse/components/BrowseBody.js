@@ -1,6 +1,7 @@
 /* import React components here */
 import React, { Component } from 'react';
 import Archive from '../modals/Archive';
+import Files from '../modals/Files';
 /* import bulma components */
 import {
   Pagination,
@@ -55,7 +56,11 @@ export default class BrowseFolders extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { archiveModalOpen: false, archiveId: '' };
+    this.state = {
+      archiveModalOpen: false,
+      editModalOpen: false,
+      archiveId: ''
+    };
   }
 
   /* archive functions */
@@ -76,6 +81,15 @@ export default class BrowseFolders extends Component {
   closeModal = e => {
     e.preventDefault();
     this.setState({ archiveModalOpen: false });
+  };
+
+  openEditModal = e => {
+    e.preventDefault();
+    this.setState({ editModalOpen: true });
+  };
+
+  closeEditModal = () => {
+    this.setState({ editModalOpen: false });
   };
 
   render() {
@@ -111,7 +125,7 @@ export default class BrowseFolders extends Component {
             <Button
               style={{ ...style.back, float: 'right', marginLeft: '5px' }}
               isSize={'small'}
-              onClick={this.props.closeFolder}>
+              onClick={this.openEditModal}>
               <Icon
                 className={'fa fa-file-text fa-1x'}
                 style={{ marginRight: '5px' }}
@@ -144,7 +158,7 @@ export default class BrowseFolders extends Component {
               <Button
                 style={{ ...style.back, marginLeft: '5px' }}
                 isSize={'small'}
-                onClick={this.props.closeFolder}>
+                onClick={this.openEditModal}>
                 <Icon
                   className={'fa fa-file-text fa-1x'}
                   style={{ marginRight: '5px' }}
@@ -221,12 +235,12 @@ export default class BrowseFolders extends Component {
                     )}
                   </CardHeader>
                   <CardImage>
-                    <a
-                      href="."
+                    <Image
                       data-value={image.id}
-                      onClick={this.props.viewImage}>
-                      <Image src={image.filepath} />
-                    </a>
+                      onClick={this.props.viewImage}
+                      style={{ cursor: 'pointer' }}
+                      src={image.filepath}
+                    />
                   </CardImage>
                   <CardContent style={{ padding: '5px' }}>
                     <center>
@@ -401,6 +415,15 @@ export default class BrowseFolders extends Component {
             /* pass the handlers here */
             close: this.closeModal,
             archive: this.archive
+          }}
+        />
+        <Files
+          {...{
+            /* pass the props here */
+            active: this.state.editModalOpen,
+            folder_id: this.props.folder_id,
+            /* pass the handlers here */
+            close: this.closeEditModal
           }}
         />
       </div>

@@ -371,6 +371,7 @@ export default class Browse extends Component {
                     currentPage: this.state.currentPage,
                     totalPage: this.state.totalPages,
                     userID: this.props.userID,
+                    folder_id: this.state.currentFolder,
                     /* pass the handlers here */
                     closeFolder: this.closeFolder,
                     next: this.next,

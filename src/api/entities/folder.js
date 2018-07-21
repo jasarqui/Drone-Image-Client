@@ -10,6 +10,11 @@ export const editFolder = info => {
   return axios.put('/folder/edit', info);
 };
 
+// edits folder files only
+export const editFiles = info => {
+  return axios.put('/folder/files/edit', info);
+};
+
 // gets the total number of folder pages for pagination
 export const countFolderPages = ({ myUpload, category, showData, search }) => {
   return axios.get(
