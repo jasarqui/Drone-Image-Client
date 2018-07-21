@@ -1,6 +1,7 @@
 /* import React components here */
 import React, { Component } from 'react';
 import Folder from '../modals/Folder';
+import EditFolder from '../modals/EditFolder';
 /* import bulma components */
 import {
   Pagination,
@@ -65,17 +66,39 @@ export default class BrowseBody extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { folderModalOpen: false };
+    this.state = {
+      folderModalOpen: false,
+      editModalOpen: false,
+      currentFolder: ''
+    };
   }
 
   openModal = e => {
     e.preventDefault();
-    this.setState({ folderModalOpen: true });
+    this.getCurrentFolder(e);
   };
+
+  async getCurrentFolder(e) {
+    if (e.currentTarget.dataset.value === 'add')
+      this.setState({ folderModalOpen: true });
+    else
+      this.setState({
+        editModalOpen: true,
+        currentFolder: e.currentTarget.dataset.value
+      });
+  }
 
   closeModal = e => {
     e.preventDefault();
-    this.setState({ folderModalOpen: false });
+    e.currentTarget.dataset.value === 'add'
+      ? this.setState({ folderModalOpen: false })
+      : this.setState({ editModalOpen: false });
+  };
+
+  close = modal => {
+    modal === 'add'
+      ? this.setState({ folderModalOpen: false })
+      : this.setState({ editModalOpen: false });
   };
 
   render() {
@@ -111,6 +134,7 @@ export default class BrowseBody extends Component {
             <Button
               style={{ ...style.add, float: 'right' }}
               isSize={'small'}
+              data-value={'add'}
               onClick={this.openModal}>
               <Icon
                 className={'fa fa-folder fa-1x'}
@@ -124,6 +148,7 @@ export default class BrowseBody extends Component {
               <Button
                 style={style.add}
                 isSize={'small'}
+                data-value={'add'}
                 onClick={this.openModal}>
                 <Icon
                   className={'fa fa-folder fa-1x'}
@@ -172,7 +197,11 @@ export default class BrowseBody extends Component {
                             <Button style={style.folderButton} isSize={'small'}>
                               <Icon className={'fa fa-trash fa-sm'} />
                             </Button>
-                            <Button style={style.folderButton} isSize={'small'}>
+                            <Button
+                              style={style.folderButton}
+                              isSize={'small'}
+                              data-value={folder.id}
+                              onClick={this.openModal}>
                               <Icon className={'fa fa-edit fa-sm'} />
                             </Button>
                             <Button
@@ -299,7 +328,20 @@ export default class BrowseBody extends Component {
             page: this.props.currentPage,
             /* pass handlers here */
             newFolderSearch: this.props.newFolderSearch,
-            close: this.closeModal
+            close: this.closeModal,
+            closeDirect: this.close
+          }}
+        />
+        <EditFolder
+          {...{
+            /* pass props here */
+            active: this.state.editModalOpen,
+            page: this.props.currentPage,
+            folder_id: this.state.currentFolder,
+            /* pass handlers here */
+            newFolderSearch: this.props.newFolderSearch,
+            close: this.closeModal,
+            closeDirect: this.close
           }}
         />
       </div>

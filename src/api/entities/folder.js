@@ -28,3 +28,8 @@ export const getFolders = ({ myUpload, category, showData, search, start }) => {
 export const getAllFolders = () => {
   return axios.get('/folder/all');
 };
+
+// get a folder
+export const getFolder = ({ id }) => {
+  return axios.get(`folder/${id}`);
+};

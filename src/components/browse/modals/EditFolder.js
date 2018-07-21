@@ -73,7 +73,7 @@ const style = {
 /* update if reached more than year 9999 */
 const yearRegex = /^[0-9]{4}$/;
 
-export default class Folder extends Component {
+export default class EditFolder extends Component {
   constructor(props) {
     super(props);
 
@@ -129,27 +129,26 @@ export default class Folder extends Component {
     this.props.close(e);
   };
 
-  addFolder = () => {
-    API.addFolder({
+  editFolder = () => {
+    API.editFolder({
       season: this.state.season,
       date: this.state.date,
       layout: this.state.layout,
-      report: this.state.report
+      report: this.state.report,
+      id: this.props.folder_id
     })
       .then(() => {
-        Alert.success('Successfully added folder.', {
+        Alert.success('Successfully edited folder.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
           timeout: 2000
         });
-        this.props.closeDirect('add');
+        this.props.closeDirect('edit');
         this.props.newFolderSearch(this.props.page);
-        /* reset modal */
-        this.setState({ season: 'WET', date: '2018' });
       })
       .catch(() => {
-        Alert.error('Failed to add folder.', {
+        Alert.error('Failed to edit folder.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
@@ -158,12 +157,26 @@ export default class Folder extends Component {
       });
   };
 
+  /* when modal opens */
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.folder_id) {
+      API.getFolder({ id: nextProps.folder_id }).then(result => {
+        this.setState({
+          season: result.data.data.season,
+          date: result.data.data.year,
+          layout: result.data.data.layout ? result.data.data.layout : [],
+          report: result.data.data.report
+        });
+      });
+    }
+  }
+
   render() {
     return (
       <div>
         <center>
           <Modal isActive={this.props.active}>
-            <ModalBackground data-value={'add'} onClick={this.closeModal} />
+            <ModalBackground data-value={'edit'} onClick={this.closeModal} />
             <ModalContent>
               <Notification
                 style={{ width: '75%', textAlign: 'left' }}
@@ -174,7 +187,7 @@ export default class Folder extends Component {
                     fontSize: '14px',
                     marginBottom: '20px'
                   }}>
-                  <strong>CREATE A NEW FOLDER</strong>
+                  <strong>EDIT FOLDER</strong>
                 </Heading>
                 <Columns style={{ marginBottom: '0px' }}>
                   <Column isSize="1/4">Name</Column>
@@ -324,18 +337,16 @@ export default class Folder extends Component {
                 </Columns>
                 {this.state.date.match(yearRegex) ? (
                   <Button
-                    data-value={'add'}
                     isSize="large"
                     style={{
                       ...style.add,
                       float: 'right'
                     }}
-                    onClick={this.addFolder}>
-                    <Icon className={'fa fa-plus fa-1x'} />
+                    onClick={this.editFolder}>
+                    <Icon className={'fa fa-edit fa-1x'} />
                   </Button>
                 ) : (
                   <Button
-                    data-value={'add'}
                     isSize="large"
                     style={{
                       ...style.add,
@@ -354,7 +365,7 @@ export default class Folder extends Component {
                     fontSize: '14px',
                     marginBottom: '20px'
                   }}>
-                  <strong>CREATE A NEW FOLDER</strong>
+                  <strong>EDIT FOLDER</strong>
                 </Heading>
                 <p style={{ margin: '10px 0px 10px 0px' }}>
                   <strong>Name:</strong>
@@ -505,8 +516,8 @@ export default class Folder extends Component {
                       style={{
                         ...style.add
                       }}
-                      onClick={this.addFolder}>
-                      <Icon className={'fa fa-plus fa-1x'} />
+                      onClick={this.editFolder}>
+                      <Icon className={'fa fa-edit fa-1x'} />
                     </Button>
                   ) : (
                     <Button
@@ -522,7 +533,7 @@ export default class Folder extends Component {
                 </center>
               </Notification>
             </ModalContent>
-            <ModalClose data-value={'add'} onClick={this.closeModal} />
+            <ModalClose data-value={'edit'} onClick={this.closeModal} />
           </Modal>
         </center>
       </div>
