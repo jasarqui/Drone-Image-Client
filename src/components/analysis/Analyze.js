@@ -118,6 +118,13 @@ const style = {
   },
   blueText: {
     color: '#77c9d4'
+  },
+  copyButton: {
+    float: 'right',
+    borderRadius: '50%',
+    backgroundColor: 'white',
+    color: '#015249',
+    marginBottom: '2px'
   }
 };
 
@@ -140,6 +147,92 @@ export default class Analyze extends Component {
       folders: []
     };
   }
+
+  /* this function will copy the metadata type
+  into all of the same type for different images */
+  copy = e => {
+    e.preventDefault();
+    var imageState = [...this.state.images];
+    var index = 0;
+
+    switch (e.currentTarget.value) {
+      case 'name': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].name = imageState[this.state.activeImage].name;
+        }
+        break;
+      }
+      case 'date': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].day = imageState[this.state.activeImage].day;
+        }
+        break;
+      }
+      case 'location': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].location =
+              imageState[this.state.activeImage].location;
+        }
+        break;
+      }
+      case 'drone': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].drone = imageState[this.state.activeImage].drone;
+        }
+        break;
+      }
+      case 'camera': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].camera =
+              imageState[this.state.activeImage].camera;
+        }
+        break;
+      }
+      case 'image': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].image = imageState[this.state.activeImage].image;
+        }
+        break;
+      }
+      case 'environment': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].env_condition =
+              imageState[this.state.activeImage].env_condition;
+        }
+        break;
+      }
+      case 'folder': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage) {
+            imageState[index].season =
+              imageState[this.state.activeImage].season;
+            imageState[index].date = imageState[this.state.activeImage].date;
+            this.checkFolder(index);
+          }
+        }
+        break;
+      }
+      case 'private': {
+        for (index = 0; index < imageState.length; index++) {
+          if (index !== this.state.activeImage)
+            imageState[index].private =
+              imageState[this.state.activeImage].private;
+        }
+        break;
+      }
+      default:
+        break;
+    }
+
+    this.setState({ images: imageState });
+  };
 
   openModal = e => {
     e.preventDefault();
@@ -234,7 +327,7 @@ export default class Analyze extends Component {
 
   changeSeason = e => {
     e.preventDefault();
-    this.onSeasonChange(e).then(this.checkFolder);
+    this.onSeasonChange(e).then(() => {this.checkFolder(this.state.activeImage)});
   };
 
   async onSeasonChange(e) {
@@ -244,7 +337,7 @@ export default class Analyze extends Component {
   }
 
   changeDate = e => {
-    this.onDateChange(e).then(this.checkFolder);
+    this.onDateChange(e).then(() => {this.checkFolder(this.state.activeImage)});
   };
 
   async onDateChange(e) {
@@ -253,25 +346,25 @@ export default class Analyze extends Component {
     this.setState({ images: imageState });
   }
 
-  checkFolder = () => {
+  checkFolder = index => {
     var imageState = [...this.state.images];
     /* check if folder generated is located in folders loaded */
-    imageState[this.state.activeImage].folder_exists =
+    imageState[index].folder_exists =
       this.state.folders.filter(
         folder =>
           folder.name ===
-          (this.state.images[this.state.activeImage].season === 'WET'
+          (this.state.images[index].season === 'WET'
             ? 'WS'
             : 'DS') +
-            this.state.images[this.state.activeImage].date
+            this.state.images[index].date
       ).length > 0
         ? true
         : false;
     /* change state name */
-    imageState[this.state.activeImage].folder_name =
-      (this.state.images[this.state.activeImage].season === 'WET'
+    imageState[index].folder_name =
+      (this.state.images[index].season === 'WET'
         ? 'WS'
-        : 'DS') + this.state.images[this.state.activeImage].date;
+        : 'DS') + this.state.images[index].date;
     this.setState({ images: imageState });
   };
 
@@ -376,44 +469,44 @@ export default class Analyze extends Component {
   /* saves one */
   save = index => {
     if (this.state.images[index].folder_exists) {
-    /* saves the image information */
-    var imageState = [...this.state.images];
-    imageState[index].saved = true;
-    this.setState({ images: imageState });
+      /* saves the image information */
+      var imageState = [...this.state.images];
+      imageState[index].saved = true;
+      this.setState({ images: imageState });
 
-    API.save({
-      fileURL: this.state.images[index].fileURL,
-      name: this.state.images[index].name,
-      date: this.state.images[index].day,
-      camera: this.state.images[index].camera,
-      drone: this.state.images[index].drone,
-      image: this.state.images[index].image,
-      location: this.state.images[index].location,
-      is_private: this.state.images[index].private,
-      env_cond: this.state.images[index].env_condition,
-      season: this.state.images[index].season,
-      attrib: this.state.images[index].attrib,
-      folder: this.state.images[index].folder_name,
-      userId: this.props.userId
-    })
-      .then(() => {
-        /* this is an alert on success */
-        Alert.success('Successfully saved image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
-        });
+      API.save({
+        fileURL: this.state.images[index].fileURL,
+        name: this.state.images[index].name,
+        date: this.state.images[index].day,
+        camera: this.state.images[index].camera,
+        drone: this.state.images[index].drone,
+        image: this.state.images[index].image,
+        location: this.state.images[index].location,
+        is_private: this.state.images[index].private,
+        env_cond: this.state.images[index].env_condition,
+        season: this.state.images[index].season,
+        attrib: this.state.images[index].attrib,
+        folder: this.state.images[index].folder_name,
+        userId: this.props.userId
       })
-      .catch(() => {
-        /* this is an alert on failure */
-        Alert.error('Failed to save image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
+        .then(() => {
+          /* this is an alert on success */
+          Alert.success('Successfully saved image.', {
+            beep: false,
+            position: 'top-right',
+            effect: 'jelly',
+            timeout: 2000
+          });
+        })
+        .catch(() => {
+          /* this is an alert on failure */
+          Alert.error('Failed to save image.', {
+            beep: false,
+            position: 'top-right',
+            effect: 'jelly',
+            timeout: 2000
+          });
         });
-      });
     } else {
       Alert.error('Must have a folder.', {
         beep: false,
@@ -452,7 +545,10 @@ export default class Analyze extends Component {
             userId: this.props.userId
           });
           imageState[index].saved = true;
-        } else if (!imageState[index].saved && imageState[index].folder_exists) {
+        } else if (
+          !imageState[index].saved &&
+          imageState[index].folder_exists
+        ) {
           Alert.error(`${imageState[index].name} must have a folder`, {
             beep: false,
             position: 'top-right',
@@ -819,7 +915,7 @@ export default class Analyze extends Component {
                         Image Data
                       </Heading>
                     </MessageHeader>
-                    <MessageBody>
+                    <MessageBody style={{ minHeight: '40vh' }}>
                       <Menu>
                         <MenuLabel>
                           Metadata{' '}
@@ -845,7 +941,16 @@ export default class Analyze extends Component {
                               <Columns isMultiline>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Name</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>Name</p>
+                                      <Button
+                                        value={'name'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="3/4">
                                       <Input
                                         type="text"
@@ -863,7 +968,16 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Date</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>Date</p>
+                                      <Button
+                                        value={'date'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="3/4">
                                       <Input
                                         type="date"
@@ -880,7 +994,16 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Location</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>Location</p>
+                                      <Button
+                                        value={'location'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="3/4">
                                       <Input
                                         type="text"
@@ -898,7 +1021,16 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Drone</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>Drone</p>
+                                      <Button
+                                        value={'drone'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="3/4">
                                       <Input
                                         type="text"
@@ -916,7 +1048,16 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Camera</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>Camera</p>
+                                      <Button
+                                        value={'camera'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="3/4">
                                       <Input
                                         type="text"
@@ -934,7 +1075,18 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column>
                                   <Columns>
-                                    <Column isSize="1/4">Image Type</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>
+                                        Image Type
+                                      </p>
+                                      <Button
+                                        value={'image'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="3/4">
                                       <Input
                                         type="text"
@@ -952,7 +1104,18 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Environment</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>
+                                        Environment
+                                      </p>
+                                      <Button
+                                        value={'environment'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="3/4">
                                       <Input
                                         type="text"
@@ -970,7 +1133,16 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Folder</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>Folder</p>
+                                      <Button
+                                        value={'folder'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column isSize="2/4">
                                       <Columns>
                                         <Column isSize="1/2">
@@ -1061,17 +1233,32 @@ export default class Analyze extends Component {
                                 </Column>
                                 <Column isSize="1/2">
                                   <Columns>
-                                    <Column isSize="1/4">Private</Column>
+                                    <Column isSize="1/4">
+                                      <p style={{ float: 'left' }}>Private</p>
+                                      <Button
+                                        value={'private'}
+                                        isSize={'small'}
+                                        style={style.copyButton}
+                                        onClick={this.copy}>
+                                        <Icon className={'fa fa-clone fa-sm'} />
+                                      </Button>
+                                    </Column>
                                     <Column
                                       isSize="3/4"
-                                      style={{ padding: '0px', paddingLeft: '5px' }}>
+                                      style={{
+                                        padding: '0px',
+                                        paddingLeft: '15px',
+                                        paddingTop: '15px'
+                                      }}>
                                       {this.state.images[this.state.activeImage]
                                         .private ? (
-                                        <a
-                                          href="."
-                                          onClick={this.switch}
-                                          style={style.removeUnderline}>
-                                          <i style={style.switchOn}>
+                                        <div>
+                                          <i
+                                            style={{
+                                              ...style.switchOn,
+                                              cursor: 'pointer'
+                                            }}
+                                            onClick={this.switch}>
                                             <Icon
                                               href="."
                                               className={
@@ -1080,13 +1267,16 @@ export default class Analyze extends Component {
                                               isSize="small"
                                             />
                                           </i>
-                                        </a>
+                                        </div>
                                       ) : (
-                                        <a
-                                          href="."
-                                          onClick={this.switch}
-                                          style={style.removeUnderline}>
-                                          <i style={style.switchOff}>
+                                        <div>
+                                          <i
+                                            style={{
+                                              ...style.switchOff,
+                                              cursor: 'pointer',
+                                              margin: '5px 0px 5px 0px'
+                                            }}
+                                            onClick={this.switch}>
                                             <Icon
                                               href="."
                                               className={
@@ -1095,7 +1285,7 @@ export default class Analyze extends Component {
                                               isSize="small"
                                             />
                                           </i>
-                                        </a>
+                                        </div>
                                       )}
                                     </Column>
                                   </Columns>

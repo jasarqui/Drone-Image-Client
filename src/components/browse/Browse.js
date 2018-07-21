@@ -273,7 +273,7 @@ export default class Browse extends Component {
 
   /* below are folder functions ================================== */
 
-  /* load the first images */
+  /* load the first folders */
   componentDidMount = () => this.newFolderSearch(1);
 
   /* reusable function for setting the page */
