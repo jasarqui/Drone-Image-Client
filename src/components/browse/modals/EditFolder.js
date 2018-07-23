@@ -165,11 +165,23 @@ export default class EditFolder extends Component {
           season: result.data.data.season,
           date: result.data.data.year,
           layout: result.data.data.layout ? result.data.data.layout : [],
-          report: result.data.data.report
+          report: URL.createObjectURL(
+            new File(
+              result.data.data.report.data,
+              (result.data.data.season === 'WET' ? 'WS' : 'DS') +
+                result.data.data.year +
+                ' Report',
+              { type: 'application/pdf', lastModified: Date.now() }
+            )
+          )
         });
       });
     }
   }
+
+  openPreview = file => {
+    window.open(file, 'Download');
+  };
 
   render() {
     return (
@@ -260,7 +272,13 @@ export default class EditFolder extends Component {
                     {this.state.report ? (
                       <small>
                         <p>
-                          {this.state.report.name}
+                          <a
+                            href={this.state.report}
+                            target={'_blank'}>
+                            <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                            {this.state.season === 'WET' ? 'WS' : 'DS'}
+                            {this.state.date}
+                          </a>
                           <a
                             href="."
                             onClick={this.removeReport}
@@ -276,7 +294,6 @@ export default class EditFolder extends Component {
                       <p />
                     )}
                     <Dropzone
-                      multiple={true}
                       onDrop={this.uploadReport}
                       style={{ ...style.flex, width: '100%' }}>
                       <small style={style.attach}>
@@ -301,7 +318,10 @@ export default class EditFolder extends Component {
                       return (
                         <p key={index}>
                           <small>
+                            <Icon className={'fa fa-file-o fa-1x'}/>
+                            <a href={file.preview} target={'_blank'}>
                             {file.name}
+                            </a>
                             <a
                               data-value={index}
                               href="."
@@ -430,9 +450,13 @@ export default class EditFolder extends Component {
                       <strong>Report</strong>
                     </p>
                     <p>
+                        {this.state.report ? (
                       <small>
-                        {this.state.report.name}
-                        {this.state.report.name ? (
+                        <a href={this.state.report} target={'_blank'}>
+                          <Icon className={'fa fa-file-pdf-o fa-1x'}/>
+                          {this.state.season === 'WET' ? 'WS' : 'DS'}
+                            {this.state.date}
+                            </a>
                           <a
                             href="."
                             onClick={this.removeReport}
@@ -442,10 +466,10 @@ export default class EditFolder extends Component {
                             }}>
                             <Icon className={'fa fa-times-circle fa-1x'} />
                           </a>
+                      </small>
                         ) : (
                           <small />
                         )}
-                      </small>
                     </p>
                     <Dropzone
                       multiple={true}
@@ -475,7 +499,10 @@ export default class EditFolder extends Component {
                       return (
                         <p key={index}>
                           <small>
+                            <a href={file.preview} target={'_blank'}>
+                            <Icon className={'fa fa-file-o fa-1x'}/>
                             {file.name}
+                            </a>
                             <a
                               data-value={index}
                               href="."

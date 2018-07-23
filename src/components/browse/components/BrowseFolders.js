@@ -194,9 +194,6 @@ export default class BrowseBody extends Component {
                             </small>
                           </div>
                           <div style={{ float: 'right' }}>
-                            <Button style={style.folderButton} isSize={'small'}>
-                              <Icon className={'fa fa-trash fa-sm'} />
-                            </Button>
                             <Button
                               style={style.folderButton}
                               isSize={'small'}
@@ -316,6 +313,12 @@ export default class BrowseBody extends Component {
               </PageList>
             </Pagination>
           </div>
+        ) : this.props.loadingFolders ? (
+          <p>
+            <small>
+              <Icon className={'fa fa-gear fa-sm fa-spin'} />Loading folders...
+            </small>
+          </p>
         ) : (
           <p>
             <small>There are no folders found.</small>

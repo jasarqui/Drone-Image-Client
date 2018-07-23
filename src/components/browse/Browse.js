@@ -27,7 +27,10 @@ export default class Browse extends Component {
       /* these are filters */
       myUpload: false, // default is false
       category: 'All Seasons', // values: all, category name
-      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data' // values: Public and Private Data, Public Data, Private Data
+      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data', // values: Public and Private Data, Public Data, Private Data
+      /* these are UX */
+      loadingFolders: true,
+      loadingImages: true
     };
   }
 
@@ -46,13 +49,15 @@ export default class Browse extends Component {
     e.preventDefault();
     this.setState({
       currentBrowse: 'folder',
-      currentPage: 1
+      currentPage: 1,
+      images: []
     });
     this.newFolderSearch(this.state.currentFolderPage);
   };
 
   /* reusable function for setting the page */
   newSearch = page => {
+    this.setState({ loadingImages: true });
     this.setPages(page).then(this.setImages);
   };
 
@@ -262,7 +267,7 @@ export default class Browse extends Component {
       folder_id: this.state.currentFolder,
       start: 6 * (this.state.currentPage - 1)
     }).then(result => {
-      this.setState({ images: result.data.data });
+      this.setState({ images: result.data.data, loadingImages: false });
     });
   };
 
@@ -284,6 +289,7 @@ export default class Browse extends Component {
 
   /* reusable function for setting the page */
   newFolderSearch = page => {
+    this.setState({ loadingFolders: true });
     this.setFolderPages(page).then(this.setFolders);
   };
 
@@ -311,7 +317,7 @@ export default class Browse extends Component {
       search: this.state.searchTag ? this.state.searchTag : null,
       start: 10 * (this.state.currentFolderPage - 1)
     }).then(result => {
-      this.setState({ folders: result.data.data });
+      this.setState({ folders: result.data.data, loadingFolders: false });
     });
   };
 
@@ -353,6 +359,7 @@ export default class Browse extends Component {
                     currentPage: this.state.currentFolderPage,
                     totalPage: this.state.totalFolderPages,
                     userID: this.props.userID,
+                    loadingFolders: this.state.loadingFolders,
                     /* pass the handlers here */
                     next: this.next,
                     prev: this.prev,
@@ -378,6 +385,7 @@ export default class Browse extends Component {
                     totalPage: this.state.totalPages,
                     userID: this.props.userID,
                     folder_id: this.state.currentFolder,
+                    loadingImages: this.state.loadingImages,
                     /* pass the handlers here */
                     closeFolder: this.closeFolder,
                     next: this.next,

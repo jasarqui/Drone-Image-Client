@@ -41,7 +41,7 @@ const style = {
     border: '1px solid #015249',
     color: 'white',
     margin: '0px 0px 0px 10px',
-    width: '40%'
+    width: '37%'
   },
   divider: { backgroundColor: '#015249' },
   headText: { marginLeft: '10px' }

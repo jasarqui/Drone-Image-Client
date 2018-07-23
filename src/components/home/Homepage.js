@@ -25,6 +25,9 @@ import {
 } from 'bloomer';
 /* import assets here */
 import DiaIcon from '../../assets/dia-logo-white.png';
+import RiceField from '../../assets/ricefield.jpg';
+import FadeInGroup from '../transition/FadeInGroup';
+import TrackVisibility from 'react-on-screen';
 
 /* create styles here */
 const style = {
@@ -71,23 +74,73 @@ export default class Homepage extends Component {
     return (
       <DocumentTitle title="DIA">
         <div>
-          <Hero style={style.greenBack} isSize={'medium'}>
+          <Hero style={style.greenBack} isSize={'large'}>
+            <Image
+              style={{
+                padding: '0',
+                margin: '0',
+                opacity: '0.3',
+                position: 'absolute',
+                width: '100%',
+                webkitMaskImage:
+                  'linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)), linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0))',
+                webkitMaskSize: '100% 51%',
+                webkitMaskRepeat: 'no-repeat',
+                webkitMaskPosition: 'top, bottom'
+              }}
+              src={RiceField}
+            />
             <HeroBody>
               <Media>
                 <MediaLeft>
-                  <Image src={DiaIcon} isSize="64x64" />
+                  <TrackVisibility once>
+                    {({ isVisible }) =>
+                      isVisible ? (
+                        <FadeInGroup
+                          transitionAppear={isVisible ? true : false}>
+                          <Image src={DiaIcon} isSize="64x64" />
+                        </FadeInGroup>
+                      ) : (
+                        <Image
+                          style={{ opacity: 0 }}
+                          src={DiaIcon}
+                          isSize="64x64"
+                        />
+                      )
+                    }
+                  </TrackVisibility>
                 </MediaLeft>
                 <MediaContent>
-                  <Content style={style.whiteText}>
-                    <Title isSize={3} style={style.whiteText}>
-                      Drone Image Analysis
-                    </Title>
-                    <Subtitle isSize={6} style={style.whiteText}>
-                      A web application that uses deep learning to process drone
-                      images and extract important information about rice
-                      fields.
-                    </Subtitle>
-                  </Content>
+                  <TrackVisibility once>
+                    {({ isVisible }) =>
+                      isVisible ? (
+                        <FadeInGroup
+                          transitionAppear={isVisible ? true : false}>
+                          <Content style={style.whiteText}>
+                            <Title isSize={3} style={style.whiteText}>
+                              Drone Image Analysis
+                            </Title>
+                            <Subtitle isSize={6} style={style.whiteText}>
+                              A web application that uses deep learning to
+                              process drone images and extract important
+                              information about rice fields.
+                            </Subtitle>
+                          </Content>
+                        </FadeInGroup>
+                      ) : (
+                        <Content style={{ ...style.whiteText, opacity: 0 }}>
+                          <Title isSize={3} style={style.whiteText}>
+                            Drone Image Analysis
+                          </Title>
+                          <Subtitle isSize={6} style={style.whiteText}>
+                            A web application that uses deep learning to process
+                            drone images and extract important information about
+                            rice fields.
+                          </Subtitle>
+                        </Content>
+                      )
+                    }
+                  </TrackVisibility>
                 </MediaContent>
               </Media>
             </HeroBody>
@@ -113,7 +166,7 @@ export default class Homepage extends Component {
                           </Heading>
                         </TabLink>
                       </Tab>
-                      <Tab
+                      {/*<Tab
                         isActive={
                           this.state.activeTab === 'how' ? true : false
                         }>
@@ -129,7 +182,7 @@ export default class Homepage extends Component {
                             <strong>HOW</strong>
                           </Heading>
                         </TabLink>
-                      </Tab>
+                        </Tab>*/}
                     </TabList>
                   </center>
                 </Container>

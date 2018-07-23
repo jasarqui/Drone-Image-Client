@@ -402,6 +402,12 @@ export default class BrowseFolders extends Component {
               </PageList>
             </Pagination>
           </div>
+        ) : this.props.loadingImages ? (
+          <p>
+            <small>
+              <Icon className={'fa fa-gear fa-sm fa-spin'} />Loading images...
+            </small>
+          </p>
         ) : (
           <p>
             <small>There are no images found.</small>

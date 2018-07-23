@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import Alert from 'react-s-alert';
 import Dropzone from 'react-dropzone';
+import ReactTooltip from 'react-tooltip';
 /* import bulma components */
 import {
   Button,
@@ -174,7 +175,15 @@ export default class Folder extends Component {
                     fontSize: '14px',
                     marginBottom: '20px'
                   }}>
-                  <strong>CREATE A NEW FOLDER</strong>
+                  <strong>
+                    CREATE A NEW FOLDER{' '}
+                    <Icon
+                      data-tip={
+                        "Ctrl+Click uploaded files if you're using Google Chrome"
+                      }
+                      className={'fa fa-info fa-1x'}
+                    />
+                  </strong>
                 </Heading>
                 <Columns style={{ marginBottom: '0px' }}>
                   <Column isSize="1/4">Name</Column>
@@ -247,7 +256,10 @@ export default class Folder extends Component {
                     {this.state.report ? (
                       <small>
                         <p>
-                          {this.state.report.name}
+                          <a href={this.state.report.preview} target={'_blank'}>
+                          <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                            {this.state.report.name}
+                          </a>
                           <a
                             href="."
                             onClick={this.removeReport}
@@ -263,7 +275,6 @@ export default class Folder extends Component {
                       <p />
                     )}
                     <Dropzone
-                      multiple={true}
                       onDrop={this.uploadReport}
                       style={{ ...style.flex, width: '100%' }}>
                       <small style={style.attach}>
@@ -288,7 +299,10 @@ export default class Folder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            {file.name}
+                            <a href={file.preview} target={'_blank'}>
+                            <Icon className={'fa fa-file-o fa-1x'} />
+                              {file.name}
+                            </a>
                             <a
                               data-value={index}
                               href="."
@@ -354,7 +368,15 @@ export default class Folder extends Component {
                     fontSize: '14px',
                     marginBottom: '20px'
                   }}>
-                  <strong>CREATE A NEW FOLDER</strong>
+                  <strong>
+                    CREATE A NEW FOLDER{' '}
+                    <Icon
+                      data-tip={
+                        "Ctrl+Click uploaded files if you're using Google Chrome"
+                      }
+                      className={'fa fa-info fa-1x'}
+                    />
+                  </strong>
                 </Heading>
                 <p style={{ margin: '10px 0px 10px 0px' }}>
                   <strong>Name:</strong>
@@ -418,10 +440,13 @@ export default class Folder extends Component {
                     <p>
                       <strong>Report</strong>
                     </p>
-                    <p>
-                      <small>
-                        {this.state.report.name}
-                        {this.state.report.name ? (
+                    <small>
+                      {this.state.report.name ? (
+                        <p>
+                          <a href={this.state.report.preview} target={'_blank'}>
+                          <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                            {this.state.report.name}
+                          </a>
                           <a
                             href="."
                             onClick={this.removeReport}
@@ -431,13 +456,12 @@ export default class Folder extends Component {
                             }}>
                             <Icon className={'fa fa-times-circle fa-1x'} />
                           </a>
-                        ) : (
-                          <small />
-                        )}
-                      </small>
-                    </p>
+                        </p>
+                      ) : (
+                        <small />
+                      )}
+                    </small>
                     <Dropzone
-                      multiple={true}
                       onDrop={this.uploadReport}
                       style={{ ...style.flex, width: '50%' }}>
                       <small style={style.attach}>
@@ -464,7 +488,10 @@ export default class Folder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            {file.name}
+                            <a href={file.preview} target={'_blank'}>
+                            <Icon className={'fa fa-file-o fa-1x'} />
+                              {file.name}
+                            </a>
                             <a
                               data-value={index}
                               href="."
@@ -524,6 +551,7 @@ export default class Folder extends Component {
             </ModalContent>
             <ModalClose data-value={'add'} onClick={this.closeModal} />
           </Modal>
+          <ReactTooltip effect={'solid'} place={'bottom'} />
         </center>
       </div>
     );

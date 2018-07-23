@@ -55,6 +55,15 @@ const style = {
   whiteText: {
     color: 'white'
   },
+  greenText: {
+    color: '#57bc90'
+  },
+  redText: {
+    color: '#ef6f6c'
+  },
+  blueText: {
+    color: '#77c9d4'
+  },
   dataHeader: {
     backgroundColor: '#015249',
     color: 'white',
@@ -110,10 +119,18 @@ export default class View extends Component {
       camera: '',
       season: '',
       private: '',
+      year: '',
+      drone: '',
+      location: '',
+      image: '',
+      env_condition: '',
       date: '',
       archived: '',
       attrib: [],
+      folder_name: '',
       /* these are for UX */
+      folders: [],
+      folder_exists: true,
       metadataOpen: true,
       attribOpen: true,
       archiveModalOpen: false,
@@ -187,9 +204,56 @@ export default class View extends Component {
     this.setState({ camera: e.target.value });
   };
 
+  changeDate = e => {
+    this.setState({ date: e.target.value });
+  };
+
   changeSeason = e => {
     e.preventDefault();
+    this.onChangeSeason(e).then(this.checkFolder);
+  };
+
+  async onChangeSeason(e) {
     this.setState({ season: e.currentTarget.dataset.value });
+  }
+
+  changeYear = e => {
+    this.onChangeYear(e).then(this.checkFolder);
+  };
+
+  async onChangeYear(e) {
+    this.setState({ year: e.target.value });
+  }
+
+  checkFolder = () => {
+    /* check if folder generated is located in folders loaded */
+    this.state.folders.filter(
+      folder =>
+        folder.name ===
+        (this.state.season === 'WET' ? 'WS' : 'DS') + this.state.year
+    ).length > 0
+      ? this.setState({ folder_exists: true })
+      : this.setState({ folder_exists: false });
+    /* change state name */
+    this.setState({
+      folder_name: (this.state.season === 'WET' ? 'WS' : 'DS') + this.state.year
+    });
+  };
+
+  changeDrone = e => {
+    this.setState({ drone: e.target.value });
+  };
+
+  changeImage = e => {
+    this.setState({ image: e.target.value });
+  };
+
+  changeLocation = e => {
+    this.setState({ location: e.target.value });
+  };
+
+  changeEnvironment = e => {
+    this.setState({ env_condition: e.target.value });
   };
 
   /* when user logs out */
@@ -202,9 +266,13 @@ export default class View extends Component {
       this.props.changePage('browse');
   }
 
-  /* loads the image info */
   componentDidMount = () => {
+    /* loads the image info */
     this.loadInfo('all');
+    /* load the folders */
+    API.getAllFolders().then(result => {
+      this.setState({ folders: result.data.data });
+    });
   };
 
   /* reusable load info */
@@ -215,12 +283,18 @@ export default class View extends Component {
           fileURL: result.data.data.filepath,
           name: result.data.data.name,
           camera: result.data.data.camera,
+          drone: result.data.data.drone,
+          location: result.data.data.location,
+          image: result.data.data.image,
           season: result.data.data.season,
+          env_condition: result.data.data.env_cond,
           private: result.data.data.private,
           date: result.data.data.date,
           attrib: result.data.data.data,
           archived: result.data.data.archived,
-          userID: result.data.data.user_id
+          userID: result.data.data.user_id,
+          year: result.data.data.folder.year,
+          folder_name: result.data.data.folder.name
         });
       });
     } else {
@@ -233,16 +307,10 @@ export default class View extends Component {
   };
 
   /* analyzes one */
-  analyzeImage = e => {
+  analyze = e => {
     e.preventDefault();
     /* this is where we put the glue */
 
-    /* this should only get the date excluding the time */
-    this.setState({
-      date: new Date(Date.now()).toLocaleString().split(',')[0]
-    });
-
-    // placeholder, needs glue
     /* this is an alert on success */
     Alert.success('Successfully analyzed image.', {
       beep: false,
@@ -255,33 +323,47 @@ export default class View extends Component {
   /* saves one */
   save = e => {
     e.preventDefault();
-    API.update({
-      name: this.state.name,
-      camera: this.state.camera,
-      date: this.state.date ? this.state.date : 'unanalyzed',
-      is_private: this.state.private,
-      season: this.state.season,
-      attrib: this.state.attrib,
-      id: this.props.imageID
-    })
-      .then(() => {
-        /* this is an alert on success */
-        Alert.success('Successfully saved image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
-        });
+    if (this.state.folder_exists) {
+      API.update({
+        name: this.state.name,
+        date: this.state.date,
+        camera: this.state.camera,
+        drone: this.state.drone,
+        image: this.state.image,
+        location: this.state.location,
+        is_private: this.state.private,
+        env_cond: this.state.env_condition,
+        season: this.state.season,
+        attrib: this.state.attrib,
+        folder: this.state.folder_name,
+        id: this.props.imageID
       })
-      .catch(() => {
-        /* this is an alert on failure */
-        Alert.error('Failed to save image.', {
-          beep: false,
-          position: 'top-right',
-          effect: 'jelly',
-          timeout: 2000
+        .then(() => {
+          /* this is an alert on success */
+          Alert.success('Successfully saved image.', {
+            beep: false,
+            position: 'top-right',
+            effect: 'jelly',
+            timeout: 2000
+          });
+        })
+        .catch(() => {
+          /* this is an alert on failure */
+          Alert.error('Failed to save image.', {
+            beep: false,
+            position: 'top-right',
+            effect: 'jelly',
+            timeout: 2000
+          });
         });
+    } else {
+      Alert.error('Must have a folder.', {
+        beep: false,
+        position: 'top-right',
+        effect: 'jelly',
+        timeout: 2000
       });
+    }
   };
 
   render() {
@@ -489,170 +571,328 @@ export default class View extends Component {
                 style={{ borderRight: '2px solid #015249' }}>
                 <Menu>
                   <MenuLabel style={{ marginLeft: '10px' }}>
-                    Metadata
-                    <a
-                      href="."
-                      onClick={this.handleMeta}
-                      style={style.removeUnderline}>
-                      <Icon
-                        className={
-                          this.state.metadataOpen
-                            ? 'fa fa-angle-up'
-                            : 'fa fa-angle-down'
-                        }
-                        isSize="small"
-                      />
-                    </a>
+                    IMAGE INFO
                   </MenuLabel>
-                  {this.state.metadataOpen ? (
-                    <MenuList>
-                      <li>
-                        <MenuLink style={style.removeUnderline}>
-                          <Columns>
-                            <Column isSize="1/4">Name</Column>
-                            <Column isSize="3/4">
-                              {this.state.userID &&
-                              this.props.userID === this.state.userID ? (
-                                <Input
-                                  type="text"
-                                  isSize="small"
-                                  value={this.state.name}
-                                  onChange={this.changeName}
-                                />
-                              ) : !this.state.userID ? (
-                                <Input
-                                  type="text"
-                                  isSize="small"
-                                  value={this.state.name}
-                                  onChange={this.changeName}
-                                />
-                              ) : (
-                                this.state.name
-                              )}
-                            </Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                      <li>
-                        <MenuLink style={style.removeUnderline}>
-                          <Columns>
-                            <Column isSize="1/4">Camera</Column>
-                            <Column isSize="3/4">
-                              {this.state.userID &&
-                              this.props.userID === this.state.userID ? (
-                                <Input
-                                  type="text"
-                                  isSize="small"
-                                  value={this.state.camera}
-                                  onChange={this.changeCam}
-                                />
-                              ) : !this.state.userID ? (
-                                <Input
-                                  type="text"
-                                  isSize="small"
-                                  value={this.state.camera}
-                                  onChange={this.changeCam}
-                                />
-                              ) : (
-                                this.state.camera
-                              )}
-                            </Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                      <MenuLink style={style.removeUnderline}>
-                        <Columns>
-                          <Column isSize="1/4">Season</Column>
-                          <Column isSize="3/4">
-                            <Button
-                              data-value={'WET'}
+                  <MenuList>
+                    <MenuLink style={style.removeUnderline}>
+                      <Columns>
+                        <Column isSize="1/4">Name</Column>
+                        <Column isSize="3/4">
+                          {this.state.userID &&
+                          this.props.userID === this.state.userID ? (
+                            <Input
+                              type="text"
+                              isSize="small"
+                              value={this.state.name}
+                              onChange={this.changeName}
+                            />
+                          ) : !this.state.userID ? (
+                            <Input
+                              type="text"
+                              isSize="small"
+                              value={this.state.name}
+                              onChange={this.changeName}
+                            />
+                          ) : (
+                            this.state.name
+                          )}
+                        </Column>
+                      </Columns>
+                    </MenuLink>
+                    <MenuLink style={style.removeUnderline}>
+                      <Columns>
+                        <Column isSize="1/4">Date</Column>
+                        <Column isSize="3/4">
+                          {this.state.userID &&
+                          this.props.userID === this.state.userID ? (
+                            <Input
+                              type="date"
+                              isSize="small"
+                              value={this.state.date}
+                              onChange={this.changeDate}
+                            />
+                          ) : !this.state.userID ? (
+                            <Input
+                              type="date"
+                              isSize="small"
+                              value={this.state.date}
+                              onChange={this.changeDate}
+                            />
+                          ) : (
+                            this.state.date
+                          )}
+                        </Column>
+                      </Columns>
+                    </MenuLink>
+                    <MenuLink style={style.removeUnderline}>
+                      <Columns>
+                        <Column isSize="1/4">Folder</Column>
+                        <Column isSize="3/4">
+                          {this.state.userID &&
+                          this.props.userID === this.state.userID ? (
+                            <Columns isMultiline>
+                              <Column isSize="1/2">
+                                <Button
+                                  data-value={'WET'}
+                                  onClick={
+                                    this.state.userID &&
+                                    this.state.userID === this.props.userID
+                                      ? this.changeSeason
+                                      : !this.state.userID
+                                        ? this.changeSeason
+                                        : e => e.preventDefault()
+                                  }
+                                  isSize={'small'}
+                                  style={
+                                    this.state.season === 'WET'
+                                      ? style.activeButton
+                                      : {}
+                                  }>
+                                  <Icon
+                                    className={'fa fa-umbrella fa-1x'}
+                                    style={{ marginRight: '5px' }}
+                                  />{' '}
+                                  WET
+                                </Button>
+                                <Button
+                                  data-value={'DRY'}
+                                  onClick={
+                                    this.state.userID &&
+                                    this.state.userID === this.props.userID
+                                      ? this.changeSeason
+                                      : !this.state.userID
+                                        ? this.changeSeason
+                                        : e => e.preventDefault()
+                                  }
+                                  isSize={'small'}
+                                  style={
+                                    this.state.season === 'DRY'
+                                      ? style.activeButton
+                                      : {}
+                                  }>
+                                  <Icon
+                                    className={'fa fa-fire fa-1x'}
+                                    style={{ marginRight: '5px' }}
+                                  />{' '}
+                                  DRY
+                                </Button>
+                              </Column>
+                              <Column isSize="1/2">
+                                {this.state.userID &&
+                                this.props.userID === this.state.userID ? (
+                                  <Input
+                                    type="text"
+                                    isSize="small"
+                                    value={this.state.year}
+                                    onChange={this.changeYear}
+                                  />
+                                ) : !this.state.userID ? (
+                                  <Input
+                                    type="text"
+                                    isSize="small"
+                                    value={this.state.year}
+                                    onChange={this.changeYear}
+                                  />
+                                ) : (
+                                  this.state.year
+                                )}
+                              </Column>
+                              <Column isSize="1/2">
+                                <Button
+                                  data-value={'WET'}
+                                  onClick={
+                                    this.state.userID &&
+                                    this.state.userID === this.props.userID
+                                      ? this.changeSeason
+                                      : !this.state.userID
+                                        ? this.changeSeason
+                                        : e => e.preventDefault()
+                                  }
+                                  isSize={'small'}
+                                  style={
+                                    this.state.season === 'WET'
+                                      ? style.activeButton
+                                      : {}
+                                  }>
+                                  <Icon
+                                    className={'fa fa-umbrella fa-1x'}
+                                    style={{ marginRight: '5px' }}
+                                  />{' '}
+                                  WET
+                                </Button>
+                                <Button
+                                  data-value={'DRY'}
+                                  onClick={
+                                    this.state.userID &&
+                                    this.state.userID === this.props.userID
+                                      ? this.changeSeason
+                                      : !this.state.userID
+                                        ? this.changeSeason
+                                        : e => e.preventDefault()
+                                  }
+                                  isSize={'small'}
+                                  style={
+                                    this.state.season === 'DRY'
+                                      ? style.activeButton
+                                      : {}
+                                  }>
+                                  <Icon
+                                    className={'fa fa-fire fa-1x'}
+                                    style={{ marginRight: '5px' }}
+                                  />{' '}
+                                  DRY
+                                </Button>
+                              </Column>
+                            </Columns>
+                          ) : !this.state.userID ? (
+                            <Columns isMultiline>
+                              <Column isSize="1/2">
+                                <Button
+                                  data-value={'WET'}
+                                  onClick={
+                                    this.state.userID &&
+                                    this.state.userID === this.props.userID
+                                      ? this.changeSeason
+                                      : !this.state.userID
+                                        ? this.changeSeason
+                                        : e => e.preventDefault()
+                                  }
+                                  isSize={'small'}
+                                  style={
+                                    this.state.season === 'WET'
+                                      ? style.activeButton
+                                      : {}
+                                  }>
+                                  <Icon
+                                    className={'fa fa-umbrella fa-1x'}
+                                    style={{ marginRight: '5px' }}
+                                  />{' '}
+                                  WET
+                                </Button>
+                                <Button
+                                  data-value={'DRY'}
+                                  onClick={
+                                    this.state.userID &&
+                                    this.state.userID === this.props.userID
+                                      ? this.changeSeason
+                                      : !this.state.userID
+                                        ? this.changeSeason
+                                        : e => e.preventDefault()
+                                  }
+                                  isSize={'small'}
+                                  style={
+                                    this.state.season === 'DRY'
+                                      ? style.activeButton
+                                      : {}
+                                  }>
+                                  <Icon
+                                    className={'fa fa-fire fa-1x'}
+                                    style={{ marginRight: '5px' }}
+                                  />{' '}
+                                  DRY
+                                </Button>
+                              </Column>
+                              <Column isSize="1/2">
+                                {this.state.userID &&
+                                this.props.userID === this.state.userID ? (
+                                  <Input
+                                    type="text"
+                                    isSize="small"
+                                    value={this.state.year}
+                                    onChange={this.changeYear}
+                                  />
+                                ) : !this.state.userID ? (
+                                  <Input
+                                    type="text"
+                                    isSize="small"
+                                    value={this.state.year}
+                                    onChange={this.changeYear}
+                                  />
+                                ) : (
+                                  this.state.year
+                                )}
+                              </Column>
+                              <Column
+                                isSize="1/2"
+                                style={{ paddingTop: '0px' }}>
+                                <small>
+                                  {this.state.folder_exists === '' ? (
+                                    <p style={style.blueText}>
+                                      <Icon
+                                        className={'fa fa-info-circle fa-xs'}
+                                      />Required
+                                    </p>
+                                  ) : this.state.folder_exists ? (
+                                    <p style={style.greenText}>
+                                      <Icon
+                                        className={'fa fa-check-circle fa-xs'}
+                                      />Exists
+                                    </p>
+                                  ) : (
+                                    <p style={style.redText}>
+                                      <Icon
+                                        className={'fa fa-times-circle fa-xs'}
+                                      />Doesn't Exist
+                                    </p>
+                                  )}
+                                </small>
+                              </Column>
+                            </Columns>
+                          ) : (
+                            this.state.folder_name
+                          )}
+                        </Column>
+                      </Columns>
+                    </MenuLink>
+                    <MenuLink style={style.removeUnderline}>
+                      <Columns>
+                        <Column isSize="1/4">Private</Column>
+                        <Column isSize="3/4" style={{ paddingLeft: '20px' }}>
+                          {this.state.private ? (
+                            <i
+                              style={{
+                                ...style.switchOn,
+                                cursor: 'pointer'
+                              }}
                               onClick={
                                 this.state.userID &&
-                                this.state.userID === this.props.userID
-                                  ? this.changeSeason
+                                this.props.userID === this.state.userID
+                                  ? this.switch
                                   : !this.state.userID
-                                    ? this.changeSeason
+                                    ? this.switch
                                     : e => e.preventDefault()
-                              }
-                              isSize={'small'}
-                              style={
-                                this.state.season === 'WET'
-                                  ? style.activeButton
-                                  : {}
                               }>
                               <Icon
-                                className={'fa fa-umbrella fa-1x'}
-                                style={{ marginRight: '5px' }}
-                              />{' '}
-                              WET
-                            </Button>
-                            <Button
-                              data-value={'DRY'}
+                                href="."
+                                className={'fa fa-toggle-on fa-lg'}
+                                isSize="small"
+                              />
+                            </i>
+                          ) : (
+                            <i
+                              style={{
+                                ...style.switchOff,
+                                cursor: 'pointer'
+                              }}
                               onClick={
                                 this.state.userID &&
-                                this.state.userID === this.props.userID
-                                  ? this.changeSeason
+                                this.props.userID === this.state.userID
+                                  ? this.switch
                                   : !this.state.userID
-                                    ? this.changeSeason
+                                    ? this.switch
                                     : e => e.preventDefault()
-                              }
-                              isSize={'small'}
-                              style={
-                                this.state.season === 'DRY'
-                                  ? style.activeButton
-                                  : {}
                               }>
                               <Icon
-                                className={'fa fa-fire fa-1x'}
-                                style={{ marginRight: '5px' }}
-                              />{' '}
-                              DRY
-                            </Button>
-                          </Column>
-                        </Columns>
-                      </MenuLink>
-                      <li>
-                        <MenuLink
-                          style={style.removeUnderline}
-                          onClick={this.state.userID && this.props.userID === this.state.userID ? this.switch : !this.state.userID ? this.switch : e => e.preventDefault()}>
-                          <Columns>
-                            <Column isSize="1/4">Private</Column>
-                            <Column
-                              isSize="3/4"
-                              style={{ paddingLeft: '20px' }}>
-                              {this.state.private ? (
-                                <i style={style.switchOn}>
-                                  <Icon
-                                    href="."
-                                    className={'fa fa-toggle-on fa-lg'}
-                                    isSize="small"
-                                  />
-                                </i>
-                              ) : (
-                                <i style={style.switchOff}>
-                                  <Icon
-                                    href="."
-                                    className={'fa fa-toggle-off fa-lg'}
-                                    isSize="small"
-                                  />
-                                </i>
-                              )}
-                            </Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                      <li>
-                        <MenuLink style={style.removeUnderline}>
-                          <Columns>
-                            <Column isSize="1/4">Date</Column>
-                            <Column isSize="3/4">{this.state.date}</Column>
-                          </Columns>
-                        </MenuLink>
-                      </li>
-                    </MenuList>
-                  ) : (
-                    <div />
-                  )}
+                                href="."
+                                className={'fa fa-toggle-off fa-lg'}
+                                isSize="small"
+                              />
+                            </i>
+                          )}
+                        </Column>
+                      </Columns>
+                    </MenuLink>
+                  </MenuList>
                 </Menu>
               </Column>
               <Column isSize={'2/3'} style={style.imageColumn}>
@@ -674,6 +914,157 @@ export default class View extends Component {
                   </MessageHeader>
                   <MessageBody>
                     <Menu style={{ minHeight: '35vh' }}>
+                      <MenuLabel>
+                        Metadata
+                        <a
+                          href="."
+                          onClick={this.handleMeta}
+                          style={style.removeUnderline}>
+                          <Icon
+                            className={
+                              this.state.metadataOpen
+                                ? 'fa fa-angle-up'
+                                : 'fa fa-angle-down'
+                            }
+                            isSize="small"
+                          />
+                        </a>
+                      </MenuLabel>
+                      {this.state.metadataOpen ? (
+                        <MenuList>
+                          <MenuLink style={style.removeUnderline}>
+                            <Columns isMultiline>
+                              <Column isSize="1/2">
+                                <Columns>
+                                  <Column isSize="1/4">Location</Column>
+                                  <Column isSize="3/4">
+                                    {this.state.userID &&
+                                    this.props.userID === this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.location}
+                                        onChange={this.changeLocation}
+                                      />
+                                    ) : !this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.location}
+                                        onChange={this.changeLocation}
+                                      />
+                                    ) : (
+                                      this.state.location
+                                    )}
+                                  </Column>
+                                </Columns>
+                              </Column>
+                              <Column isSize="1/2">
+                                <Columns>
+                                  <Column isSize="1/4">Drone</Column>
+                                  <Column isSize="3/4">
+                                    {this.state.userID &&
+                                    this.props.userID === this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.drone}
+                                        onChange={this.changeDrone}
+                                      />
+                                    ) : !this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.drone}
+                                        onChange={this.changeDrone}
+                                      />
+                                    ) : (
+                                      this.state.drone
+                                    )}
+                                  </Column>
+                                </Columns>
+                              </Column>
+                              <Column isSize="1/2">
+                                <Columns>
+                                  <Column isSize="1/4">Camera</Column>
+                                  <Column isSize="3/4">
+                                    {this.state.userID &&
+                                    this.props.userID === this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.camera}
+                                        onChange={this.changeCam}
+                                      />
+                                    ) : !this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.camera}
+                                        onChange={this.changeCam}
+                                      />
+                                    ) : (
+                                      this.state.camera
+                                    )}
+                                  </Column>
+                                </Columns>
+                              </Column>
+                              <Column isSize="1/2">
+                                <Columns>
+                                  <Column isSize="1/4">Image Type</Column>
+                                  <Column isSize="3/4">
+                                    {this.state.userID &&
+                                    this.props.userID === this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.image}
+                                        onChange={this.changeImage}
+                                      />
+                                    ) : !this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.image}
+                                        onChange={this.changeImage}
+                                      />
+                                    ) : (
+                                      this.state.image
+                                    )}
+                                  </Column>
+                                </Columns>
+                              </Column>
+                              <Column isSize="1/2">
+                                <Columns>
+                                  <Column isSize="1/4">Environment</Column>
+                                  <Column isSize="3/4">
+                                    {this.state.userID &&
+                                    this.props.userID === this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.env_condition}
+                                        onChange={this.changeEnvironment}
+                                      />
+                                    ) : !this.state.userID ? (
+                                      <Input
+                                        type="text"
+                                        isSize="small"
+                                        value={this.state.env_condition}
+                                        onChange={this.changeEnvironment}
+                                      />
+                                    ) : (
+                                      this.state.env_condition
+                                    )}
+                                  </Column>
+                                </Columns>
+                              </Column>
+                            </Columns>
+                          </MenuLink>
+                        </MenuList>
+                      ) : (
+                        <div />
+                      )}
                       <MenuLabel>
                         Attributes{' '}
                         <a
