@@ -171,7 +171,7 @@ export default class About extends Component {
                               <Icon className={'fa fa-pagelines fa-3x'} />
                             </MediaLeft>
                             <MediaContent style={{ marginLeft: '10%' }}>
-                              be able to analyze rice filed images taken from
+                              be able to analyze rice field images taken from
                               drones and extract important information from them
                             </MediaContent>
                           </Media>
@@ -182,7 +182,7 @@ export default class About extends Component {
                             <Icon className={'fa fa-pagelines fa-3x'} />
                           </MediaLeft>
                           <MediaContent style={{ marginLeft: '10%' }}>
-                            be able to analyze rice filed images taken from
+                            be able to analyze rice field images taken from
                             drones and extract important information from them
                           </MediaContent>
                         </Media>
