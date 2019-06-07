@@ -15,6 +15,11 @@ export const update = info => {
   return axios.put('/img/update', info);
 };
 
+// segments an image
+export const segment = file => {
+  return axios.post('/img/segment', file);
+};
+
 // gets the total number of pages for pagination
 export const countPages = ({
   myUpload,

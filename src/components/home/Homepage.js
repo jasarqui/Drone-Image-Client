@@ -46,7 +46,7 @@ const style = {
     backgroundColor: '#015249'
   },
   marginBody: {
-    margin: '50px 0px 50px 0px',
+    margin: '0px 0px 50px 0px',
     color: 'white'
   },
   irriLogo: {
@@ -82,11 +82,11 @@ export default class Homepage extends Component {
                 opacity: '0.3',
                 position: 'absolute',
                 width: '100%',
-                webkitMaskImage:
+                WebkitMaskImage:
                   'linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0)), linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0))',
-                webkitMaskSize: '100% 51%',
-                webkitMaskRepeat: 'no-repeat',
-                webkitMaskPosition: 'top, bottom'
+                WebkitMaskSize: '100% 51%',
+                WebkitMaskRepeat: 'no-repeat',
+                WebkitMaskPosition: 'top, bottom'
               }}
               src={RiceField}
             />
@@ -166,7 +166,7 @@ export default class Homepage extends Component {
                           </Heading>
                         </TabLink>
                       </Tab>
-                      {/*<Tab
+                      <Tab
                         isActive={
                           this.state.activeTab === 'how' ? true : false
                         }>
@@ -182,7 +182,7 @@ export default class Homepage extends Component {
                             <strong>HOW</strong>
                           </Heading>
                         </TabLink>
-                        </Tab>*/}
+                        </Tab>
                     </TabList>
                   </center>
                 </Container>
@@ -199,7 +199,7 @@ export default class Homepage extends Component {
                   <a target={'_blank'} href={'http://irri.org/'}>
                     <img
                       alt={'irri'}
-                      src={'http://irri.org/images/IRRI-logo-social.png'}
+                      src={'https://c1.staticflickr.com/3/2880/9364222880_523d753019_b.jpg'}
                       style={style.irriLogo}
                     />
                   </a>

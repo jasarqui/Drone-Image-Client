@@ -1,13 +1,13 @@
 /* import React components here */
-import React, { Component } from 'react';
-import DocumentTitle from 'react-document-title';
-import Dropzone from 'react-dropzone';
-import Alert from 'react-s-alert';
-import ReactTooltip from 'react-tooltip';
-import { Carousel } from 'react-responsive-carousel';
-import RemoveModal from './modals/RemoveModal';
-import SaveModal from './modals/SaveModal';
-import AnalyzeModal from './modals/AnalyzeModal';
+import React, { Component } from "react";
+import DocumentTitle from "react-document-title";
+import Dropzone from "react-dropzone";
+import Alert from "react-s-alert";
+import ReactTooltip from "react-tooltip";
+import { Carousel } from "react-responsive-carousel";
+import RemoveModal from "./modals/RemoveModal";
+import SaveModal from "./modals/SaveModal";
+import AnalyzeModal from "./modals/AnalyzeModal";
 /* import bulma components */
 import {
   Columns,
@@ -24,113 +24,108 @@ import {
   Input,
   Heading,
   Button
-} from 'bloomer';
+} from "bloomer";
 /* import api here */
-import * as API from '../../api';
-/* import misc components here */
-import request from 'superagent';
+import * as API from "../../api";
 
 /* create styles here */
 const style = {
   marginCard: {
-    margin: '30px',
-    borderRadius: '25px'
+    margin: "30px",
+    borderRadius: "25px"
   },
   icon: {
-    marginRight: '3px'
+    marginRight: "3px"
   },
   removeUnderline: {
-    textDecoration: 'none'
+    textDecoration: "none"
   },
   imageMargin: {
-    margin: '5px'
+    margin: "5px"
   },
   switchOn: {
-    color: '#57bc90',
-    margin: '0px',
-    padding: '0px',
-    textDecoration: 'none'
+    color: "#57bc90",
+    margin: "0px",
+    padding: "0px",
+    textDecoration: "none"
   },
   switchOff: {
-    color: '#ef6f6c',
-    margin: '0px',
-    padding: '0px',
-    textDecoration: 'none'
+    color: "#ef6f6c",
+    margin: "0px",
+    padding: "0px",
+    textDecoration: "none"
   },
   toolbar: {
-    textAlign: 'center',
-    padding: '15px 0px 0px 0px'
+    textAlign: "center",
+    padding: "15px 0px 0px 0px"
   },
   whiteText: {
-    color: 'white'
+    color: "white"
   },
   dropInitial: {
     /* pseudo flexbox */
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    verticalAlign: 'center',
-    border: '2px dashed silver',
-    borderRadius: '30px',
-    backgroundColor: '#f8f8f8',
-    margin: '20px'
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+    verticalAlign: "center",
+    border: "2px dashed silver",
+    borderRadius: "30px",
+    backgroundColor: "#f8f8f8",
+    margin: "20px",
+    cursor: "pointer"
   },
   dataHeader: {
-    backgroundColor: '#015249',
-    color: 'white',
-    paddingTop: '0px'
+    backgroundColor: "#015249",
+    color: "white",
+    paddingTop: "0px"
   },
   button: {
-    backgroundColor: '#015249',
-    border: '1px solid #015249',
-    color: 'white',
-    marginTop: '0px',
-    width: '25%',
-    textAlign: 'center'
+    backgroundColor: "#015249",
+    border: "1px solid #015249",
+    color: "white",
+    marginTop: "0px",
+    width: "25%",
+    textAlign: "center"
   },
   activeButton: {
-    color: 'white',
-    backgroundColor: '#77c9d4',
-    border: '1px solid #77c9d4'
+    color: "white",
+    backgroundColor: "#77c9d4",
+    border: "1px solid #77c9d4"
   },
   activeHelper: {
-    float: 'right',
-    borderRadius: '50%',
-    color: 'white',
-    backgroundColor: '#77c9d4',
-    border: 'none',
-    marginTop: '-4px'
+    float: "right",
+    borderRadius: "50%",
+    color: "white",
+    backgroundColor: "#77c9d4",
+    border: "none",
+    marginTop: "-4px"
   },
   inactiveHelper: {
-    float: 'right',
-    borderRadius: '50%',
-    backgroundColor: 'white',
-    border: 'none',
-    marginTop: '-4px'
+    float: "right",
+    borderRadius: "50%",
+    backgroundColor: "white",
+    border: "none",
+    marginTop: "-4px"
   },
   greenText: {
-    color: '#57bc90'
+    color: "#57bc90"
   },
   redText: {
-    color: '#ef6f6c'
+    color: "#ef6f6c"
   },
   blueText: {
-    color: '#77c9d4'
+    color: "#77c9d4"
   },
   copyButton: {
-    float: 'right',
-    borderRadius: '50%',
-    backgroundColor: 'white',
-    color: '#015249',
-    marginBottom: '2px'
+    float: "right",
+    borderRadius: "50%",
+    backgroundColor: "white",
+    color: "#015249",
+    marginBottom: "2px"
   }
 };
-
-/* create constants here */
-const CLOUDINARY_UPLOAD_PRESET = 'dronedb';
-const CLOUDINARY_UPLOAD_URL = 'https://api.cloudinary.com/v1_1/jasarqui/upload';
 
 export default class Analyze extends Component {
   constructor(props) {
@@ -144,7 +139,8 @@ export default class Analyze extends Component {
       analyzeModalOpen: false,
       saveModalOpen: false,
       activeImage: 0,
-      folders: []
+      folders: [],
+      cv_image: null
     };
   }
 
@@ -156,21 +152,21 @@ export default class Analyze extends Component {
     var index = 0;
 
     switch (e.currentTarget.value) {
-      case 'name': {
+      case "name": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].name = imageState[this.state.activeImage].name;
         }
         break;
       }
-      case 'date': {
+      case "date": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].day = imageState[this.state.activeImage].day;
         }
         break;
       }
-      case 'location': {
+      case "location": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].location =
@@ -178,14 +174,14 @@ export default class Analyze extends Component {
         }
         break;
       }
-      case 'drone': {
+      case "drone": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].drone = imageState[this.state.activeImage].drone;
         }
         break;
       }
-      case 'camera': {
+      case "camera": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].camera =
@@ -193,14 +189,14 @@ export default class Analyze extends Component {
         }
         break;
       }
-      case 'image': {
+      case "image": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].image = imageState[this.state.activeImage].image;
         }
         break;
       }
-      case 'environment': {
+      case "environment": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].env_condition =
@@ -208,7 +204,7 @@ export default class Analyze extends Component {
         }
         break;
       }
-      case 'folder': {
+      case "folder": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage) {
             imageState[index].season =
@@ -219,7 +215,7 @@ export default class Analyze extends Component {
         }
         break;
       }
-      case 'private': {
+      case "private": {
         for (index = 0; index < imageState.length; index++) {
           if (index !== this.state.activeImage)
             imageState[index].private =
@@ -236,20 +232,20 @@ export default class Analyze extends Component {
 
   openModal = e => {
     e.preventDefault();
-    e.currentTarget.dataset.value === 'remove'
+    e.currentTarget.dataset.value === "remove"
       ? this.setState({ removeModalOpen: true })
-      : e.currentTarget.dataset.value === 'save'
-        ? this.setState({ saveModalOpen: true })
-        : this.setState({ analyzeModalOpen: true });
+      : e.currentTarget.dataset.value === "save"
+      ? this.setState({ saveModalOpen: true })
+      : this.setState({ analyzeModalOpen: true });
   };
 
   closeModal = e => {
     e.preventDefault();
-    e.currentTarget.dataset.value === 'remove'
+    e.currentTarget.dataset.value === "remove"
       ? this.setState({ removeModalOpen: false })
-      : e.currentTarget.dataset.value === 'save'
-        ? this.setState({ saveModalOpen: false })
-        : this.setState({ analyzeModalOpen: false });
+      : e.currentTarget.dataset.value === "save"
+      ? this.setState({ saveModalOpen: false })
+      : this.setState({ analyzeModalOpen: false });
   };
 
   changeActiveImg = index => {
@@ -327,7 +323,9 @@ export default class Analyze extends Component {
 
   changeSeason = e => {
     e.preventDefault();
-    this.onSeasonChange(e).then(() => {this.checkFolder(this.state.activeImage)});
+    this.onSeasonChange(e).then(() => {
+      this.checkFolder(this.state.activeImage);
+    });
   };
 
   async onSeasonChange(e) {
@@ -337,7 +335,9 @@ export default class Analyze extends Component {
   }
 
   changeDate = e => {
-    this.onDateChange(e).then(() => {this.checkFolder(this.state.activeImage)});
+    this.onDateChange(e).then(() => {
+      this.checkFolder(this.state.activeImage);
+    });
   };
 
   async onDateChange(e) {
@@ -353,18 +353,15 @@ export default class Analyze extends Component {
       this.state.folders.filter(
         folder =>
           folder.name ===
-          (this.state.images[index].season === 'WET'
-            ? 'WS'
-            : 'DS') +
+          (this.state.images[index].season === "WET" ? "WS" : "DS") +
             this.state.images[index].date
       ).length > 0
         ? true
         : false;
     /* change state name */
     imageState[index].folder_name =
-      (this.state.images[index].season === 'WET'
-        ? 'WS'
-        : 'DS') + this.state.images[index].date;
+      (this.state.images[index].season === "WET" ? "WS" : "DS") +
+      this.state.images[index].date;
     this.setState({ images: imageState });
   };
 
@@ -414,7 +411,8 @@ export default class Analyze extends Component {
         <Carousel
           showStatus={false}
           onChange={this.changeActiveImg}
-          selectedItem={this.state.activeImage}>
+          selectedItem={this.state.activeImage}
+        >
           {this.state.images.map((image, index) => {
             return (
               <div key={index}>
@@ -432,10 +430,10 @@ export default class Analyze extends Component {
     /* this is where we put the glue */
 
     /* this is an alert on success */
-    Alert.success('Successfully analyzed image.', {
+    Alert.success("Successfully analyzed image.", {
       beep: false,
-      position: 'top-right',
-      effect: 'jelly',
+      position: "top-right",
+      effect: "jelly",
       timeout: 2000
     });
   };
@@ -447,20 +445,20 @@ export default class Analyze extends Component {
 
     if (this.state.images.length === 0) {
       /* this is an alert on success */
-      Alert.info('No images in the collection.', {
+      Alert.info("No images in the collection.", {
         beep: false,
-        position: 'top-right',
-        effect: 'jelly',
+        position: "top-right",
+        effect: "jelly",
         timeout: 2000
       });
     } else {
       /* this is where we put the glue */
 
       /* this is an alert on success */
-      Alert.success('Successfully analyzed all image(s).', {
+      Alert.success("Successfully analyzed all image(s).", {
         beep: false,
-        position: 'top-right',
-        effect: 'jelly',
+        position: "top-right",
+        effect: "jelly",
         timeout: 2000
       });
     }
@@ -491,27 +489,27 @@ export default class Analyze extends Component {
       })
         .then(() => {
           /* this is an alert on success */
-          Alert.success('Successfully saved image.', {
+          Alert.success("Successfully saved image.", {
             beep: false,
-            position: 'top-right',
-            effect: 'jelly',
+            position: "top-right",
+            effect: "jelly",
             timeout: 2000
           });
         })
         .catch(() => {
           /* this is an alert on failure */
-          Alert.error('Failed to save image.', {
+          Alert.error("Failed to save image.", {
             beep: false,
-            position: 'top-right',
-            effect: 'jelly',
+            position: "top-right",
+            effect: "jelly",
             timeout: 2000
           });
         });
     } else {
-      Alert.error('Must have a folder.', {
+      Alert.error("Must have a folder.", {
         beep: false,
-        position: 'top-right',
-        effect: 'jelly',
+        position: "top-right",
+        effect: "jelly",
         timeout: 2000
       });
     }
@@ -551,8 +549,8 @@ export default class Analyze extends Component {
         ) {
           Alert.error(`${imageState[index].name} must have a folder`, {
             beep: false,
-            position: 'top-right',
-            effect: 'jelly',
+            position: "top-right",
+            effect: "jelly",
             timeout: 2000
           });
         }
@@ -564,113 +562,103 @@ export default class Analyze extends Component {
           .then(() => {
             this.setState({ images: imageState });
             /* this is an alert on success */
-            Alert.success('Successfully saved image(s).', {
+            Alert.success("Successfully saved image(s).", {
               beep: false,
-              position: 'top-right',
-              effect: 'jelly',
+              position: "top-right",
+              effect: "jelly",
               timeout: 2000
             });
           })
           .catch(() => {
             /* this is an alert on failure */
-            Alert.error('Failed to save image(s).', {
+            Alert.error("Failed to save image(s).", {
               beep: false,
-              position: 'top-right',
-              effect: 'jelly',
+              position: "top-right",
+              effect: "jelly",
               timeout: 2000
             });
           });
       } else {
         /* this is an alert for no images */
-        Alert.info('No valid image(s) to be saved.', {
+        Alert.info("No valid image(s) to be saved.", {
           beep: false,
-          position: 'top-right',
-          effect: 'jelly',
+          position: "top-right",
+          effect: "jelly",
           timeout: 2000
         });
       }
     } catch (err) {
       /* this is an alert on failure */
-      Alert.error('Failed to save image(s).', {
+      Alert.error("Failed to save image(s).", {
         beep: false,
-        position: 'top-right',
-        effect: 'jelly',
+        position: "top-right",
+        effect: "jelly",
         timeout: 2000
       });
     }
   };
 
-  uploadFiles = files => {
-    var countUploading = files.length;
+  segment = file => {
     this.setState({ uploading: true });
-    for (var index = 0; index < files.length; index++) {
-      /* this is to post to the cloudinary api,
-      so that the image is uploaded to the cloud */
-      let upload = request
-        .post(CLOUDINARY_UPLOAD_URL)
-        .field('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-        .field('file', files[index]);
+    const reader = new FileReader();
 
-      /* upload end is when the image is finished uploading */
-      upload.end((err, response) => {
-        /* this will help in the image uploading UX */
-        countUploading--;
-        if (countUploading === 0) this.setState({ uploading: false });
+    reader.addEventListener("load", () => {
+      API.segment({ file: reader.result })
+        .then(res => {
+          var imageState = [...this.state.images];
 
-        if (err) {
-          /* this is an alert on success */
-          Alert.error('Failed to upload image.', {
-            beep: false,
-            position: 'top-right',
-            effect: 'jelly',
-            timeout: 2000
-          });
-        } else {
-          if (response.body.secure_url !== '') {
-            var imageState = [...this.state.images];
+          res.data.data.forEach(file => {
             imageState.push({
               /* obtained by upload */
-              fileURL: response.body.secure_url,
-              name: response.body.original_filename,
+              fileURL: file.link,
+              name: file.name,
               /* the following are defaults */
-              camera: '',
-              season: 'WET',
+              camera: "",
+              season: "WET",
               private: false,
               saved: false,
-              date: '',
-              drone: '',
-              location: '',
-              image: '',
-              env_condition: '',
-              day: '',
+              date: "",
+              drone: "",
+              location: "",
+              image: "",
+              env_condition: "",
+              day: "",
               /* the following are obtained by functions */
-              folder_exists: '',
-              folder_name: '',
-              attrib: [
-                {
-                  name: 'Place',
-                  value: 'Holder'
-                }
-              ],
+              folder_exists: "",
+              folder_name: "",
+              attrib: [],
               /* these are for UX */
               metadataOpen: true,
               attribOpen: true
             });
-            this.setState({ images: imageState });
+          });
 
-            /* this is an alert on success */
-            Alert.success('Successfully uploaded image.', {
-              beep: false,
-              position: 'top-right',
-              effect: 'jelly',
-              timeout: 2000
-            });
-            /* render the carousel */
-            this.renderCarousel();
-          }
-        }
-      });
-    }
+          this.setState({ images: imageState, uploading: false });
+
+          /* this is an alert on success */
+          Alert.success("Successfully segmented image.", {
+            beep: false,
+            position: "top-right",
+            effect: "jelly",
+            timeout: 2000
+          });
+          /* render the carousel */
+          this.renderCarousel();
+        })
+        .catch(err => {
+          /* this is an alert on error */
+          Alert.error("Failed to upload image.", {
+            beep: false,
+            position: "top-right",
+            effect: "jelly",
+            timeout: 2000
+          });
+
+          this.setState({ uploading: false });
+        });
+    });
+
+    reader.readAsDataURL(file[0]);
   };
 
   componentDidMount = () => {
@@ -684,104 +672,114 @@ export default class Analyze extends Component {
     return (
       <DocumentTitle title="DIA | Analyze">
         <div>
-          <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
-            <Column style={style.toolbar} isHidden={'mobile'}>
+          <Columns isFullWidth style={{ backgroundColor: "#015249" }}>
+            <Column style={style.toolbar} isHidden={"mobile"}>
               <center>
                 <Dropzone
                   multiple={true}
                   accept="image/*"
-                  onDrop={this.uploadFiles}
-                  style={{ width: '0px' }}>
+                  onDrop={this.segment}
+                  style={{ width: "0px" }}
+                >
                   <a
-                    href={'.'}
-                    data-tip={'Add Image(s)'}
+                    href={"."}
+                    data-tip={"Add Image(s)"}
                     style={style.whiteText}
-                    onClick={e => e.preventDefault()}>
-                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    onClick={e => e.preventDefault()}
+                  >
+                    <Icon className={"fa fa-plus-circle fa-1x"} />
                     <Heading>ADD</Heading>
                   </a>
                 </Dropzone>
               </center>
             </Column>
-            <Column style={style.toolbar} isHidden={'mobile'}>
+            <Column style={style.toolbar} isHidden={"mobile"}>
               <a
-                href={'.'}
-                data-value={'analyze'}
-                data-tip={'Analyze Image(s)'}
+                href={"."}
+                data-value={"analyze"}
+                data-tip={"Analyze Image(s)"}
                 style={style.whiteText}
-                onClick={this.openModal}>
-                <Icon className={'fa fa-bolt fa-1x'} />
+                onClick={this.openModal}
+              >
+                <Icon className={"fa fa-bolt fa-1x"} />
                 <Heading>ANALYZE</Heading>
               </a>
             </Column>
-            <Column style={style.toolbar} isHidden={'mobile'}>
+            <Column style={style.toolbar} isHidden={"mobile"}>
               <a
-                href={'.'}
-                data-value={'save'}
-                data-tip={'Save analyzed Image(s)'}
+                href={"."}
+                data-value={"save"}
+                data-tip={"Save analyzed Image(s)"}
                 style={style.whiteText}
-                onClick={this.openModal}>
-                <Icon className={'fa fa-save fa-1x'} />
+                onClick={this.openModal}
+              >
+                <Icon className={"fa fa-save fa-1x"} />
                 <Heading>SAVE</Heading>
               </a>
             </Column>
-            <Column style={style.toolbar} isHidden={'mobile'}>
+            <Column style={style.toolbar} isHidden={"mobile"}>
               <a
-                href={'.'}
-                data-value={'remove'}
-                data-tip={'Remove all Image(s)'}
+                href={"."}
+                data-value={"remove"}
+                data-tip={"Remove all Image(s)"}
                 style={style.whiteText}
-                onClick={this.openModal}>
-                <Icon className={'fa fa-minus-circle fa-1x'} />
+                onClick={this.openModal}
+              >
+                <Icon className={"fa fa-minus-circle fa-1x"} />
                 <Heading>REMOVE</Heading>
               </a>
             </Column>
             <Column
-              style={{ paddingTop: '20px', textAlign: 'center' }}
-              isHidden={'desktop'}>
+              style={{ paddingTop: "20px", textAlign: "center" }}
+              isHidden={"desktop"}
+            >
               <Button style={style.button}>
                 <center>
                   <Dropzone
                     multiple={true}
                     accept="image/*"
-                    onDrop={this.uploadFiles}
+                    onDrop={this.segment}
                     style={{
-                      height: '0px',
-                      marginLeft: '0px',
-                      marginBottom: '25px'
-                    }}>
-                    <Icon className={'fa fa-plus-circle fa-1x'} />
-                    <small style={{ color: 'white', fontSize: '15px' }}>
+                      height: "0px",
+                      marginLeft: "0px",
+                      marginBottom: "25px"
+                    }}
+                  >
+                    <Icon className={"fa fa-plus-circle fa-1x"} />
+                    <small style={{ color: "white", fontSize: "15px" }}>
                       ADD
                     </small>
                   </Dropzone>
                 </center>
               </Button>
               <Button
-                data-value={'analyze'}
+                data-value={"analyze"}
                 style={style.button}
-                onClick={this.openModal}>
+                onClick={this.openModal}
+              >
                 <center>
-                  <Icon className={'fa fa-bolt fa-1x'} />
-                  <small style={{ color: 'white' }}>ANALYZE</small>
+                  <Icon className={"fa fa-bolt fa-1x"} />
+                  <small style={{ color: "white" }}>ANALYZE</small>
                 </center>
               </Button>
               <Button
-                data-value={'save'}
+                data-value={"save"}
                 style={style.button}
-                onClick={this.openModal}>
+                onClick={this.openModal}
+              >
                 <center>
-                  <Icon className={'fa fa-save fa-1x'} />
-                  <small style={{ color: 'white' }}>SAVE</small>
+                  <Icon className={"fa fa-save fa-1x"} />
+                  <small style={{ color: "white" }}>SAVE</small>
                 </center>
               </Button>
               <Button
-                data-value={'remove'}
+                data-value={"remove"}
                 style={style.button}
-                onClick={this.openModal}>
+                onClick={this.openModal}
+              >
                 <center>
-                  <Icon className={'fa fa-minus-circle fa-1x'} />
-                  <small style={{ color: 'white' }}>REMOVE</small>
+                  <Icon className={"fa fa-minus-circle fa-1x"} />
+                  <small style={{ color: "white" }}>REMOVE</small>
                 </center>
               </Button>
             </Column>
@@ -789,8 +787,8 @@ export default class Analyze extends Component {
           {this.state.images.length === 0 ? (
             this.state.uploading ? (
               <div style={style.dropInitial}>
-                <Icon className={'fa fa-gear fa-spin fa-5x'} />
-                <p style={{ marginTop: '30px' }}>
+                <Icon className={"fa fa-gear fa-spin fa-5x"} />
+                <p style={{ marginTop: "30px" }}>
                   Please wait while the image is uploading
                 </p>
               </div>
@@ -799,29 +797,29 @@ export default class Analyze extends Component {
                 style={style.dropInitial}
                 multiple={true}
                 accept="image/*"
-                onDrop={this.uploadFiles}>
-                <div>
-                  <Section isHidden="mobile">
-                    <Icon className="fa fa-download" style={style.icon} />
-                    Drop images or{'  '}
-                    <Icon className="fa fa-upload" style={style.icon} />
-                    Click to select them.
-                  </Section>
-                  <Section isHidden="desktop">
-                    <Icon className="fa fa-upload" style={style.icon} />
-                    Click to select images.
-                  </Section>
-                </div>
+                onDrop={this.segment}
+              >
+                <Section isHidden="mobile">
+                  <Icon className="fa fa-download" style={style.icon} />
+                  Drop images or{"  "}
+                  <Icon className="fa fa-upload" style={style.icon} />
+                  Click to select them.
+                </Section>
+                <Section isHidden="desktop">
+                  <Icon className="fa fa-upload" style={style.icon} />
+                  Click to select images.
+                </Section>
               </Dropzone>
             )
           ) : (
             <div>
               <Columns isFullWidth>
                 <Column
-                  isSize={'1/3'}
-                  style={{ borderRight: '2px solid #015249' }}>
+                  isSize={"1/3"}
+                  style={{ borderRight: "2px solid #015249" }}
+                >
                   <Menu>
-                    <MenuLabel style={{ marginLeft: '5px' }}>
+                    <MenuLabel style={{ marginLeft: "5px" }}>
                       Collection
                     </MenuLabel>
                     <MenuList>
@@ -832,15 +830,16 @@ export default class Analyze extends Component {
                             style={
                               index === this.state.activeImage
                                 ? {
-                                    backgroundColor: '#77c9d4',
-                                    color: 'white',
-                                    cursor: 'default'
+                                    backgroundColor: "#77c9d4",
+                                    color: "white",
+                                    cursor: "default"
                                   }
-                                : { cursor: 'default' }
-                            }>
+                                : { cursor: "default" }
+                            }
+                          >
                             {image.name}
                             <Button
-                              isSize={'small'}
+                              isSize={"small"}
                               style={
                                 index === this.state.activeImage
                                   ? style.activeHelper
@@ -848,11 +847,12 @@ export default class Analyze extends Component {
                               }
                               onClick={() => {
                                 this.removeImage(index);
-                              }}>
-                              <Icon className={'fa fa-times'} />
+                              }}
+                            >
+                              <Icon className={"fa fa-times"} />
                             </Button>
                             <Button
-                              isSize={'small'}
+                              isSize={"small"}
                               style={
                                 index === this.state.activeImage
                                   ? style.activeHelper
@@ -860,12 +860,13 @@ export default class Analyze extends Component {
                               }
                               onClick={() => {
                                 this.analyzeImage(index);
-                              }}>
-                              <Icon className={'fa fa-bolt'} />
+                              }}
+                            >
+                              <Icon className={"fa fa-bolt"} />
                             </Button>
                             {!image.saved ? (
                               <Button
-                                isSize={'small'}
+                                isSize={"small"}
                                 style={
                                   index === this.state.activeImage
                                     ? style.activeHelper
@@ -873,8 +874,9 @@ export default class Analyze extends Component {
                                 }
                                 onClick={() => {
                                   this.save(index);
-                                }}>
-                                <Icon className={'fa fa-save'} />
+                                }}
+                              >
+                                <Icon className={"fa fa-save"} />
                               </Button>
                             ) : (
                               <div />
@@ -885,9 +887,9 @@ export default class Analyze extends Component {
                       {this.state.uploading ? (
                         <MenuLink>
                           <Icon
-                            style={{ marginRight: '5px' }}
-                            className={'fa fa-gear fa-spin fa-1x'}
-                          />{' '}
+                            style={{ marginRight: "5px" }}
+                            className={"fa fa-gear fa-spin fa-1x"}
+                          />{" "}
                           Please wait while the image is uploading
                         </MenuLink>
                       ) : (
@@ -897,38 +899,41 @@ export default class Analyze extends Component {
                   </Menu>
                 </Column>
                 <Column
-                  isSize={'2/3'}
-                  style={{ backgroundColor: '#F8F8F8', paddingLeft: '0px' }}>
+                  isSize={"2/3"}
+                  style={{ backgroundColor: "#F8F8F8", paddingLeft: "0px" }}
+                >
                   <center>{this.state.carousel}</center>
                 </Column>
               </Columns>
-              <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
+              <Columns isFullWidth style={{ backgroundColor: "#015249" }}>
                 <Column>
                   <Message>
                     <MessageHeader style={style.dataHeader}>
                       <Heading
                         style={{
-                          fontSize: '18px',
-                          paddingTop: '5px',
-                          paddingBottom: '0px'
-                        }}>
+                          fontSize: "18px",
+                          paddingTop: "5px",
+                          paddingBottom: "0px"
+                        }}
+                      >
                         Image Data
                       </Heading>
                     </MessageHeader>
-                    <MessageBody style={{ minHeight: '40vh' }}>
+                    <MessageBody style={{ minHeight: "40vh" }}>
                       <Menu>
                         <MenuLabel>
-                          Metadata{' '}
+                          Metadata{" "}
                           <a
                             href="."
                             onClick={this.handleMeta}
-                            style={style.removeUnderline}>
+                            style={style.removeUnderline}
+                          >
                             <Icon
                               className={
                                 this.state.images[this.state.activeImage]
                                   .metadataOpen
-                                  ? 'fa fa-angle-up'
-                                  : 'fa fa-angle-down'
+                                  ? "fa fa-angle-up"
+                                  : "fa fa-angle-down"
                               }
                               isSize="small"
                             />
@@ -942,13 +947,14 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>Name</p>
+                                      <p style={{ float: "left" }}>Name</p>
                                       <Button
-                                        value={'name'}
-                                        isSize={'small'}
+                                        value={"name"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="3/4">
@@ -969,13 +975,14 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>Date</p>
+                                      <p style={{ float: "left" }}>Date</p>
                                       <Button
-                                        value={'date'}
-                                        isSize={'small'}
+                                        value={"date"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="3/4">
@@ -995,13 +1002,14 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>Location</p>
+                                      <p style={{ float: "left" }}>Location</p>
                                       <Button
-                                        value={'location'}
-                                        isSize={'small'}
+                                        value={"location"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="3/4">
@@ -1022,13 +1030,14 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>Drone</p>
+                                      <p style={{ float: "left" }}>Drone</p>
                                       <Button
-                                        value={'drone'}
-                                        isSize={'small'}
+                                        value={"drone"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="3/4">
@@ -1049,13 +1058,14 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>Camera</p>
+                                      <p style={{ float: "left" }}>Camera</p>
                                       <Button
-                                        value={'camera'}
-                                        isSize={'small'}
+                                        value={"camera"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="3/4">
@@ -1076,15 +1086,16 @@ export default class Analyze extends Component {
                                 <Column>
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>
+                                      <p style={{ float: "left" }}>
                                         Image Type
                                       </p>
                                       <Button
-                                        value={'image'}
-                                        isSize={'small'}
+                                        value={"image"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="3/4">
@@ -1105,15 +1116,16 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>
+                                      <p style={{ float: "left" }}>
                                         Environment
                                       </p>
                                       <Button
-                                        value={'environment'}
-                                        isSize={'small'}
+                                        value={"environment"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="3/4">
@@ -1134,50 +1146,53 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>Folder</p>
+                                      <p style={{ float: "left" }}>Folder</p>
                                       <Button
-                                        value={'folder'}
-                                        isSize={'small'}
+                                        value={"folder"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column isSize="2/4">
                                       <Columns>
                                         <Column isSize="1/2">
                                           <Button
-                                            data-value={'WET'}
+                                            data-value={"WET"}
                                             onClick={this.changeSeason}
-                                            isSize={'small'}
+                                            isSize={"small"}
                                             style={
                                               this.state.images[
                                                 this.state.activeImage
-                                              ].season === 'WET'
+                                              ].season === "WET"
                                                 ? style.activeButton
                                                 : {}
-                                            }>
+                                            }
+                                          >
                                             <Icon
-                                              className={'fa fa-umbrella fa-1x'}
-                                              style={{ marginRight: '5px' }}
-                                            />{' '}
+                                              className={"fa fa-umbrella fa-1x"}
+                                              style={{ marginRight: "5px" }}
+                                            />{" "}
                                             WET
                                           </Button>
                                           <Button
-                                            data-value={'DRY'}
+                                            data-value={"DRY"}
                                             onClick={this.changeSeason}
-                                            isSize={'small'}
+                                            isSize={"small"}
                                             style={
                                               this.state.images[
                                                 this.state.activeImage
-                                              ].season === 'DRY'
+                                              ].season === "DRY"
                                                 ? style.activeButton
                                                 : {}
-                                            }>
+                                            }
+                                          >
                                             <Icon
-                                              className={'fa fa-fire fa-1x'}
-                                              style={{ marginRight: '5px' }}
-                                            />{' '}
+                                              className={"fa fa-fire fa-1x"}
+                                              style={{ marginRight: "5px" }}
+                                            />{" "}
                                             DRY
                                           </Button>
                                         </Column>
@@ -1200,31 +1215,34 @@ export default class Analyze extends Component {
                                       <small>
                                         {this.state.images[
                                           this.state.activeImage
-                                        ].folder_exists === '' ? (
+                                        ].folder_exists === "" ? (
                                           <p style={style.blueText}>
                                             <Icon
                                               className={
-                                                'fa fa-info-circle fa-xs'
+                                                "fa fa-info-circle fa-xs"
                                               }
-                                            />Required
+                                            />
+                                            Required
                                           </p>
                                         ) : this.state.images[
-                                          this.state.activeImage
-                                        ].folder_exists ? (
+                                            this.state.activeImage
+                                          ].folder_exists ? (
                                           <p style={style.greenText}>
                                             <Icon
                                               className={
-                                                'fa fa-check-circle fa-xs'
+                                                "fa fa-check-circle fa-xs"
                                               }
-                                            />Exists
+                                            />
+                                            Exists
                                           </p>
                                         ) : (
                                           <p style={style.redText}>
                                             <Icon
                                               className={
-                                                'fa fa-times-circle fa-xs'
+                                                "fa fa-times-circle fa-xs"
                                               }
-                                            />Doesn't Exist
+                                            />
+                                            Doesn't Exist
                                           </p>
                                         )}
                                       </small>
@@ -1234,35 +1252,38 @@ export default class Analyze extends Component {
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
-                                      <p style={{ float: 'left' }}>Private</p>
+                                      <p style={{ float: "left" }}>Private</p>
                                       <Button
-                                        value={'private'}
-                                        isSize={'small'}
+                                        value={"private"}
+                                        isSize={"small"}
                                         style={style.copyButton}
-                                        onClick={this.copy}>
-                                        <Icon className={'fa fa-clone fa-sm'} />
+                                        onClick={this.copy}
+                                      >
+                                        <Icon className={"fa fa-clone fa-sm"} />
                                       </Button>
                                     </Column>
                                     <Column
                                       isSize="3/4"
                                       style={{
-                                        padding: '0px',
-                                        paddingLeft: '15px',
-                                        paddingTop: '15px'
-                                      }}>
+                                        padding: "0px",
+                                        paddingLeft: "15px",
+                                        paddingTop: "15px"
+                                      }}
+                                    >
                                       {this.state.images[this.state.activeImage]
                                         .private ? (
                                         <div>
                                           <i
                                             style={{
                                               ...style.switchOn,
-                                              cursor: 'pointer'
+                                              cursor: "pointer"
                                             }}
-                                            onClick={this.switch}>
+                                            onClick={this.switch}
+                                          >
                                             <Icon
                                               href="."
                                               className={
-                                                'fa fa-toggle-on fa-lg'
+                                                "fa fa-toggle-on fa-lg"
                                               }
                                               isSize="small"
                                             />
@@ -1273,14 +1294,15 @@ export default class Analyze extends Component {
                                           <i
                                             style={{
                                               ...style.switchOff,
-                                              cursor: 'pointer',
-                                              margin: '5px 0px 5px 0px'
+                                              cursor: "pointer",
+                                              margin: "5px 0px 5px 0px"
                                             }}
-                                            onClick={this.switch}>
+                                            onClick={this.switch}
+                                          >
                                             <Icon
                                               href="."
                                               className={
-                                                'fa fa-toggle-off fa-lg'
+                                                "fa fa-toggle-off fa-lg"
                                               }
                                               isSize="small"
                                             />
@@ -1294,7 +1316,8 @@ export default class Analyze extends Component {
                             </MenuLink>
                             <MenuLink
                               style={style.removeUnderline}
-                              onClick={this.switch}>
+                              onClick={this.switch}
+                            >
                               <Columns>
                                 <Column isSize="1/2" />
                               </Columns>
@@ -1304,17 +1327,18 @@ export default class Analyze extends Component {
                           <div />
                         )}
                         <MenuLabel>
-                          Attributes{' '}
+                          Attributes{" "}
                           <a
                             href="."
                             onClick={this.handleAttrib}
-                            style={style.removeUnderline}>
+                            style={style.removeUnderline}
+                          >
                             <Icon
                               className={
                                 this.state.images[this.state.activeImage]
                                   .attribOpen
-                                  ? 'fa fa-angle-up'
-                                  : 'fa fa-angle-down'
+                                  ? "fa fa-angle-up"
+                                  : "fa fa-angle-down"
                               }
                               isSize="small"
                             />
@@ -1352,7 +1376,8 @@ export default class Analyze extends Component {
               </Columns>
             </div>
           )}
-          <ReactTooltip effect={'solid'} place={'bottom'} />
+          {this.state.cv_image};
+          <ReactTooltip effect={"solid"} place={"bottom"} />
           {/* these are modals */}
           <RemoveModal
             {...{

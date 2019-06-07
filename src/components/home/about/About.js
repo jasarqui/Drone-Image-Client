@@ -72,18 +72,9 @@ export default class About extends Component {
     return (
       <div style={{backgroundColor: 'white'}}>
         {/* about the project here */}
-        <Columns isFullWidth style={style.projHeader}>
-          <Column>
-            <center>
-              <Heading>
-                <strong style={{ fontSize: '20px' }}>THE PROJECT</strong>
-              </Heading>
-            </center>
-          </Column>
-        </Columns>
         <Columns isFullWidth style={style.projContainer}>
           <Column>
-            <center style={{ color: 'black' }}>
+            <center style={{ color: 'black', marginTop: '10px' }}>
               This web application is made as part of the research project
               entitled <strong>Drone Image Analysis</strong>,
               <br />which intends to:
@@ -340,7 +331,7 @@ export default class About extends Component {
                         <img
                           alt={'node'}
                           src={
-                            'http://creative.stage5.com.ng/blog/wp-content/uploads/2018/04/nodejs.png'
+                            'https://nodejs.org/static/images/logos/nodejs-new-pantone-black.png'
                           }
                           style={style.icon}
                         />
@@ -353,7 +344,7 @@ export default class About extends Component {
                       <img
                         alt={'node'}
                         src={
-                          'http://creative.stage5.com.ng/blog/wp-content/uploads/2018/04/nodejs.png'
+                          'https://nodejs.org/static/images/logos/nodejs-new-pantone-black.png'
                         }
                         style={style.icon}
                       />
@@ -723,7 +714,7 @@ export default class About extends Component {
                         <img
                           alt={'fontawesome'}
                           src={
-                            'https://upload.wikimedia.org/wikipedia/en/thumb/8/83/Font_Awesome_2017_Logo.svg/220px-Font_Awesome_2017_Logo.svg.png'
+                            'https://www.drupal.org/files/project-images/font_awesome_logo.png'
                           }
                           style={style.icon}
                         />
@@ -736,7 +727,7 @@ export default class About extends Component {
                       <img
                         alt={'fontawesome'}
                         src={
-                          'https://upload.wikimedia.org/wikipedia/en/thumb/8/83/Font_Awesome_2017_Logo.svg/220px-Font_Awesome_2017_Logo.svg.png'
+                          'https://www.drupal.org/files/project-images/font_awesome_logo.png'
                         }
                         style={style.icon}
                       />
@@ -756,7 +747,7 @@ export default class About extends Component {
                         <img
                           alt={'tensorflow'}
                           src={
-                            'https://pbs.twimg.com/profile_images/773317101012586496/q8sc1KuZ.jpg'
+                            'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Tensorflow_logo.svg/957px-Tensorflow_logo.svg.png'
                           }
                           style={style.icon}
                         />
@@ -769,7 +760,7 @@ export default class About extends Component {
                       <img
                         alt={'tensorflow'}
                         src={
-                          'https://pbs.twimg.com/profile_images/773317101012586496/q8sc1KuZ.jpg'
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Tensorflow_logo.svg/957px-Tensorflow_logo.svg.png'
                         }
                         style={style.icon}
                       />
