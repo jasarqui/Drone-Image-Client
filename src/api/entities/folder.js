@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// set axios timeout
+axios.defaults.timeout = 3600000; 
+
 // creates a folder
 export const addFolder = info => {
   return axios.post('/folder/add', info);

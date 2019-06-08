@@ -8,6 +8,7 @@ import { Carousel } from "react-responsive-carousel";
 import RemoveModal from "./modals/RemoveModal";
 import SaveModal from "./modals/SaveModal";
 import AnalyzeModal from "./modals/AnalyzeModal";
+import eachOfSeries from 'async/eachOfSeries';
 /* import bulma components */
 import {
   Columns,
@@ -139,8 +140,7 @@ export default class Analyze extends Component {
       analyzeModalOpen: false,
       saveModalOpen: false,
       activeImage: 0,
-      folders: [],
-      cv_image: null
+      folders: []
     };
   }
 
@@ -426,16 +426,34 @@ export default class Analyze extends Component {
   };
 
   /* analyzes one */
-  analyzeImage = index => {
+  analyzeImage = async (index) => {
     /* this is where we put the glue */
+    await API.analyze({file: this.state.images[index].fileURL}).then(result => {
+      var imageState = [...this.state.images];
+      imageState[index].attrib = [
+        {name: "Yield Percentage (%)", value: result.data.data.yield},
+        {name: "Days before Harvest", value: result.data.data.days}
+      ];
 
-    /* this is an alert on success */
-    Alert.success("Successfully analyzed image.", {
-      beep: false,
-      position: "top-right",
-      effect: "jelly",
-      timeout: 2000
-    });
+      this.setState({ images: imageState });
+
+      /* this is an alert on success */
+      Alert.success("Successfully analyzed image.", {
+        beep: false,
+        position: "top-right",
+        effect: "jelly",
+        timeout: 2000
+      });
+    }).catch(err => {
+      /* this is an alert on failure */
+      Alert.error("Failed to analyze image.", {
+        beep: false,
+        position: "top-right",
+        effect: "jelly",
+        timeout: 2000
+      });
+      }
+    );
   };
 
   /* analyzes all */
@@ -444,7 +462,7 @@ export default class Analyze extends Component {
     this.setState({ analyzeModalOpen: false });
 
     if (this.state.images.length === 0) {
-      /* this is an alert on success */
+      /* this is an alert when there are no images */
       Alert.info("No images in the collection.", {
         beep: false,
         position: "top-right",
@@ -453,13 +471,10 @@ export default class Analyze extends Component {
       });
     } else {
       /* this is where we put the glue */
-
-      /* this is an alert on success */
-      Alert.success("Successfully analyzed all image(s).", {
-        beep: false,
-        position: "top-right",
-        effect: "jelly",
-        timeout: 2000
+      eachOfSeries(this.state.images, (value, key, callback) => {
+        this.analyzeImage(key).then(() => callback());
+      }, (err) => {
+          if (err) console.log(err);
       });
     }
   };
@@ -709,7 +724,7 @@ export default class Analyze extends Component {
               <a
                 href={"."}
                 data-value={"save"}
-                data-tip={"Save analyzed Image(s)"}
+                data-tip={"Save Image(s)"}
                 style={style.whiteText}
                 onClick={this.openModal}
               >
@@ -1376,7 +1391,6 @@ export default class Analyze extends Component {
               </Columns>
             </div>
           )}
-          {this.state.cv_image};
           <ReactTooltip effect={"solid"} place={"bottom"} />
           {/* these are modals */}
           <RemoveModal

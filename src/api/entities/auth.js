@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// set axios timeout
+axios.defaults.timeout = 3600000; 
+
 export const login = credentials => {
   return axios.post('/login', credentials);
 };

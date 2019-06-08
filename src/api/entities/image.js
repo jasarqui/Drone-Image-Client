@@ -1,5 +1,8 @@
 import axios from 'axios';
 
+// set axios timeout
+axios.defaults.timeout = 3600000; 
+
 // saves an image
 export const save = info => {
   return axios.post('/img/save', info);
@@ -13,6 +16,11 @@ export const saveMany = images => {
 // updates an image's info
 export const update = info => {
   return axios.put('/img/update', info);
+};
+
+// analyzes an image
+export const analyze = file => {
+  return axios.post('/img/analyze', file);
 };
 
 // segments an image
