@@ -600,6 +600,7 @@ export default class View extends Component {
                               isSize="small"
                               value={this.state.name}
                               onChange={this.changeName}
+                              placeholder="IMAGE1..."
                             />
                           ) : !this.state.userID ? (
                             <Input
@@ -607,6 +608,7 @@ export default class View extends Component {
                               isSize="small"
                               value={this.state.name}
                               onChange={this.changeName}
+                              placeholder="IMAGE1..."
                             />
                           ) : (
                             this.state.name
@@ -769,6 +771,7 @@ export default class View extends Component {
                                     isSize="small"
                                     value={this.state.year}
                                     onChange={this.changeYear}
+                                    placeholder="2019..."
                                   />
                                 ) : !this.state.userID ? (
                                   <Input
@@ -776,6 +779,7 @@ export default class View extends Component {
                                     isSize="small"
                                     value={this.state.year}
                                     onChange={this.changeYear}
+                                    placeholder="2019..."
                                   />
                                 ) : (
                                   this.state.year
@@ -914,6 +918,7 @@ export default class View extends Component {
                                         isSize="small"
                                         value={this.state.location}
                                         onChange={this.changeLocation}
+                                        placeholder="B500..."
                                       />
                                     ) : !this.state.userID ? (
                                       <Input
@@ -921,6 +926,7 @@ export default class View extends Component {
                                         isSize="small"
                                         value={this.state.location}
                                         onChange={this.changeLocation}
+                                        placeholder="B500..."
                                       />
                                     ) : (
                                       this.state.location
@@ -938,6 +944,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.drone}
+                                        placeholder="Sensefly eBee, DJI M100..."
                                         onChange={this.changeDrone}
                                       />
                                     ) : !this.state.userID ? (
@@ -945,6 +952,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.drone}
+                                        placeholder="Sensefly eBee, DJI M100..."
                                         onChange={this.changeDrone}
                                       />
                                     ) : (
@@ -963,6 +971,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.camera}
+                                        placeholder="RGB, NIR, MS..."
                                         onChange={this.changeCam}
                                       />
                                     ) : !this.state.userID ? (
@@ -970,6 +979,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.camera}
+                                        placeholder="RGB, NIR, MS..."
                                         onChange={this.changeCam}
                                       />
                                     ) : (
@@ -988,6 +998,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.image}
+                                        placeholder="Mosaic, Index, DSM..."
                                         onChange={this.changeImage}
                                       />
                                     ) : !this.state.userID ? (
@@ -995,6 +1006,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.image}
+                                        placeholder="Mosaic, Index, DSM..."
                                         onChange={this.changeImage}
                                       />
                                     ) : (
@@ -1013,6 +1025,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.env_condition}
+                                        placeholder="Was it rainy?"
                                         onChange={this.changeEnvironment}
                                       />
                                     ) : !this.state.userID ? (
@@ -1020,6 +1033,7 @@ export default class View extends Component {
                                         type="text"
                                         isSize="small"
                                         value={this.state.env_condition}
+                                        placeholder="Was it rainy?"
                                         onChange={this.changeEnvironment}
                                       />
                                     ) : (
