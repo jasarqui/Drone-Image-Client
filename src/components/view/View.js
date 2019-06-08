@@ -310,14 +310,29 @@ export default class View extends Component {
   analyze = e => {
     e.preventDefault();
     /* this is where we put the glue */
+    API.analyze({file: this.state.fileURL}).then(result => {
+      this.setState({ attrib: [
+        {name: "Yield Percentage (%)", value: result.data.data.yield},
+        {name: "Days before Harvest", value: result.data.data.days}
+      ] });
 
-    /* this is an alert on success */
-    Alert.success('Successfully analyzed image.', {
-      beep: false,
-      position: 'top-right',
-      effect: 'jelly',
-      timeout: 2000
-    });
+      /* this is an alert on success */
+      Alert.success("Successfully analyzed image.", {
+        beep: false,
+        position: "top-right",
+        effect: "jelly",
+        timeout: 2000
+      });
+    }).catch(err => {
+      /* this is an alert on failure */
+      Alert.error("Failed to analyze image.", {
+        beep: false,
+        position: "top-right",
+        effect: "jelly",
+        timeout: 2000
+      });
+      }
+    );
   };
 
   /* saves one */
@@ -696,52 +711,6 @@ export default class View extends Component {
                                 ) : (
                                   this.state.year
                                 )}
-                              </Column>
-                              <Column isSize="1/2">
-                                <Button
-                                  data-value={'WET'}
-                                  onClick={
-                                    this.state.userID &&
-                                    this.state.userID === this.props.userID
-                                      ? this.changeSeason
-                                      : !this.state.userID
-                                        ? this.changeSeason
-                                        : e => e.preventDefault()
-                                  }
-                                  isSize={'small'}
-                                  style={
-                                    this.state.season === 'WET'
-                                      ? style.activeButton
-                                      : {}
-                                  }>
-                                  <Icon
-                                    className={'fa fa-umbrella fa-1x'}
-                                    style={{ marginRight: '5px' }}
-                                  />{' '}
-                                  WET
-                                </Button>
-                                <Button
-                                  data-value={'DRY'}
-                                  onClick={
-                                    this.state.userID &&
-                                    this.state.userID === this.props.userID
-                                      ? this.changeSeason
-                                      : !this.state.userID
-                                        ? this.changeSeason
-                                        : e => e.preventDefault()
-                                  }
-                                  isSize={'small'}
-                                  style={
-                                    this.state.season === 'DRY'
-                                      ? style.activeButton
-                                      : {}
-                                  }>
-                                  <Icon
-                                    className={'fa fa-fire fa-1x'}
-                                    style={{ marginRight: '5px' }}
-                                  />{' '}
-                                  DRY
-                                </Button>
                               </Column>
                             </Columns>
                           ) : !this.state.userID ? (
