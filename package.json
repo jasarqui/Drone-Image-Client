@@ -10,6 +10,7 @@
     "bulma": "^0.7.1",
     "bulma-start": "^0.0.3",
     "font-awesome": "^4.7.0",
+    "pdfmake": "^0.1.57",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-css-transition": "^0.7.4",
