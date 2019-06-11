@@ -383,13 +383,13 @@ export default class Analyze extends Component {
   };
 
   /* removes one */
-  removeImage = index => {
+  removeImage = async index => {
     /* this is to avoid errors */
     if (this.state.activeImage !== 0) {
       if (this.state.activeImage === index)
-        this.setState({ activeImage: this.state.activeImage - 1 });
+        await this.setState({ activeImage: this.state.activeImage - 1 });
       else if (this.state.activeImage - 1 === index)
-        this.setState({ activeImage: this.state.activeImage - 2 });
+        await this.setState({ activeImage: this.state.activeImage - 2 });
     }
 
     this.updateImages(index)
