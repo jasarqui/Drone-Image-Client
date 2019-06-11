@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import Alert from 'react-s-alert';
 import Dropzone from 'react-dropzone';
+import ReactTooltip from 'react-tooltip';
 /* import bulma components */
 import {
   Button,
@@ -73,7 +74,7 @@ const style = {
 /* update if reached more than year 9999 */
 const yearRegex = /^[0-9]{4}$/;
 
-export default class EditFolder extends Component {
+export default class Folder extends Component {
   constructor(props) {
     super(props);
 
@@ -97,10 +98,7 @@ export default class EditFolder extends Component {
 
   uploadFiles = files => {
     var layoutFiles = [...this.state.layout];
-    files.forEach(file => {
-      layoutFiles.push({name: file.name, preview: file.preview});
-    })
-    this.setState({ layout: layoutFiles });
+    this.setState({ layout: layoutFiles.concat(files) });
   };
 
   removeFile = e => {
@@ -122,6 +120,11 @@ export default class EditFolder extends Component {
 
   closeModal = e => {
     /* restart modal */
+    this.resetModal();
+    this.props.close(e);
+  };
+
+  resetModal = () => {
     this.setState({
       season: 'WET',
       date: '',
@@ -129,61 +132,37 @@ export default class EditFolder extends Component {
       report: '',
       uploading: false
     });
-    this.props.close(e);
-  };
+  }
 
-  editFolder = () => {
-    API.editFolder({
+  addFolder = () => {
+    API.addFolder({
       season: this.state.season,
       date: this.state.date,
       layout: this.state.layout,
-      report: this.state.report,
-      id: this.props.folder_id
+      report: this.state.report
     })
       .then(() => {
-        Alert.success('Successfully edited folder.', {
+        Alert.success('Successfully added folder.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
           timeout: 2000
         });
-        this.props.closeDirect('edit');
-        this.props.newFolderSearch(this.props.page);
+        this.props.closeDirect('add');
+        this.props.getFolders();
+        /* reset modal */
+        this.resetModal();
       })
       .catch(() => {
-        Alert.error('Failed to edit folder.', {
+        Alert.error('Failed to add folder.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
           timeout: 2000
         });
+        /* reset modal */
+        this.resetModal();
       });
-  };
-
-  /* when modal opens */
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.folder_id && nextProps.active) {
-      API.getFolder({ id: nextProps.folder_id }).then(result => {
-        this.setState({
-          season: result.data.data.season,
-          date: result.data.data.year,
-          layout: result.data.data.layout ? result.data.data.layout : [],
-          report: URL.createObjectURL(
-            new File(
-              result.data.data.report.data,
-              (result.data.data.season === 'WET' ? 'WS' : 'DS') +
-                result.data.data.year +
-                ' Report',
-              { type: 'application/pdf', lastModified: Date.now() }
-            )
-          )
-        });
-      });
-    }
-  }
-
-  openPreview = file => {
-    window.open(file, 'Download');
   };
 
   render() {
@@ -191,7 +170,7 @@ export default class EditFolder extends Component {
       <div>
         <center>
           <Modal isActive={this.props.active}>
-            <ModalBackground data-value={'edit'} onClick={this.closeModal} />
+            <ModalBackground data-value={'add'} onClick={this.closeModal} />
             <ModalContent>
               <Notification
                 style={{ width: '75%', textAlign: 'left' }}
@@ -202,7 +181,15 @@ export default class EditFolder extends Component {
                     fontSize: '14px',
                     marginBottom: '20px'
                   }}>
-                  <strong>EDIT FOLDER</strong>
+                  <strong>
+                    CREATE A NEW FOLDER{' '}
+                    <Icon
+                      data-tip={
+                        "Ctrl+Click uploaded files if you're using Google Chrome"
+                      }
+                      className={'fa fa-info fa-1x'}
+                    />
+                  </strong>
                 </Heading>
                 <Columns style={{ marginBottom: '0px' }}>
                   <Column isSize="1/4">Name</Column>
@@ -275,12 +262,9 @@ export default class EditFolder extends Component {
                     {this.state.report ? (
                       <small>
                         <p>
-                          <a
-                            href={this.state.report}
-                            target={'_blank'}>
-                            <Icon className={'fa fa-file-pdf-o fa-1x'} />
-                            {this.state.season === 'WET' ? 'WS' : 'DS'}
-                            {this.state.date}
+                          <a href={this.state.report.preview} target={'_blank'}>
+                          <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                            {this.state.report.name}
                           </a>
                           <a
                             href="."
@@ -321,8 +305,8 @@ export default class EditFolder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            <Icon className={'fa fa-file-o fa-1x'}/>
-                            {file.name}
+                            <Icon className={'fa fa-file-o fa-1x'} />
+                              {file.name}
                             <a
                               data-value={index}
                               href="."
@@ -358,16 +342,18 @@ export default class EditFolder extends Component {
                 </Columns>
                 {this.state.date.match(yearRegex) ? (
                   <Button
+                    data-value={'add'}
                     isSize="large"
                     style={{
                       ...style.add,
                       float: 'right'
                     }}
-                    onClick={this.editFolder}>
-                    <Icon className={'fa fa-edit fa-1x'} />
+                    onClick={this.addFolder}>
+                    <Icon className={'fa fa-plus fa-1x'} />
                   </Button>
                 ) : (
                   <Button
+                    data-value={'add'}
                     isSize="large"
                     style={{
                       ...style.add,
@@ -386,7 +372,15 @@ export default class EditFolder extends Component {
                     fontSize: '14px',
                     marginBottom: '20px'
                   }}>
-                  <strong>EDIT FOLDER</strong>
+                  <strong>
+                    CREATE A NEW FOLDER{' '}
+                    <Icon
+                      data-tip={
+                        "Ctrl+Click uploaded files if you're using Google Chrome"
+                      }
+                      className={'fa fa-info fa-1x'}
+                    />
+                  </strong>
                 </Heading>
                 <p style={{ margin: '10px 0px 10px 0px' }}>
                   <strong>Name:</strong>
@@ -450,14 +444,13 @@ export default class EditFolder extends Component {
                     <p>
                       <strong>Report</strong>
                     </p>
-                    <p>
-                        {this.state.report ? (
-                      <small>
-                        <a href={this.state.report} target={'_blank'}>
-                          <Icon className={'fa fa-file-pdf-o fa-1x'}/>
-                          {this.state.season === 'WET' ? 'WS' : 'DS'}
-                            {this.state.date}
-                            </a>
+                    <small>
+                      {this.state.report.name ? (
+                        <p>
+                          <a href={this.state.report.preview} target={'_blank'}>
+                          <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                            {this.state.report.name}
+                          </a>
                           <a
                             href="."
                             onClick={this.removeReport}
@@ -467,13 +460,12 @@ export default class EditFolder extends Component {
                             }}>
                             <Icon className={'fa fa-times-circle fa-1x'} />
                           </a>
-                      </small>
-                        ) : (
-                          <small />
-                        )}
-                    </p>
+                        </p>
+                      ) : (
+                        <small />
+                      )}
+                    </small>
                     <Dropzone
-                      multiple={true}
                       onDrop={this.uploadReport}
                       style={{ ...style.flex, width: '50%' }}>
                       <small style={style.attach}>
@@ -500,10 +492,8 @@ export default class EditFolder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            <a href={file.preview} target={'_blank'}>
-                            <Icon className={'fa fa-file-o fa-1x'}/>
-                            {file.name}
-                            </a>
+                            <Icon className={'fa fa-file-o fa-1x'} />
+                              {file.name}
                             <a
                               data-value={index}
                               href="."
@@ -544,8 +534,8 @@ export default class EditFolder extends Component {
                       style={{
                         ...style.add
                       }}
-                      onClick={this.editFolder}>
-                      <Icon className={'fa fa-edit fa-1x'} />
+                      onClick={this.addFolder}>
+                      <Icon className={'fa fa-plus fa-1x'} />
                     </Button>
                   ) : (
                     <Button
@@ -561,8 +551,9 @@ export default class EditFolder extends Component {
                 </center>
               </Notification>
             </ModalContent>
-            <ModalClose data-value={'edit'} onClick={this.closeModal} />
+            <ModalClose data-value={'add'} onClick={this.closeModal} />
           </Modal>
+          <ReactTooltip effect={'solid'} place={'bottom'} />
         </center>
       </div>
     );

@@ -45,13 +45,18 @@ export default class Files extends Component {
     this.state = {
       layout: [],
       report: '',
+      season: '',
+      year: '',
       uploading: false
     };
   }
 
-  uploadFiles = files => {
+  uploadFiles = async files => {
     var layoutFiles = [...this.state.layout];
-    this.setState({ layout: layoutFiles.concat(files) });
+    files.forEach(file => {
+      layoutFiles.push({name: file.name, preview: file.preview});
+    })
+    this.setState({ layout: layoutFiles });
   };
 
   removeFile = e => {
@@ -113,7 +118,9 @@ export default class Files extends Component {
       API.getFolder({ id: nextProps.folder_id }).then(result => {
         this.setState({
           layout: result.data.data.layout ? result.data.data.layout : [],
-          report: result.data.data.report
+          report: result.data.data.report,
+          season: result.data.data.season,
+          year: result.data.data.year
         });
       });
     }
@@ -140,10 +147,16 @@ export default class Files extends Component {
                 <Columns>
                   <Column isSize="1/4">Report</Column>
                   <Column isSize="3/4">
-                    {this.state.report ? (
+                  {this.state.report ? (
                       <small>
                         <p>
-                          {this.state.report.name}
+                          <a
+                            href={this.state.report}
+                            target={'_blank'}>
+                            <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                            {this.state.season === 'WET' ? 'WS' : 'DS'}
+                            {this.state.year}
+                          </a>
                           <a
                             href="."
                             onClick={this.removeReport}

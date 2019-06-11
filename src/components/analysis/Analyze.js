@@ -8,7 +8,8 @@ import { Carousel } from "react-responsive-carousel";
 import RemoveModal from "./modals/RemoveModal";
 import SaveModal from "./modals/SaveModal";
 import AnalyzeModal from "./modals/AnalyzeModal";
-import eachOfSeries from 'async/eachOfSeries';
+import Folder from "./modals/Folder";
+import eachOfSeries from "async/eachOfSeries";
 /* import bulma components */
 import {
   Columns,
@@ -139,6 +140,7 @@ export default class Analyze extends Component {
       removeModalOpen: false,
       analyzeModalOpen: false,
       saveModalOpen: false,
+      folderModalOpen: false,
       activeImage: 0,
       folders: []
     };
@@ -236,6 +238,8 @@ export default class Analyze extends Component {
       ? this.setState({ removeModalOpen: true })
       : e.currentTarget.dataset.value === "save"
       ? this.setState({ saveModalOpen: true })
+      : e.currentTarget.dataset.value === "add"
+      ? this.setState({ folderModalOpen: true })
       : this.setState({ analyzeModalOpen: true });
   };
 
@@ -245,8 +249,12 @@ export default class Analyze extends Component {
       ? this.setState({ removeModalOpen: false })
       : e.currentTarget.dataset.value === "save"
       ? this.setState({ saveModalOpen: false })
+      : e.currentTarget.dataset.value === "add"
+      ? this.setState({ folderModalOpen: false })
       : this.setState({ analyzeModalOpen: false });
   };
+
+  closeFolderModal = modal => this.setState({ folderModalOpen: false });
 
   changeActiveImg = index => {
     this.setState({ activeImage: index });
@@ -426,34 +434,35 @@ export default class Analyze extends Component {
   };
 
   /* analyzes one */
-  analyzeImage = async (index) => {
+  analyzeImage = async index => {
     /* this is where we put the glue */
-    await API.analyze({file: this.state.images[index].fileURL}).then(result => {
-      var imageState = [...this.state.images];
-      imageState[index].attrib = [
-        {name: "Yield Percentage (%)", value: result.data.data.yield},
-        {name: "Days before Harvest", value: result.data.data.days}
-      ];
+    await API.analyze({ file: this.state.images[index].fileURL })
+      .then(result => {
+        var imageState = [...this.state.images];
+        imageState[index].attrib = [
+          { name: "Yield Percentage (%)", value: result.data.data.yield },
+          { name: "Days before Harvest", value: result.data.data.days }
+        ];
 
-      this.setState({ images: imageState });
+        this.setState({ images: imageState });
 
-      /* this is an alert on success */
-      Alert.success("Successfully analyzed image.", {
-        beep: false,
-        position: "top-right",
-        effect: "jelly",
-        timeout: 2000
+        /* this is an alert on success */
+        Alert.success("Successfully analyzed image.", {
+          beep: false,
+          position: "top-right",
+          effect: "jelly",
+          timeout: 2000
+        });
+      })
+      .catch(err => {
+        /* this is an alert on failure */
+        Alert.error("Failed to analyze image.", {
+          beep: false,
+          position: "top-right",
+          effect: "jelly",
+          timeout: 2000
+        });
       });
-    }).catch(err => {
-      /* this is an alert on failure */
-      Alert.error("Failed to analyze image.", {
-        beep: false,
-        position: "top-right",
-        effect: "jelly",
-        timeout: 2000
-      });
-      }
-    );
   };
 
   /* analyzes all */
@@ -471,11 +480,15 @@ export default class Analyze extends Component {
       });
     } else {
       /* this is where we put the glue */
-      eachOfSeries(this.state.images, (value, key, callback) => {
-        this.analyzeImage(key).then(() => callback());
-      }, (err) => {
+      eachOfSeries(
+        this.state.images,
+        (value, key, callback) => {
+          this.analyzeImage(key).then(() => callback());
+        },
+        err => {
           if (err) console.log(err);
-      });
+        }
+      );
     }
   };
 
@@ -676,11 +689,15 @@ export default class Analyze extends Component {
     reader.readAsDataURL(file[0]);
   };
 
-  componentDidMount = () => {
+  getFolders = () => {
     /* load the folders */
     API.getAllFolders().then(result => {
       this.setState({ folders: result.data.data });
     });
+  };
+
+  componentDidMount = () => {
+    this.getFolders();
   };
 
   render() {
@@ -956,9 +973,12 @@ export default class Analyze extends Component {
                         </MenuLabel>
                         {this.state.images[this.state.activeImage]
                           .metadataOpen ? (
-                          <MenuList>
+                          <MenuList style={{ cursor: "default" }}>
                             <MenuLink style={style.removeUnderline}>
-                              <Columns isMultiline>
+                              <Columns
+                                isMultiline
+                                style={{ cursor: "default" }}
+                              >
                                 <Column isSize="1/2">
                                   <Columns>
                                     <Column isSize="1/4">
@@ -1327,6 +1347,38 @@ export default class Analyze extends Component {
                                     </Column>
                                   </Columns>
                                 </Column>
+                                <Column isSize="1/2">
+                                  <Columns>
+                                    <Column isSize="1/4">
+                                      <Button
+                                        isSize={"small"}
+                                        style={style.copyButton}
+                                        onClick={this.openModal}
+                                        data-value={"add"}
+                                        data-tip={"Add a new Folder"}
+                                      >
+                                        <Icon className={"fa fa-plus fa-sm"} />
+                                      </Button>
+                                    </Column>
+                                    <Column
+                                      isSize="3/4"
+                                      style={{
+                                        padding: "0px",
+                                        paddingLeft: "15px",
+                                        paddingTop: "15px"
+                                      }}
+                                    >
+                                      <p
+                                        style={{
+                                          fontSize: "13px",
+                                          color: "#666666"
+                                        }}
+                                      >
+                                        ADD FOLDER
+                                      </p>
+                                    </Column>
+                                  </Columns>
+                                </Column>
                               </Columns>
                             </MenuLink>
                             <MenuLink
@@ -1418,6 +1470,16 @@ export default class Analyze extends Component {
               /* pass handlers here */
               close: this.closeModal,
               analyzeAll: this.analyzeAll
+            }}
+          />
+          <Folder
+            {...{
+              /* pass props here */
+              active: this.state.folderModalOpen,
+              /* pass handlers here */
+              getFolders: this.getFolders,
+              close: this.closeModal,
+              closeDirect: this.closeFolderModal
             }}
           />
         </div>

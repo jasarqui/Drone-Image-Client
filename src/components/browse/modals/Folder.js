@@ -120,6 +120,11 @@ export default class Folder extends Component {
 
   closeModal = e => {
     /* restart modal */
+    this.resetModal();
+    this.props.close(e);
+  };
+
+  resetModal = () => {
     this.setState({
       season: 'WET',
       date: '',
@@ -127,8 +132,7 @@ export default class Folder extends Component {
       report: '',
       uploading: false
     });
-    this.props.close(e);
-  };
+  }
 
   addFolder = () => {
     API.addFolder({
@@ -147,7 +151,7 @@ export default class Folder extends Component {
         this.props.closeDirect('add');
         this.props.newFolderSearch(this.props.page);
         /* reset modal */
-        this.setState({ season: 'WET', date: '2018' });
+        this.resetModal();
       })
       .catch(() => {
         Alert.error('Failed to add folder.', {
@@ -156,6 +160,8 @@ export default class Folder extends Component {
           effect: 'jelly',
           timeout: 2000
         });
+        /* reset modal */
+        this.resetModal();
       });
   };
 
@@ -299,10 +305,8 @@ export default class Folder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            <a href={file.preview} target={'_blank'}>
                             <Icon className={'fa fa-file-o fa-1x'} />
                               {file.name}
-                            </a>
                             <a
                               data-value={index}
                               href="."
@@ -488,10 +492,8 @@ export default class Folder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            <a href={file.preview} target={'_blank'}>
                             <Icon className={'fa fa-file-o fa-1x'} />
                               {file.name}
-                            </a>
                             <a
                               data-value={index}
                               href="."
