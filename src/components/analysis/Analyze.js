@@ -366,6 +366,7 @@ export default class Analyze extends Component {
       ).length > 0
         ? true
         : false;
+
     /* change state name */
     imageState[index].folder_name =
       (this.state.images[index].season === "WET" ? "WS" : "DS") +
@@ -689,9 +690,9 @@ export default class Analyze extends Component {
     reader.readAsDataURL(file[0]);
   };
 
-  getFolders = () => {
+  getFolders = async () => {
     /* load the folders */
-    API.getAllFolders().then(result => {
+    await API.getAllFolders().then(result => {
       this.setState({ folders: result.data.data });
     });
   };
@@ -1476,7 +1477,9 @@ export default class Analyze extends Component {
             {...{
               /* pass props here */
               active: this.state.folderModalOpen,
+              activeImage: this.state.activeImage,
               /* pass handlers here */
+              checkFolder: this.checkFolder,
               getFolders: this.getFolders,
               close: this.closeModal,
               closeDirect: this.closeFolderModal

@@ -134,6 +134,10 @@ export default class Folder extends Component {
     });
   }
 
+  getFolders = async () => {
+    await this.props.getFolders();
+  }
+
   addFolder = () => {
     API.addFolder({
       season: this.state.season,
@@ -141,17 +145,22 @@ export default class Folder extends Component {
       layout: this.state.layout,
       report: this.state.report
     })
-      .then(() => {
+      .then( () => {
         Alert.success('Successfully added folder.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
           timeout: 2000
         });
-        this.props.closeDirect('add');
-        this.props.getFolders();
+        
+        // check folder
+        this.getFolders().then(() => {
+          this.props.checkFolder(this.props.activeImage);
+        });
+        
         /* reset modal */
         this.resetModal();
+        this.props.closeDirect('add');
       })
       .catch(() => {
         Alert.error('Failed to add folder.', {
