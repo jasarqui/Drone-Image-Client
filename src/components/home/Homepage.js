@@ -166,7 +166,7 @@ export default class Homepage extends Component {
                           </Heading>
                         </TabLink>
                       </Tab>
-                      <Tab
+                      {/* <Tab
                         isActive={
                           this.state.activeTab === 'how' ? true : false
                         }>
@@ -182,7 +182,7 @@ export default class Homepage extends Component {
                             <strong>HOW</strong>
                           </Heading>
                         </TabLink>
-                        </Tab>
+                        </Tab> */}
                     </TabList>
                   </center>
                 </Container>

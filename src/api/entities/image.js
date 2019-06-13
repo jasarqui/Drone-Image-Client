@@ -55,6 +55,10 @@ export const getImages = ({
   );
 };
 
+export const getAllImages = ({id}) => {
+  return axios.get(`/img/all/${id}`);
+};
+
 // archives an image
 export const archiveImg = id => {
   return axios.put(`/img/archive`, id);

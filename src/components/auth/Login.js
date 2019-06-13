@@ -1,7 +1,7 @@
 /* import React components here */
-import React, { Component } from 'react';
-import GoogleLogin from 'react-google-login';
-import Alert from 'react-s-alert';
+import React, { Component } from "react";
+import GoogleLogin from "react-google-login";
+import Alert from "react-s-alert";
 /* import bulma components */
 import {
   Box,
@@ -20,91 +20,91 @@ import {
   Progress,
   Columns,
   Column
-} from 'bloomer';
+} from "bloomer";
 /* import assets here */
-import DiaIcon from '../../assets/dia-logo-white.png';
+import DiaIcon from "../../assets/dia-logo-white.png";
 /* import api here */
-import * as API from '../../api';
+import * as API from "../../api";
 
 /* insert styles here */
 const style = {
   marginTop: {
-    marginTop: '20px',
-    marginBottom: '0px'
+    marginTop: "20px",
+    marginBottom: "0px"
   },
   submit: {
-    backgroundColor: '#015264',
-    color: 'white',
-    width: '100%',
-    height: '35px',
-    borderRadius: '3px',
-    border: '1px solid #015264'
+    backgroundColor: "#015264",
+    color: "white",
+    width: "100%",
+    height: "35px",
+    borderRadius: "3px",
+    border: "1px solid #015264"
   },
   googleSubmit: {
-    backgroundColor: '#015264',
-    height: '35px',
-    borderRadius: '3px',
-    border: '1px solid #015264',
-    cursor: 'pointer',
-    width: '100%',
-    marginTop: '5px'
+    backgroundColor: "#015264",
+    height: "35px",
+    borderRadius: "3px",
+    border: "1px solid #015264",
+    cursor: "pointer",
+    width: "100%",
+    marginTop: "5px"
   },
   whiteText: {
-    color: 'white'
+    color: "white"
   },
   noBorder: {
-    paddingTop: '12px',
-    border: '1px solid white',
-    color: '#ff3860'
+    paddingTop: "12px",
+    border: "1px solid white",
+    color: "#ff3860"
   },
   boxPadding: {
-    paddingLeft: '0px',
-    paddingRight: '0px',
-    paddingTop: '0px'
+    paddingLeft: "0px",
+    paddingRight: "0px",
+    paddingTop: "0px"
   },
   formPadding: {
-    marginLeft: '20px',
-    marginRight: '20px',
-    textAlign: 'center'
+    marginLeft: "20px",
+    marginRight: "20px",
+    textAlign: "center"
   },
   img: {
-    borderRadius: '50%',
-    width: '128px',
-    height: '128px',
-    marginTop: '20px'
+    borderRadius: "50%",
+    width: "128px",
+    height: "128px",
+    marginTop: "20px"
   },
   divider: {
-    backgroundColor: 'silver'
+    backgroundColor: "silver"
   },
   info: {
-    marginTop: '30px'
+    marginTop: "30px"
   },
   infoBG: {
-    backgroundColor: '#77c9d4'
+    backgroundColor: "#77c9d4"
   },
   successBG: {
-    backgroundColor: '#57bc90'
+    backgroundColor: "#57bc90"
   },
   errorBG: {
-    backgroundColor: '#ef6f6c'
+    backgroundColor: "#ef6f6c"
   }
 };
 
 /* create regex here */
 // email regex according to General Email Regex (RFC 5322 Official Standard)
-// changed to accept emails under IRRI domain only
-const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
+// changed to accept emails under IRRI and UP domain only
+const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(irri.org|up.edu.ph)$/;
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      name: '',
-      email: '',
-      imgURL: '',
-      password: '',
-      logState: 'info'
+      name: "",
+      email: "",
+      imgURL: "",
+      password: "",
+      logState: "info"
     };
   }
 
@@ -113,7 +113,7 @@ export default class Login extends Component {
   };
 
   handleClose = e => {
-    this.setState({ logState: 'info' });
+    this.setState({ logState: "info" });
     this.props.close(e);
   };
 
@@ -125,7 +125,7 @@ export default class Login extends Component {
       password: this.state.password
     })
       .then(result => {
-        this.setState({ logState: 'success' });
+        this.setState({ logState: "success" });
         this.props.changeLog();
         this.props.changeUser(
           result.data.data.firstname,
@@ -138,30 +138,30 @@ export default class Login extends Component {
           this.props.close(e);
           /* this resets the modal */
           this.setState({
-            email: '',
-            name: '',
-            password: '',
-            imgURL: '',
-            logState: 'info'
+            email: "",
+            name: "",
+            password: "",
+            imgURL: "",
+            logState: "info"
           });
         }, 350);
       })
       .catch(error => {
         if (error.response !== undefined) {
           if (error.response.status === 404)
-            this.setState({ logState: 'danger' });
+            this.setState({ logState: "danger" });
         }
       });
   };
 
   responseGoogle = res => {
     /* if there was an error with loggin in */
-    if (res.error && res.error !== 'popup_closed_by_user') {
+    if (res.error && res.error !== "popup_closed_by_user") {
       // closing the popup is considered an error, but must not show error alert
-      Alert.error('Login Error.', {
+      Alert.error("Login Error.", {
         beep: false,
-        position: 'top-right',
-        effect: 'jelly',
+        position: "top-right",
+        effect: "jelly",
         timeout: 2000
       });
     }
@@ -169,18 +169,19 @@ export default class Login extends Component {
     /* successfully logged in */
     if (res.googleId) {
       /* change to res.profileObj.email.match(emailRegex) */
-      if (res.profileObj.email) {
+      if (res.profileObj.email.match(emailRegex)) {
         this.setState({
           name: res.profileObj.name,
           email: res.profileObj.email,
           imgURL: res.profileObj.imageUrl
         });
+        this.setState({ logState: "info" });
       } else {
-        this.setState({ logState: 'danger' });
-        Alert.error('Must be under IRRI domain.', {
+        this.setState({ logState: "danger" });
+        Alert.error("Must be under IRRI and UP domain.", {
           beep: false,
-          position: 'top-right',
-          effect: 'jelly',
+          position: "top-right",
+          effect: "jelly",
           timeout: 2000
         });
       }
@@ -196,36 +197,37 @@ export default class Login extends Component {
             <Box style={style.boxPadding}>
               <Notification
                 style={
-                  this.state.logState === 'info'
+                  this.state.logState === "info"
                     ? style.infoBG
-                    : this.state.logState === 'success'
-                      ? style.successBG
-                      : style.errorBG
-                }>
+                    : this.state.logState === "success"
+                    ? style.successBG
+                    : style.errorBG
+                }
+              >
                 <center>
                   <Image src={DiaIcon} isSize="128x128" />
                   <p style={style.whiteText}>
-                    {this.state.logState === 'info' ? (
-                      'Welcome!'
-                    ) : this.state.logState === 'success' ? (
+                    {this.state.logState === "info" ? (
+                      "Welcome!"
+                    ) : this.state.logState === "success" ? (
                       <span>
                         <Icon className="fa fa-check-circle" />
-                        {'Successfully logged in!'}
+                        {"Successfully logged in!"}
                       </span>
-                    ) : this.state.logState === 'danger' ? (
+                    ) : this.state.logState === "danger" ? (
                       <span>
                         <Icon className="fa fa-times-circle" />
-                        {'Account information is invalid!'}
+                        {"Account information is invalid!"}
                       </span>
                     ) : (
-                      ''
+                      ""
                     )}
                   </p>
                 </center>
               </Notification>
               <form style={style.formPadding}>
                 <Progress
-                  isColor={'info'}
+                  isColor={"info"}
                   value={!this.state.email ? 1 : 2}
                   max={2}
                   style={style.width95}
@@ -238,11 +240,11 @@ export default class Login extends Component {
                     </small>
                     <div>
                       <img
-                        alt={'userpic'}
+                        alt={"userpic"}
                         src={
                           this.state.imgURL
                             ? this.state.imgURL
-                            : 'https://www.iventa.eu/wp-content/uploads/2016/07/Person_Dummy.png'
+                            : "https://www.iventa.eu/wp-content/uploads/2016/07/Person_Dummy.png"
                         }
                         style={style.img}
                       />
@@ -252,12 +254,8 @@ export default class Login extends Component {
                       clientId="224633775911-d2hav5ep4grlovqrqc4ugtgtqaiub07g.apps.googleusercontent.com"
                       onSuccess={this.responseGoogle}
                       onFailure={this.responseGoogle}
-                      redirectUri={'localhost:3000'}
-                      buttonText={
-                        <span>
-                          Sign-in with Google
-                        </span>
-                      }
+                      redirectUri={"localhost:3000"}
+                      buttonText={<span>Sign-in with Google</span>}
                     />
                   </Column>
                   {this.state.email ? (
@@ -267,7 +265,7 @@ export default class Login extends Component {
                       </small>
                       <br />
                       <div style={style.info}>
-                        <small>{this.state.email ? 'Log in as' : ''}</small>
+                        <small>{this.state.email ? "Log in as" : ""}</small>
                         <p>
                           <strong>{this.state.name}</strong>
                           <br />
@@ -307,7 +305,8 @@ export default class Login extends Component {
                   type="submit"
                   disabled={
                     this.state.email && this.state.password ? false : true
-                  }>
+                  }
+                >
                   <small>Login</small>
                 </Button>
               </form>

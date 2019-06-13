@@ -92,8 +92,8 @@ const style = {
 /* create regex here */
 const passRegex = /^[A-Za-z0-9-_./\\@";:,<>()]{6,}$/;
 // email regex according to General Email Regex (RFC 5322 Official Standard)
-// changed to accept emails under IRRI domain only
-const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@irri.org$/;
+// changed to accept emails under IRRI and UP domain only
+const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@(irri.org|up.edu.ph)$/;
 
 export default class Signup extends Component {
   constructor(props) {
@@ -182,7 +182,7 @@ export default class Signup extends Component {
     /* successfully logged in */
     if (response.googleId) {
       /* change to response.profileObj.email.match(emailRegex) */
-      if (response.profileObj.email) {
+      if (response.profileObj.email.match(emailRegex)) {
         this.setState({
           firstname: response.profileObj.givenName,
           lastname: response.profileObj.familyName,
@@ -196,7 +196,7 @@ export default class Signup extends Component {
         });
       } else {
         this.setState({ signupState: 'danger' });
-        Alert.error('Must be under IRRI domain.', {
+        Alert.error('Must be under IRRI and UP domain.', {
           beep: false,
           position: 'top-right',
           effect: 'jelly',
