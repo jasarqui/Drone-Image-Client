@@ -1,8 +1,11 @@
 /* import React components here */
-import React, { Component } from 'react';
-import Alert from 'react-s-alert';
-import Dropzone from 'react-dropzone';
-import ReactTooltip from 'react-tooltip';
+import React, { Component } from "react";
+import Alert from "react-s-alert";
+import Dropzone from "react-dropzone";
+import ReactTooltip from "react-tooltip";
+/* file upload api */
+import { Dropbox } from "dropbox";
+import fetch from "isomorphic-fetch";
 /* import bulma components */
 import {
   Button,
@@ -17,56 +20,56 @@ import {
   Icon,
   Input,
   Tag
-} from 'bloomer';
+} from "bloomer";
 /* import api here */
-import * as API from '../../../api';
+import * as API from "../../../api";
 
 /* insert styles here */
 const style = {
   activeButton: {
-    color: 'white',
-    backgroundColor: '#77c9d4',
-    border: '1px solid #77c9d4'
+    color: "white",
+    backgroundColor: "#77c9d4",
+    border: "1px solid #77c9d4"
   },
   valid: {
-    backgroundColor: '#57bc90',
-    color: 'white',
-    width: '20%',
-    marginLeft: '5px'
+    backgroundColor: "#57bc90",
+    color: "white",
+    width: "20%",
+    marginLeft: "5px"
   },
   invalid: {
-    backgroundColor: '#ef6f6c',
-    color: 'white',
-    width: '20%',
-    marginLeft: '5px'
+    backgroundColor: "#ef6f6c",
+    color: "white",
+    width: "20%",
+    marginLeft: "5px"
   },
   none: {
-    backgroundColor: '#77c9d4',
-    color: 'white',
-    width: '20%',
-    marginLeft: '5px'
+    backgroundColor: "#77c9d4",
+    color: "white",
+    width: "20%",
+    marginLeft: "5px"
   },
   date: {
-    backgroundColor: '#77c9d4',
-    color: 'white',
-    width: '20%',
-    marginRight: '5px'
+    backgroundColor: "#77c9d4",
+    color: "white",
+    width: "20%",
+    marginRight: "5px"
   },
   add: {
-    borderRadius: '50%',
-    color: 'white',
-    backgroundColor: '#015249',
-    borderColor: '#015249'
+    borderRadius: "50%",
+    color: "white",
+    backgroundColor: "#015249",
+    borderColor: "#015249"
   },
   flex: {
     /* pseudo flexbox */
-    display: 'flex',
-    flexDirection: 'column',
-    verticalAlign: 'center'
+    display: "flex",
+    flexDirection: "column",
+    verticalAlign: "center"
   },
   attach: {
-    fontSize: '8px',
-    color: '#999999'
+    fontSize: "8px",
+    color: "#999999"
   }
 };
 
@@ -79,11 +82,12 @@ export default class Folder extends Component {
     super(props);
 
     this.state = {
-      season: 'WET',
-      date: '',
+      season: "WET",
+      date: "",
       layout: [],
-      report: '',
-      uploading: false
+      report: "",
+      uploading_file: false,
+      uploading_report: false
     };
   }
 
@@ -96,9 +100,43 @@ export default class Folder extends Component {
     this.setState({ date: e.target.value });
   };
 
-  uploadFiles = files => {
+  uploadFiles = async files => {
+    let count_files = files.length;
+    this.setState({ uploading_file: true });
+    // authenticate dropbox
+    var dropbox = new Dropbox({
+      clientId: "iwlq20lyl4g9yz8",
+      accessToken:
+        "pQL-PvIyBLAAAAAAAAAAIC9K6bWxsgfcG9q6n0A6Xj1d_z-qt8bzYUCfXZAexWHt",
+      fetch: fetch
+    });
+
+    // add files to dropbox
     var layoutFiles = [...this.state.layout];
-    this.setState({ layout: layoutFiles.concat(files) });
+    files.forEach(async file => {
+      await dropbox
+        .filesUpload({
+          path: "/" + file.name,
+          contents: file
+        })
+        .then(response => {
+          dropbox
+            .sharingCreateSharedLink({
+              path: "/" + response.name,
+              short_url: true
+            })
+            .then(res => {
+              layoutFiles.push({ name: response.name, preview: res.url });
+              count_files--;
+              // on upload end
+              if (count_files === 0)
+                this.setState({ layout: layoutFiles, uploading_file: false });
+            });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    });
   };
 
   removeFile = e => {
@@ -108,14 +146,43 @@ export default class Folder extends Component {
     this.setState({ layout: layoutFiles });
   };
 
-  uploadReport = file => {
-    /* replace original */
-    this.setState({ report: file[0] });
+  uploadReport = async file => {
+    this.setState({ uploading_report: true });
+    // authenticate dropbox
+    var dropbox = new Dropbox({
+      clientId: "iwlq20lyl4g9yz8",
+      accessToken:
+        "pQL-PvIyBLAAAAAAAAAAIC9K6bWxsgfcG9q6n0A6Xj1d_z-qt8bzYUCfXZAexWHt",
+      fetch: fetch
+    });
+
+    // add report to dropbox
+    await dropbox
+      .filesUpload({
+        path: "/" + file[0].name,
+        contents: file[0]
+      })
+      .then(response => {
+        dropbox
+          .sharingCreateSharedLink({
+            path: "/" + response.name,
+            short_url: true
+          })
+          .then(res => {
+            this.setState({ report: res.url });
+          })
+          .catch(error => console.log(error));
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    this.setState({ uploading_report: false });
   };
 
   removeReport = e => {
     e.preventDefault();
-    this.setState({ report: '' });
+    this.setState({ report: "" });
   };
 
   closeModal = e => {
@@ -126,17 +193,17 @@ export default class Folder extends Component {
 
   resetModal = () => {
     this.setState({
-      season: 'WET',
-      date: '',
+      season: "WET",
+      date: "",
       layout: [],
-      report: '',
+      report: "",
       uploading: false
     });
-  }
+  };
 
   getFolders = async () => {
     await this.props.getFolders();
-  }
+  };
 
   addFolder = () => {
     API.addFolder({
@@ -145,28 +212,28 @@ export default class Folder extends Component {
       layout: this.state.layout,
       report: this.state.report
     })
-      .then( () => {
-        Alert.success('Successfully added folder.', {
+      .then(() => {
+        Alert.success("Successfully added folder.", {
           beep: false,
-          position: 'top-right',
-          effect: 'jelly',
+          position: "top-right",
+          effect: "jelly",
           timeout: 2000
         });
-        
+
         // check folder
         this.getFolders().then(() => {
           this.props.checkFolder(this.props.activeImage);
         });
-        
+
         /* reset modal */
         this.resetModal();
-        this.props.closeDirect('add');
+        this.props.closeDirect("add");
       })
       .catch(() => {
-        Alert.error('Failed to add folder.', {
+        Alert.error("Failed to add folder.", {
           beep: false,
-          position: 'top-right',
-          effect: 'jelly',
+          position: "top-right",
+          effect: "jelly",
           timeout: 2000
         });
         /* reset modal */
@@ -179,61 +246,65 @@ export default class Folder extends Component {
       <div>
         <center>
           <Modal isActive={this.props.active}>
-            <ModalBackground data-value={'add'} onClick={this.closeModal} />
+            <ModalBackground data-value={"add"} onClick={this.closeModal} />
             <ModalContent>
               <Notification
-                style={{ width: '75%', textAlign: 'left' }}
-                isHidden={'mobile'}>
+                style={{ width: "75%", textAlign: "left" }}
+                isHidden={"mobile"}
+              >
                 <Heading
                   style={{
-                    color: '#015249',
-                    fontSize: '14px',
-                    marginBottom: '20px'
-                  }}>
+                    color: "#015249",
+                    fontSize: "14px",
+                    marginBottom: "20px"
+                  }}
+                >
                   <strong>
-                    CREATE A NEW FOLDER{' '}
+                    CREATE A NEW FOLDER{" "}
                     <Icon
                       data-tip={
                         "Ctrl+Click uploaded files if you're using Google Chrome"
                       }
-                      className={'fa fa-info fa-1x'}
+                      className={"fa fa-info fa-1x"}
                     />
                   </strong>
                 </Heading>
-                <Columns style={{ marginBottom: '0px' }}>
+                <Columns style={{ marginBottom: "0px" }}>
                   <Column isSize="1/4">Name</Column>
                   <Column isSize="3/4">
-                    {this.state.season === 'WET' ? 'WS' : 'DS'}
+                    {this.state.season === "WET" ? "WS" : "DS"}
                     {this.state.date}
                   </Column>
                 </Columns>
-                <Columns style={{ marginBottom: '0px' }}>
+                <Columns style={{ marginBottom: "0px" }}>
                   <Column isSize="1/4">Season</Column>
                   <Column isSize="3/4">
                     <Button
-                      data-value={'WET'}
+                      data-value={"WET"}
                       onClick={this.changeSeason}
-                      isSize={'small'}
+                      isSize={"small"}
                       style={
-                        this.state.season === 'WET' ? style.activeButton : {}
-                      }>
+                        this.state.season === "WET" ? style.activeButton : {}
+                      }
+                    >
                       <Icon
-                        className={'fa fa-umbrella fa-1x'}
-                        style={{ marginRight: '5px' }}
-                      />{' '}
+                        className={"fa fa-umbrella fa-1x"}
+                        style={{ marginRight: "5px" }}
+                      />{" "}
                       WET
                     </Button>
                     <Button
-                      data-value={'DRY'}
+                      data-value={"DRY"}
                       onClick={this.changeSeason}
-                      isSize={'small'}
+                      isSize={"small"}
                       style={
-                        this.state.season === 'DRY' ? style.activeButton : {}
-                      }>
+                        this.state.season === "DRY" ? style.activeButton : {}
+                      }
+                    >
                       <Icon
-                        className={'fa fa-fire fa-1x'}
-                        style={{ marginRight: '5px' }}
-                      />{' '}
+                        className={"fa fa-fire fa-1x"}
+                        style={{ marginRight: "5px" }}
+                      />{" "}
                       DRY
                     </Button>
                   </Column>
@@ -247,7 +318,7 @@ export default class Folder extends Component {
                       placeholder="YYYY"
                       value={this.state.date}
                       onChange={this.changeDate}
-                      style={{ width: '75%' }}
+                      style={{ width: "75%" }}
                     />
                     <Tag
                       style={
@@ -256,52 +327,66 @@ export default class Folder extends Component {
                             ? style.valid
                             : style.invalid
                           : style.none
-                      }>
+                      }
+                    >
                       {this.state.date
                         ? this.state.date.match(yearRegex)
-                          ? 'Valid'
-                          : 'Invalid'
-                        : 'Required'}
+                          ? "Valid"
+                          : "Invalid"
+                        : "Required"}
                     </Tag>
                   </Column>
                 </Columns>
                 <Columns>
-                  <Column isSize="1/4">Report</Column>
+                  <Column isSize="1/4">Pix4D QR</Column>
                   <Column isSize="3/4">
                     {this.state.report ? (
                       <small>
                         <p>
-                          <a href={this.state.report.preview} target={'_blank'}>
-                          <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                          <a href={this.state.report.preview} target={"_blank"}>
+                            <Icon className={"fa fa-file-pdf-o fa-1x"} />
                             {this.state.report.name}
                           </a>
                           <a
                             href="."
                             onClick={this.removeReport}
                             style={{
-                              textDecoration: 'none',
-                              color: '#999999'
-                            }}>
-                            <Icon className={'fa fa-times-circle fa-1x'} />
+                              textDecoration: "none",
+                              color: "#999999"
+                            }}
+                          >
+                            <Icon className={"fa fa-times-circle fa-1x"} />
                           </a>
                         </p>
                       </small>
                     ) : (
                       <p />
                     )}
+                    {this.state.uploading_report ? (
+                      <small>
+                        <p>
+                          Uploading...{" "}
+                          <Icon className={"fa fa-gear fa-spin fa-1x"} />
+                        </p>
+                      </small>
+                    ) : (
+                      <small />
+                    )}
                     <Dropzone
                       onDrop={this.uploadReport}
-                      style={{ ...style.flex, width: '100%' }}>
+                      style={{ ...style.flex, width: "100%" }}
+                    >
                       <small style={style.attach}>
                         <a
-                          href={'.'}
-                          style={{ textDecoration: 'none', fontSize: '15px' }}
-                          onClick={e => e.preventDefault()}>
+                          href={"."}
+                          style={{ textDecoration: "none", fontSize: "15px" }}
+                          onClick={e => e.preventDefault()}
+                        >
                           <Icon
-                            style={{ float: 'left', marginTop: '0px' }}
-                            className={'fa fa-paperclip fa-1x'}
+                            style={{ float: "left", marginTop: "0px" }}
+                            className={"fa fa-paperclip fa-1x"}
                           />
-                          {this.state.report ? 'Edit ' : 'Insert '}attachment
+                          {this.state.report ? "Edit " : "Insert "}attachment
                         </a>
                       </small>
                     </Dropzone>
@@ -314,34 +399,47 @@ export default class Folder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            <Icon className={'fa fa-file-o fa-1x'} />
-                              {file.name}
+                            <Icon className={"fa fa-file-o fa-1x"} />
+                            {file.name}
                             <a
                               data-value={index}
                               href="."
                               onClick={this.removeFile}
                               style={{
-                                textDecoration: 'none',
-                                color: '#999999'
-                              }}>
-                              <Icon className={'fa fa-times-circle fa-1x'} />
+                                textDecoration: "none",
+                                color: "#999999"
+                              }}
+                            >
+                              <Icon className={"fa fa-times-circle fa-1x"} />
                             </a>
                           </small>
                         </p>
                       );
                     })}
+                    {this.state.uploading_file ? (
+                      <small>
+                        <p>
+                          Uploading...{" "}
+                          <Icon className={"fa fa-gear fa-spin fa-1x"} />
+                        </p>
+                      </small>
+                    ) : (
+                      <small />
+                    )}
                     <Dropzone
                       multiple={true}
                       onDrop={this.uploadFiles}
-                      style={{ ...style.flex, width: '100%' }}>
+                      style={{ ...style.flex, width: "100%" }}
+                    >
                       <small style={style.attach}>
                         <a
-                          href={'.'}
-                          style={{ textDecoration: 'none', fontSize: '15px' }}
-                          onClick={e => e.preventDefault()}>
+                          href={"."}
+                          style={{ textDecoration: "none", fontSize: "15px" }}
+                          onClick={e => e.preventDefault()}
+                        >
                           <Icon
-                            style={{ float: 'left', marginTop: '0px' }}
-                            className={'fa fa-paperclip fa-1x'}
+                            style={{ float: "left", marginTop: "0px" }}
+                            className={"fa fa-paperclip fa-1x"}
                           />
                           Insert attachments
                         </a>
@@ -351,81 +449,86 @@ export default class Folder extends Component {
                 </Columns>
                 {this.state.date.match(yearRegex) ? (
                   <Button
-                    data-value={'add'}
+                    data-value={"add"}
                     isSize="large"
                     style={{
                       ...style.add,
-                      float: 'right'
+                      float: "right"
                     }}
-                    onClick={this.addFolder}>
-                    <Icon className={'fa fa-plus fa-1x'} />
+                    onClick={this.addFolder}
+                  >
+                    <Icon className={"fa fa-plus fa-1x"} />
                   </Button>
                 ) : (
                   <Button
-                    data-value={'add'}
+                    data-value={"add"}
                     isSize="large"
                     style={{
                       ...style.add,
-                      float: 'right',
-                      cursor: 'not-allowed'
+                      float: "right",
+                      cursor: "not-allowed"
                     }}
-                    onClick={e => e.preventDefault()}>
-                    <Icon className={'fa fa-ban fa-1x'} />
+                    onClick={e => e.preventDefault()}
+                  >
+                    <Icon className={"fa fa-ban fa-1x"} />
                   </Button>
                 )}
               </Notification>
-              <Notification isHidden={'desktop'}>
+              <Notification isHidden={"desktop"}>
                 <Heading
                   style={{
-                    color: '#015249',
-                    fontSize: '14px',
-                    marginBottom: '20px'
-                  }}>
+                    color: "#015249",
+                    fontSize: "14px",
+                    marginBottom: "20px"
+                  }}
+                >
                   <strong>
-                    CREATE A NEW FOLDER{' '}
+                    CREATE A NEW FOLDER{" "}
                     <Icon
                       data-tip={
                         "Ctrl+Click uploaded files if you're using Google Chrome"
                       }
-                      className={'fa fa-info fa-1x'}
+                      className={"fa fa-info fa-1x"}
                     />
                   </strong>
                 </Heading>
-                <p style={{ margin: '10px 0px 10px 0px' }}>
+                <p style={{ margin: "10px 0px 10px 0px" }}>
                   <strong>Name:</strong>
-                  {'  '}
+                  {"  "}
                   <small>
-                    {this.state.season === 'WET' ? 'WS' : 'DS'}
+                    {this.state.season === "WET" ? "WS" : "DS"}
                     {this.state.date}
                   </small>
                 </p>
                 <Button
-                  data-value={'WET'}
+                  data-value={"WET"}
                   onClick={this.changeSeason}
-                  isSize={'small'}
-                  style={this.state.season === 'WET' ? style.activeButton : {}}>
+                  isSize={"small"}
+                  style={this.state.season === "WET" ? style.activeButton : {}}
+                >
                   <Icon
-                    className={'fa fa-umbrella fa-1x'}
-                    style={{ marginRight: '5px' }}
-                  />{' '}
+                    className={"fa fa-umbrella fa-1x"}
+                    style={{ marginRight: "5px" }}
+                  />{" "}
                   WET SEASON
                 </Button>
                 <Button
-                  data-value={'DRY'}
+                  data-value={"DRY"}
                   onClick={this.changeSeason}
-                  isSize={'small'}
-                  style={this.state.season === 'DRY' ? style.activeButton : {}}>
+                  isSize={"small"}
+                  style={this.state.season === "DRY" ? style.activeButton : {}}
+                >
                   <Icon
-                    className={'fa fa-fire fa-1x'}
-                    style={{ marginRight: '5px' }}
-                  />{' '}
+                    className={"fa fa-fire fa-1x"}
+                    style={{ marginRight: "5px" }}
+                  />{" "}
                   DRY SEASON
                 </Button>
-                <Columns style={{ marginTop: '2px' }}>
+                <Columns style={{ marginTop: "2px" }}>
                   <Column>
                     <Tag style={style.date}>Date</Tag>
                     <Input
-                      style={{ width: '40%' }}
+                      style={{ width: "40%" }}
                       isSize="small"
                       type="text"
                       placeholder="YYYY"
@@ -439,54 +542,68 @@ export default class Folder extends Component {
                             ? style.valid
                             : style.invalid
                           : style.none
-                      }>
+                      }
+                    >
                       {this.state.date
                         ? this.state.date.match(yearRegex)
-                          ? 'Valid'
-                          : 'Invalid'
-                        : 'Required'}
+                          ? "Valid"
+                          : "Invalid"
+                        : "Required"}
                     </Tag>
                   </Column>
                 </Columns>
                 <Columns>
                   <Column>
                     <p>
-                      <strong>Report</strong>
+                      <strong>Pix4D QR</strong>
                     </p>
                     <small>
                       {this.state.report.name ? (
                         <p>
-                          <a href={this.state.report.preview} target={'_blank'}>
-                          <Icon className={'fa fa-file-pdf-o fa-1x'} />
+                          <a href={this.state.report.preview} target={"_blank"}>
+                            <Icon className={"fa fa-file-pdf-o fa-1x"} />
                             {this.state.report.name}
                           </a>
                           <a
                             href="."
                             onClick={this.removeReport}
                             style={{
-                              textDecoration: 'none',
-                              color: '#999999'
-                            }}>
-                            <Icon className={'fa fa-times-circle fa-1x'} />
+                              textDecoration: "none",
+                              color: "#999999"
+                            }}
+                          >
+                            <Icon className={"fa fa-times-circle fa-1x"} />
                           </a>
                         </p>
                       ) : (
                         <small />
                       )}
                     </small>
+                    {this.state.uploading_report ? (
+                      <p>
+                        <small>
+                          Uploading...{" "}
+                          <Icon className={"fa fa-gear fa-spin fa-1x"} />
+                        </small>
+                      </p>
+                    ) : (
+                      <small />
+                    )}
                     <Dropzone
                       onDrop={this.uploadReport}
-                      style={{ ...style.flex, width: '50%' }}>
+                      style={{ ...style.flex, width: "50%" }}
+                    >
                       <small style={style.attach}>
                         <a
-                          href={'.'}
-                          style={{ textDecoration: 'none', fontSize: '15px' }}
-                          onClick={e => e.preventDefault()}>
+                          href={"."}
+                          style={{ textDecoration: "none", fontSize: "15px" }}
+                          onClick={e => e.preventDefault()}
+                        >
                           <Icon
-                            style={{ float: 'left', marginTop: '0px' }}
-                            className={'fa fa-paperclip fa-1x'}
+                            style={{ float: "left", marginTop: "0px" }}
+                            className={"fa fa-paperclip fa-1x"}
                           />
-                          {this.state.report ? 'Edit ' : 'Insert '}attachment
+                          {this.state.report ? "Edit " : "Insert "}attachment
                         </a>
                       </small>
                     </Dropzone>
@@ -501,34 +618,47 @@ export default class Folder extends Component {
                       return (
                         <p key={index}>
                           <small>
-                            <Icon className={'fa fa-file-o fa-1x'} />
-                              {file.name}
+                            <Icon className={"fa fa-file-o fa-1x"} />
+                            {file.name}
                             <a
                               data-value={index}
                               href="."
                               onClick={this.removeFile}
                               style={{
-                                textDecoration: 'none',
-                                color: '#999999'
-                              }}>
-                              <Icon className={'fa fa-times-circle fa-1x'} />
+                                textDecoration: "none",
+                                color: "#999999"
+                              }}
+                            >
+                              <Icon className={"fa fa-times-circle fa-1x"} />
                             </a>
                           </small>
                         </p>
                       );
                     })}
+                    {this.state.uploading_file ? (
+                      <p>
+                        <small>
+                          Uploading...{" "}
+                          <Icon className={"fa fa-gear fa-spin fa-1x"} />
+                        </small>
+                      </p>
+                    ) : (
+                      <small />
+                    )}
                     <Dropzone
                       multiple={true}
                       onDrop={this.uploadFiles}
-                      style={{ ...style.flex, width: '50%' }}>
+                      style={{ ...style.flex, width: "50%" }}
+                    >
                       <small style={style.attach}>
                         <a
-                          href={'.'}
-                          style={{ textDecoration: 'none', fontSize: '15px' }}
-                          onClick={e => e.preventDefault()}>
+                          href={"."}
+                          style={{ textDecoration: "none", fontSize: "15px" }}
+                          onClick={e => e.preventDefault()}
+                        >
                           <Icon
-                            style={{ float: 'left', marginTop: '0px' }}
-                            className={'fa fa-paperclip fa-1x'}
+                            style={{ float: "left", marginTop: "0px" }}
+                            className={"fa fa-paperclip fa-1x"}
                           />
                           Insert attachments
                         </a>
@@ -543,26 +673,28 @@ export default class Folder extends Component {
                       style={{
                         ...style.add
                       }}
-                      onClick={this.addFolder}>
-                      <Icon className={'fa fa-plus fa-1x'} />
+                      onClick={this.addFolder}
+                    >
+                      <Icon className={"fa fa-plus fa-1x"} />
                     </Button>
                   ) : (
                     <Button
                       isSize="large"
                       style={{
                         ...style.add,
-                        cursor: 'not-allowed'
+                        cursor: "not-allowed"
                       }}
-                      onClick={e => e.preventDefault()}>
-                      <Icon className={'fa fa-ban fa-1x'} />
+                      onClick={e => e.preventDefault()}
+                    >
+                      <Icon className={"fa fa-ban fa-1x"} />
                     </Button>
                   )}
                 </center>
               </Notification>
             </ModalContent>
-            <ModalClose data-value={'add'} onClick={this.closeModal} />
+            <ModalClose data-value={"add"} onClick={this.closeModal} />
           </Modal>
-          <ReactTooltip effect={'solid'} place={'bottom'} />
+          <ReactTooltip effect={"solid"} place={"bottom"} />
         </center>
       </div>
     );

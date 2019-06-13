@@ -9,6 +9,7 @@
     "bloomer": "^0.6.3",
     "bulma": "^0.7.1",
     "bulma-start": "^0.0.3",
+    "dropbox": "^4.0.27",
     "font-awesome": "^4.7.0",
     "pdfmake": "^0.1.57",
     "prop-types": "^15.6.2",
