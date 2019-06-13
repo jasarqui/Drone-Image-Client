@@ -254,8 +254,8 @@ export default class Login extends Component {
                       onFailure={this.responseGoogle}
                       redirectUri={'localhost:3000'}
                       buttonText={
-                        <span style={style.whiteText}>
-                          <Icon className={'fa fa-google'} />Sign-in with Google
+                        <span>
+                          Sign-in with Google
                         </span>
                       }
                     />
