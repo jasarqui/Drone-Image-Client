@@ -562,6 +562,39 @@ export default class About extends Component {
               }
             </TrackVisibility>
           </Column>
+          <Column isSize={'3'}>
+            <TrackVisibility once>
+              {({ isVisible }) =>
+                isVisible ? (
+                  <FadeInGroup transitionAppear={isVisible ? true : false}>
+                    <center>
+                      <a href={'https://www.dropbox.com/'} target={'_blank'}>
+                        <img
+                          alt={'dropbox'}
+                          src={
+                            'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Dropbox_Icon.svg/1101px-Dropbox_Icon.svg.png'
+                          }
+                          style={style.icon}
+                        />
+                      </a>
+                    </center>
+                  </FadeInGroup>
+                ) : (
+                  <center style={{ opacity: 0 }}>
+                    <a href={'https://www.dropbox.com/'} target={'_blank'}>
+                      <img
+                        alt={'dropbox'}
+                        src={
+                          'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Dropbox_Icon.svg/1101px-Dropbox_Icon.svg.png'
+                        }
+                        style={style.icon}
+                      />
+                    </a>
+                  </center>
+                )
+              }
+            </TrackVisibility>
+          </Column>
         </Columns>
         <Columns style={style.appIcons}>
           <Column isSize={'3'}>
@@ -794,6 +827,39 @@ export default class About extends Component {
                         alt={'opencv'}
                         src={
                           'https://softlay.net/wp-content/uploads/2016/08/opencv-3-200x200.png'
+                        }
+                        style={style.icon}
+                      />
+                    </a>
+                  </center>
+                )
+              }
+            </TrackVisibility>
+          </Column>
+          <Column isSize={'3'}>
+            <TrackVisibility once>
+              {({ isVisible }) =>
+                isVisible ? (
+                  <FadeInGroup transitionAppear={isVisible ? true : false}>
+                    <center>
+                      <a href={'https://cloudinary.com/'} target={'_blank'}>
+                        <img
+                          alt={'cloudinary'}
+                          src={
+                            'https://res.cloudinary.com/nho/image/fetch/c_limit,f_auto,q_auto,w_300/https://nicolas-hoizey.com/assets/logos/cloudinary.png'
+                          }
+                          style={style.icon}
+                        />
+                      </a>
+                    </center>
+                  </FadeInGroup>
+                ) : (
+                  <center style={{ opacity: 0 }}>
+                    <a href={'https://cloudinary.com/'} target={'_blank'}>
+                      <img
+                        alt={'cloudinary'}
+                        src={
+                          'https://res.cloudinary.com/nho/image/fetch/c_limit,f_auto,q_auto,w_300/https://nicolas-hoizey.com/assets/logos/cloudinary.png'
                         }
                         style={style.icon}
                       />
