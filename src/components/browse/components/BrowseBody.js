@@ -197,7 +197,7 @@ export default class BrowseFolders extends Component {
                                   Archive
                                 </DropdownItem>
                                 <DropdownItem
-                                  data-value={image.id}
+                                  data-value={JSON.stringify({id: image.id, folder_state: this.props.folder_state})}
                                   onClick={this.props.viewImage}>
                                   View
                                 </DropdownItem>
@@ -219,7 +219,7 @@ export default class BrowseFolders extends Component {
                                   Archive
                                 </DropdownItem>
                                 <DropdownItem
-                                  data-value={image.id}
+                                  data-value={JSON.stringify({id: image.id, folder_state: this.props.folder_state})}
                                   onClick={this.props.viewImage}>
                                   View
                                 </DropdownItem>
@@ -236,7 +236,7 @@ export default class BrowseFolders extends Component {
                   </CardHeader>
                   <CardImage>
                     <Image
-                      data-value={image.id}
+                      data-value={JSON.stringify({id: image.id, folder_state: this.props.folder_state})}
                       onClick={this.props.viewImage}
                       style={{ cursor: 'pointer' }}
                       src={image.filepath}

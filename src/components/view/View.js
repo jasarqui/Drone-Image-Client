@@ -1,10 +1,10 @@
 /* import React components here */
-import React, { Component } from 'react';
-import DocumentTitle from 'react-document-title';
-import Alert from 'react-s-alert';
-import ReactTooltip from 'react-tooltip';
-import ArchiveModal from './modals/ArchiveModal';
-import UnarchiveModal from './modals/UnarchiveModal';
+import React, { Component } from "react";
+import DocumentTitle from "react-document-title";
+import Alert from "react-s-alert";
+import ReactTooltip from "react-tooltip";
+import ArchiveModal from "./modals/ArchiveModal";
+import UnarchiveModal from "./modals/UnarchiveModal";
 /* import bulma components */
 import {
   Columns,
@@ -20,92 +20,92 @@ import {
   Input,
   Heading,
   Button
-} from 'bloomer';
+} from "bloomer";
 /* import api here */
-import * as API from '../../api';
+import * as API from "../../api";
 
 /* create styles here */
 const style = {
   marginCard: {
-    margin: '30px',
-    borderRadius: '25px'
+    margin: "30px",
+    borderRadius: "25px"
   },
   icon: {
-    marginRight: '3px'
+    marginRight: "3px"
   },
   removeUnderline: {
-    textDecoration: 'none'
+    textDecoration: "none"
   },
   switchOn: {
-    color: '#57bc90',
-    margin: '0px',
-    padding: '0px',
-    textDecoration: 'none'
+    color: "#57bc90",
+    margin: "0px",
+    padding: "0px",
+    textDecoration: "none"
   },
   switchOff: {
-    color: '#ef6f6c',
-    margin: '0px',
-    padding: '0px',
-    textDecoration: 'none'
+    color: "#ef6f6c",
+    margin: "0px",
+    padding: "0px",
+    textDecoration: "none"
   },
   toolbar: {
-    textAlign: 'center',
-    padding: '15px 0px 0px 0px'
+    textAlign: "center",
+    padding: "15px 0px 0px 0px"
   },
   whiteText: {
-    color: 'white'
+    color: "white"
   },
   greenText: {
-    color: '#57bc90'
+    color: "#57bc90"
   },
   redText: {
-    color: '#ef6f6c'
+    color: "#ef6f6c"
   },
   blueText: {
-    color: '#77c9d4'
+    color: "#77c9d4"
   },
   dataHeader: {
-    backgroundColor: '#015249',
-    color: 'white',
-    paddingTop: '0px'
+    backgroundColor: "#015249",
+    color: "white",
+    paddingTop: "0px"
   },
   button: {
-    backgroundColor: '#015249',
-    border: '1px solid #015249',
-    color: 'white',
-    marginTop: '0px',
-    width: '25%',
-    textAlign: 'center'
+    backgroundColor: "#015249",
+    border: "1px solid #015249",
+    color: "white",
+    marginTop: "0px",
+    width: "25%",
+    textAlign: "center"
   },
   activeButton: {
-    color: 'white',
-    backgroundColor: '#77c9d4',
-    border: '1px solid #77c9d4'
+    color: "white",
+    backgroundColor: "#77c9d4",
+    border: "1px solid #77c9d4"
   },
   activeHelper: {
-    float: 'right',
-    borderRadius: '50%',
-    color: 'white',
-    backgroundColor: '#77c9d4',
-    border: 'none',
-    marginTop: '-4px'
+    float: "right",
+    borderRadius: "50%",
+    color: "white",
+    backgroundColor: "#77c9d4",
+    border: "none",
+    marginTop: "-4px"
   },
   inactiveHelper: {
-    float: 'right',
-    borderRadius: '50%',
-    backgroundColor: 'white',
-    border: 'none',
-    marginTop: '-4px'
+    float: "right",
+    borderRadius: "50%",
+    backgroundColor: "white",
+    border: "none",
+    marginTop: "-4px"
   },
   imageColumn: {
     /* pseudo flexbox */
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    verticalAlign: 'center',
-    backgroundColor: '#f8f8f8',
-    paddingLeft: '0px'
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    verticalAlign: "center",
+    backgroundColor: "#f8f8f8",
+    paddingLeft: "0px"
   }
 };
 
@@ -114,20 +114,20 @@ export default class View extends Component {
     super(props);
 
     this.state = {
-      fileURL: '',
-      name: '',
-      camera: '',
-      season: '',
-      private: '',
-      year: '',
-      drone: '',
-      location: '',
-      image: '',
-      env_condition: '',
-      date: '',
-      archived: '',
+      fileURL: "",
+      name: "",
+      camera: "",
+      season: "",
+      private: "",
+      year: "",
+      drone: "",
+      location: "",
+      image: "",
+      env_condition: "",
+      date: "",
+      archived: "",
       attrib: [],
-      folder_name: '',
+      folder_name: "",
       /* these are for UX */
       folders: [],
       folder_exists: true,
@@ -135,21 +135,21 @@ export default class View extends Component {
       attribOpen: true,
       archiveModalOpen: false,
       unarchiveModalOpen: false,
-      userID: ''
+      userID: ""
     };
   }
 
   /* modal functions */
   openModal = e => {
     e.preventDefault();
-    e.currentTarget.dataset.value === 'archive'
+    e.currentTarget.dataset.value === "archive"
       ? this.setState({ archiveModalOpen: true })
       : this.setState({ unarchiveModalOpen: true });
   };
 
   closeModal = e => {
     e.preventDefault();
-    e.currentTarget.dataset.value === 'archive'
+    e.currentTarget.dataset.value === "archive"
       ? this.setState({ archiveModalOpen: false })
       : this.setState({ unarchiveModal: false });
   };
@@ -158,26 +158,26 @@ export default class View extends Component {
   archive = e => {
     e.preventDefault();
     this.archiveImage().then(() => {
-      this.loadInfo('archive');
+      this.loadInfo("archive");
       this.setState({ archiveModalOpen: false });
     });
   };
 
   async archiveImage() {
-    API.archiveImg({ id: this.props.imageID });
+    await API.archiveImg({ id: this.props.imageID });
   }
 
   /* this is to unarchive an image */
   unarchive = e => {
     e.preventDefault();
     this.unarchiveImage().then(() => {
-      this.loadInfo('unarchive');
+      this.loadInfo("unarchive");
       this.setState({ unarchiveModalOpen: false });
     });
   };
 
   async unarchiveImage() {
-    API.unarchiveImg({ id: this.props.imageID });
+    await API.unarchiveImg({ id: this.props.imageID });
   }
 
   /* handlers */
@@ -230,13 +230,13 @@ export default class View extends Component {
     this.state.folders.filter(
       folder =>
         folder.name ===
-        (this.state.season === 'WET' ? 'WS' : 'DS') + this.state.year
+        (this.state.season === "WET" ? "WS" : "DS") + this.state.year
     ).length > 0
       ? this.setState({ folder_exists: true })
       : this.setState({ folder_exists: false });
     /* change state name */
     this.setState({
-      folder_name: (this.state.season === 'WET' ? 'WS' : 'DS') + this.state.year
+      folder_name: (this.state.season === "WET" ? "WS" : "DS") + this.state.year
     });
   };
 
@@ -263,12 +263,12 @@ export default class View extends Component {
       nextProps.loggedIn === false &&
       (this.state.private || this.state.archived)
     )
-      this.props.changePage('browse');
+      this.props.changePage("browse");
   }
 
   componentDidMount = () => {
     /* loads the image info */
-    this.loadInfo('all');
+    this.loadInfo("all");
     /* load the folders */
     API.getAllFolders().then(result => {
       this.setState({ folders: result.data.data });
@@ -277,7 +277,7 @@ export default class View extends Component {
 
   /* reusable load info */
   loadInfo = params => {
-    if (params === 'all') {
+    if (params === "all") {
       API.getImage(this.props.imageID).then(result => {
         this.setState({
           fileURL: result.data.data.filepath,
@@ -310,29 +310,32 @@ export default class View extends Component {
   analyze = e => {
     e.preventDefault();
     /* this is where we put the glue */
-    API.analyze({file: this.state.fileURL}).then(result => {
-      this.setState({ attrib: [
-        {name: "Yield Percentage (%)", value: result.data.data.yield},
-        {name: "Days before Harvest", value: result.data.data.days}
-      ] });
+    API.analyze({ file: this.state.fileURL })
+      .then(result => {
+        this.setState({
+          attrib: [
+            { name: "Yield Percentage (%)", value: result.data.data.yield },
+            { name: "Days before Harvest", value: result.data.data.days }
+          ]
+        });
 
-      /* this is an alert on success */
-      Alert.success("Successfully analyzed image.", {
-        beep: false,
-        position: "top-right",
-        effect: "jelly",
-        timeout: 2000
+        /* this is an alert on success */
+        Alert.success("Successfully analyzed image.", {
+          beep: false,
+          position: "top-right",
+          effect: "jelly",
+          timeout: 2000
+        });
+      })
+      .catch(err => {
+        /* this is an alert on failure */
+        Alert.error("Failed to analyze image.", {
+          beep: false,
+          position: "top-right",
+          effect: "jelly",
+          timeout: 2000
+        });
       });
-    }).catch(err => {
-      /* this is an alert on failure */
-      Alert.error("Failed to analyze image.", {
-        beep: false,
-        position: "top-right",
-        effect: "jelly",
-        timeout: 2000
-      });
-      }
-    );
   };
 
   /* saves one */
@@ -355,27 +358,27 @@ export default class View extends Component {
       })
         .then(() => {
           /* this is an alert on success */
-          Alert.success('Successfully saved image.', {
+          Alert.success("Successfully saved image.", {
             beep: false,
-            position: 'top-right',
-            effect: 'jelly',
+            position: "top-right",
+            effect: "jelly",
             timeout: 2000
           });
         })
         .catch(() => {
           /* this is an alert on failure */
-          Alert.error('Failed to save image.', {
+          Alert.error("Failed to save image.", {
             beep: false,
-            position: 'top-right',
-            effect: 'jelly',
+            position: "top-right",
+            effect: "jelly",
             timeout: 2000
           });
         });
     } else {
-      Alert.error('Must have a folder.', {
+      Alert.error("Must have a folder.", {
         beep: false,
-        position: 'top-right',
-        effect: 'jelly',
+        position: "top-right",
+        effect: "jelly",
         timeout: 2000
       });
     }
@@ -385,26 +388,55 @@ export default class View extends Component {
     return (
       <DocumentTitle title="DIA | View">
         <div>
-          <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
+          <Columns isFullWidth style={{ backgroundColor: "#015249" }}>
             {this.state.userID && this.props.userID === this.state.userID ? (
-              <Column style={style.toolbar} isHidden={'mobile'}>
+              <Column style={style.toolbar} isHidden={"mobile"}>
                 <a
-                  href={'.'}
-                  data-tip={'Analyze Image'}
+                  href={"."}
+                  data-tip={"Back to Browse Images"}
                   style={style.whiteText}
-                  onClick={this.analyze}>
-                  <Icon className={'fa fa-bolt fa-1x'} />
+                  onClick={this.props.backToFolders}
+                >
+                  <Icon className={"fa fa-chevron-left fa-1x"} />
+                  <Heading>GO BACK</Heading>
+                </a>
+              </Column>
+            ) : !this.state.userID ? (
+              <Column style={style.toolbar} isHidden={"mobile"}>
+                <a
+                  href={"."}
+                  data-tip={"Back to Browse Images"}
+                  style={style.whiteText}
+                  onClick={this.props.backToFolders}
+                >
+                  <Icon className={"fa fa-chevron-left fa-1x"} />
+                  <Heading>GO BACK</Heading>
+                </a>
+              </Column>
+            ) : (
+              <div />
+            )}
+            {this.state.userID && this.props.userID === this.state.userID ? (
+              <Column style={style.toolbar} isHidden={"mobile"}>
+                <a
+                  href={"."}
+                  data-tip={"Analyze Image"}
+                  style={style.whiteText}
+                  onClick={this.analyze}
+                >
+                  <Icon className={"fa fa-bolt fa-1x"} />
                   <Heading>ANALYZE</Heading>
                 </a>
               </Column>
             ) : !this.state.userID ? (
-              <Column style={style.toolbar} isHidden={'mobile'}>
+              <Column style={style.toolbar} isHidden={"mobile"}>
                 <a
-                  href={'.'}
-                  data-tip={'Analyze Image'}
+                  href={"."}
+                  data-tip={"Analyze Image"}
                   style={style.whiteText}
-                  onClick={this.analyze}>
-                  <Icon className={'fa fa-bolt fa-1x'} />
+                  onClick={this.analyze}
+                >
+                  <Icon className={"fa fa-bolt fa-1x"} />
                   <Heading>ANALYZE</Heading>
                 </a>
               </Column>
@@ -412,24 +444,26 @@ export default class View extends Component {
               <div />
             )}
             {this.state.userID && this.props.userID === this.state.userID ? (
-              <Column style={style.toolbar} isHidden={'mobile'}>
+              <Column style={style.toolbar} isHidden={"mobile"}>
                 <a
-                  href={'.'}
-                  data-tip={'Save Image'}
+                  href={"."}
+                  data-tip={"Save Image"}
                   style={style.whiteText}
-                  onClick={this.save}>
-                  <Icon className={'fa fa-save fa-1x'} />
+                  onClick={this.save}
+                >
+                  <Icon className={"fa fa-save fa-1x"} />
                   <Heading>SAVE</Heading>
                 </a>
               </Column>
             ) : !this.state.userID ? (
-              <Column style={style.toolbar} isHidden={'mobile'}>
+              <Column style={style.toolbar} isHidden={"mobile"}>
                 <a
-                  href={'.'}
-                  data-tip={'Save Image'}
+                  href={"."}
+                  data-tip={"Save Image"}
                   style={style.whiteText}
-                  onClick={this.save}>
-                  <Icon className={'fa fa-save fa-1x'} />
+                  onClick={this.save}
+                >
+                  <Icon className={"fa fa-save fa-1x"} />
                   <Heading>SAVE</Heading>
                 </a>
               </Column>
@@ -438,76 +472,106 @@ export default class View extends Component {
             )}
             {this.state.userID && this.props.userID === this.state.userID ? (
               this.state.archived ? (
-                <Column style={style.toolbar} isHidden={'mobile'}>
+                <Column style={style.toolbar} isHidden={"mobile"}>
                   <a
-                    href={'.'}
-                    data-value={'unarchive'}
-                    data-tip={'Remove from Archive'}
+                    href={"."}
+                    data-value={"unarchive"}
+                    data-tip={"Remove from Archive"}
                     style={style.whiteText}
-                    onClick={this.openModal}>
-                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    onClick={this.openModal}
+                  >
+                    <Icon className={"fa fa-plus-circle fa-1x"} />
                     <Heading>UNARCHIVE</Heading>
                   </a>
                 </Column>
               ) : (
-                <Column style={style.toolbar} isHidden={'mobile'}>
+                <Column style={style.toolbar} isHidden={"mobile"}>
                   <a
-                    href={'.'}
-                    data-value={'archive'}
-                    data-tip={'Archive Image'}
+                    href={"."}
+                    data-value={"archive"}
+                    data-tip={"Archive Image"}
                     style={style.whiteText}
-                    onClick={this.openModal}>
-                    <Icon className={'fa fa-minus-circle fa-1x'} />
+                    onClick={this.openModal}
+                  >
+                    <Icon className={"fa fa-minus-circle fa-1x"} />
                     <Heading>ARCHIVE</Heading>
                   </a>
                 </Column>
               )
             ) : !this.state.userID ? (
               this.state.archived ? (
-                <Column style={style.toolbar} isHidden={'mobile'}>
+                <Column style={style.toolbar} isHidden={"mobile"}>
                   <a
-                    href={'.'}
-                    data-value={'unarchive'}
-                    data-tip={'Remove from Archive'}
+                    href={"."}
+                    data-value={"unarchive"}
+                    data-tip={"Remove from Archive"}
                     style={style.whiteText}
-                    onClick={this.openModal}>
-                    <Icon className={'fa fa-plus-circle fa-1x'} />
+                    onClick={this.openModal}
+                  >
+                    <Icon className={"fa fa-plus-circle fa-1x"} />
                     <Heading>UNARCHIVE</Heading>
                   </a>
                 </Column>
               ) : (
-                <Column style={style.toolbar} isHidden={'mobile'}>
+                <Column style={style.toolbar} isHidden={"mobile"}>
                   <a
-                    href={'.'}
-                    data-value={'archive'}
-                    data-tip={'Archive Image'}
+                    href={"."}
+                    data-value={"archive"}
+                    data-tip={"Archive Image"}
                     style={style.whiteText}
-                    onClick={this.openModal}>
-                    <Icon className={'fa fa-minus-circle fa-1x'} />
+                    onClick={this.openModal}
+                  >
+                    <Icon className={"fa fa-minus-circle fa-1x"} />
                     <Heading>ARCHIVE</Heading>
                   </a>
                 </Column>
               )
             ) : (
-              <Column style={style.toolbar} isHidden={'mobile'}>
-                <Heading style={style.whiteText}>NO USER PRIVILEGES</Heading>
+              <Column style={style.toolbar} isHidden={"mobile"}>
+                <Heading style={style.whiteText}>
+                  <span
+                    onClick={this.props.backToFolders}
+                    style={{ cursor: "pointer", textDecoration: "underline" }}
+                  >
+                    <Icon className={"fa fa-chevron-left fa-xs"}/>GO BACK
+                  </span>{" "}
+                  | NO USER PRIVILEGES
+                </Heading>
               </Column>
             )}
             <Column
-              style={{ paddingTop: '20px', textAlign: 'center' }}
-              isHidden={'desktop'}>
+              style={{ paddingTop: "20px", textAlign: "center" }}
+              isHidden={"desktop"}
+            >
+              {this.state.userID && this.props.userID === this.state.userID ? (
+                <Button style={style.button} onClick={this.props.backToFolders}>
+                  <center>
+                    <Icon className={"fa fa-chevron-left fa-1x"} />
+                    <small style={{ color: "white" }}>GO BACK</small>
+                  </center>
+                </Button>
+              ) : !this.state.userID ? (
+                <Button style={style.button} onClick={this.props.backToFolders}>
+                  <center>
+                    <Icon className={"fa fa-chevron-left fa-1x"} />
+                    <small style={{ color: "white" }}>GO BACK</small>
+                  </center>
+                </Button>
+              ) : (
+                <div />
+              )}
               {this.state.userID && this.props.userID === this.state.userID ? (
                 <Button style={style.button} onClick={this.analyze}>
                   <center>
-                    <Icon className={'fa fa-bolt fa-1x'} />
-                    <small style={{ color: 'white' }}>ANALYZE</small>
+                    <Icon className={"fa fa-bolt fa-1x"} />
+                    <small style={{ color: "white" }}>ANALYZE</small>
                   </center>
                 </Button>
               ) : !this.state.userID ? (
                 <Button style={style.button} onClick={this.analyze}>
                   <center>
-                    <Icon className={'fa fa-bolt fa-1x'} />
-                    <small style={{ color: 'white' }}>ANALYZE</small>
+                    <Icon className={"fa fa-bolt fa-1x"} />
+                    <small style={{ color: "white" }}>ANALYZE</small>
                   </center>
                 </Button>
               ) : (
@@ -516,15 +580,15 @@ export default class View extends Component {
               {this.state.userID && this.props.userID === this.state.userID ? (
                 <Button style={style.button} onClick={this.save}>
                   <center>
-                    <Icon className={'fa fa-save fa-1x'} />
-                    <small style={{ color: 'white' }}>SAVE</small>
+                    <Icon className={"fa fa-save fa-1x"} />
+                    <small style={{ color: "white" }}>SAVE</small>
                   </center>
                 </Button>
               ) : !this.state.userID ? (
                 <Button style={style.button} onClick={this.save}>
                   <center>
-                    <Icon className={'fa fa-save fa-1x'} />
-                    <small style={{ color: 'white' }}>SAVE</small>
+                    <Icon className={"fa fa-save fa-1x"} />
+                    <small style={{ color: "white" }}>SAVE</small>
                   </center>
                 </Button>
               ) : (
@@ -533,59 +597,72 @@ export default class View extends Component {
               {this.state.userID && this.props.userID === this.state.userID ? (
                 this.state.archived ? (
                   <Button
-                    data-value={'unarchive'}
+                    data-value={"unarchive"}
                     style={style.button}
-                    onClick={this.openModal}>
+                    onClick={this.openModal}
+                  >
                     <center>
-                      <Icon className={'fa fa-plus-circle fa-1x'} />
-                      <small style={{ color: 'white' }}>UNARCHIVE</small>
+                      <Icon className={"fa fa-plus-circle fa-1x"} />
+                      <small style={{ color: "white" }}>UNARCHIVE</small>
                     </center>
                   </Button>
                 ) : (
                   <Button
-                    data-value={'archive'}
+                    data-value={"archive"}
                     style={style.button}
-                    onClick={this.openModal}>
+                    onClick={this.openModal}
+                  >
                     <center>
-                      <Icon className={'fa fa-minus-circle fa-1x'} />
-                      <small style={{ color: 'white' }}>ARCHIVE</small>
+                      <Icon className={"fa fa-minus-circle fa-1x"} />
+                      <small style={{ color: "white" }}>ARCHIVE</small>
                     </center>
                   </Button>
                 )
               ) : !this.state.userID ? (
                 this.state.archived ? (
                   <Button
-                    data-value={'unarchive'}
+                    data-value={"unarchive"}
                     style={style.button}
-                    onClick={this.openModal}>
+                    onClick={this.openModal}
+                  >
                     <center>
-                      <Icon className={'fa fa-plus-circle fa-1x'} />
-                      <small style={{ color: 'white' }}>UNARCHIVE</small>
+                      <Icon className={"fa fa-plus-circle fa-1x"} />
+                      <small style={{ color: "white" }}>UNARCHIVE</small>
                     </center>
                   </Button>
                 ) : (
                   <Button
-                    data-value={'archive'}
+                    data-value={"archive"}
                     style={style.button}
-                    onClick={this.openModal}>
+                    onClick={this.openModal}
+                  >
                     <center>
-                      <Icon className={'fa fa-minus-circle fa-1x'} />
-                      <small style={{ color: 'white' }}>ARCHIVE</small>
+                      <Icon className={"fa fa-minus-circle fa-1x"} />
+                      <small style={{ color: "white" }}>ARCHIVE</small>
                     </center>
                   </Button>
                 )
               ) : (
-                <Heading style={style.whiteText}>NO USER PRIVILEGES</Heading>
+                <Heading style={style.whiteText}>
+                  <span
+                    onClick={this.props.backToFolders}
+                    style={{ cursor: "pointer", textDecoration: "underline" }}
+                  >
+                    <Icon className={"fa fa-chevron-left fa-xs"}/>GO BACK
+                  </span>{" "}
+                  | NO USER PRIVILEGES
+                </Heading>
               )}
             </Column>
           </Columns>
           <div>
-            <Columns isFullWidth style={{ minHeight: '40vh' }}>
+            <Columns isFullWidth style={{ minHeight: "40vh" }}>
               <Column
-                isSize={'1/3'}
-                style={{ borderRight: '2px solid #015249' }}>
+                isSize={"1/3"}
+                style={{ borderRight: "2px solid #015249" }}
+              >
                 <Menu>
-                  <MenuLabel style={{ marginLeft: '10px' }}>
+                  <MenuLabel style={{ marginLeft: "10px" }}>
                     IMAGE INFO
                   </MenuLabel>
                   <MenuList>
@@ -650,47 +727,49 @@ export default class View extends Component {
                             <Columns isMultiline>
                               <Column isSize="1/2">
                                 <Button
-                                  data-value={'WET'}
+                                  data-value={"WET"}
                                   onClick={
                                     this.state.userID &&
                                     this.state.userID === this.props.userID
                                       ? this.changeSeason
                                       : !this.state.userID
-                                        ? this.changeSeason
-                                        : e => e.preventDefault()
+                                      ? this.changeSeason
+                                      : e => e.preventDefault()
                                   }
-                                  isSize={'small'}
+                                  isSize={"small"}
                                   style={
-                                    this.state.season === 'WET'
+                                    this.state.season === "WET"
                                       ? style.activeButton
                                       : {}
-                                  }>
+                                  }
+                                >
                                   <Icon
-                                    className={'fa fa-umbrella fa-1x'}
-                                    style={{ marginRight: '5px' }}
-                                  />{' '}
+                                    className={"fa fa-umbrella fa-1x"}
+                                    style={{ marginRight: "5px" }}
+                                  />{" "}
                                   WET
                                 </Button>
                                 <Button
-                                  data-value={'DRY'}
+                                  data-value={"DRY"}
                                   onClick={
                                     this.state.userID &&
                                     this.state.userID === this.props.userID
                                       ? this.changeSeason
                                       : !this.state.userID
-                                        ? this.changeSeason
-                                        : e => e.preventDefault()
+                                      ? this.changeSeason
+                                      : e => e.preventDefault()
                                   }
-                                  isSize={'small'}
+                                  isSize={"small"}
                                   style={
-                                    this.state.season === 'DRY'
+                                    this.state.season === "DRY"
                                       ? style.activeButton
                                       : {}
-                                  }>
+                                  }
+                                >
                                   <Icon
-                                    className={'fa fa-fire fa-1x'}
-                                    style={{ marginRight: '5px' }}
-                                  />{' '}
+                                    className={"fa fa-fire fa-1x"}
+                                    style={{ marginRight: "5px" }}
+                                  />{" "}
                                   DRY
                                 </Button>
                               </Column>
@@ -719,47 +798,49 @@ export default class View extends Component {
                             <Columns isMultiline>
                               <Column isSize="1/2">
                                 <Button
-                                  data-value={'WET'}
+                                  data-value={"WET"}
                                   onClick={
                                     this.state.userID &&
                                     this.state.userID === this.props.userID
                                       ? this.changeSeason
                                       : !this.state.userID
-                                        ? this.changeSeason
-                                        : e => e.preventDefault()
+                                      ? this.changeSeason
+                                      : e => e.preventDefault()
                                   }
-                                  isSize={'small'}
+                                  isSize={"small"}
                                   style={
-                                    this.state.season === 'WET'
+                                    this.state.season === "WET"
                                       ? style.activeButton
                                       : {}
-                                  }>
+                                  }
+                                >
                                   <Icon
-                                    className={'fa fa-umbrella fa-1x'}
-                                    style={{ marginRight: '5px' }}
-                                  />{' '}
+                                    className={"fa fa-umbrella fa-1x"}
+                                    style={{ marginRight: "5px" }}
+                                  />{" "}
                                   WET
                                 </Button>
                                 <Button
-                                  data-value={'DRY'}
+                                  data-value={"DRY"}
                                   onClick={
                                     this.state.userID &&
                                     this.state.userID === this.props.userID
                                       ? this.changeSeason
                                       : !this.state.userID
-                                        ? this.changeSeason
-                                        : e => e.preventDefault()
+                                      ? this.changeSeason
+                                      : e => e.preventDefault()
                                   }
-                                  isSize={'small'}
+                                  isSize={"small"}
                                   style={
-                                    this.state.season === 'DRY'
+                                    this.state.season === "DRY"
                                       ? style.activeButton
                                       : {}
-                                  }>
+                                  }
+                                >
                                   <Icon
-                                    className={'fa fa-fire fa-1x'}
-                                    style={{ marginRight: '5px' }}
-                                  />{' '}
+                                    className={"fa fa-fire fa-1x"}
+                                    style={{ marginRight: "5px" }}
+                                  />{" "}
                                   DRY
                                 </Button>
                               </Column>
@@ -787,25 +868,29 @@ export default class View extends Component {
                               </Column>
                               <Column
                                 isSize="1/2"
-                                style={{ paddingTop: '0px' }}>
+                                style={{ paddingTop: "0px" }}
+                              >
                                 <small>
-                                  {this.state.folder_exists === '' ? (
+                                  {this.state.folder_exists === "" ? (
                                     <p style={style.blueText}>
                                       <Icon
-                                        className={'fa fa-info-circle fa-xs'}
-                                      />Required
+                                        className={"fa fa-info-circle fa-xs"}
+                                      />
+                                      Required
                                     </p>
                                   ) : this.state.folder_exists ? (
                                     <p style={style.greenText}>
                                       <Icon
-                                        className={'fa fa-check-circle fa-xs'}
-                                      />Exists
+                                        className={"fa fa-check-circle fa-xs"}
+                                      />
+                                      Exists
                                     </p>
                                   ) : (
                                     <p style={style.redText}>
                                       <Icon
-                                        className={'fa fa-times-circle fa-xs'}
-                                      />Doesn't Exist
+                                        className={"fa fa-times-circle fa-xs"}
+                                      />
+                                      Doesn't Exist
                                     </p>
                                   )}
                                 </small>
@@ -820,24 +905,25 @@ export default class View extends Component {
                     <MenuLink style={style.removeUnderline}>
                       <Columns>
                         <Column isSize="1/4">Private</Column>
-                        <Column isSize="3/4" style={{ paddingLeft: '20px' }}>
+                        <Column isSize="3/4" style={{ paddingLeft: "20px" }}>
                           {this.state.private ? (
                             <i
                               style={{
                                 ...style.switchOn,
-                                cursor: 'pointer'
+                                cursor: "pointer"
                               }}
                               onClick={
                                 this.state.userID &&
                                 this.props.userID === this.state.userID
                                   ? this.switch
                                   : !this.state.userID
-                                    ? this.switch
-                                    : e => e.preventDefault()
-                              }>
+                                  ? this.switch
+                                  : e => e.preventDefault()
+                              }
+                            >
                               <Icon
                                 href="."
-                                className={'fa fa-toggle-on fa-lg'}
+                                className={"fa fa-toggle-on fa-lg"}
                                 isSize="small"
                               />
                             </i>
@@ -845,19 +931,20 @@ export default class View extends Component {
                             <i
                               style={{
                                 ...style.switchOff,
-                                cursor: 'pointer'
+                                cursor: "pointer"
                               }}
                               onClick={
                                 this.state.userID &&
                                 this.props.userID === this.state.userID
                                   ? this.switch
                                   : !this.state.userID
-                                    ? this.switch
-                                    : e => e.preventDefault()
-                              }>
+                                  ? this.switch
+                                  : e => e.preventDefault()
+                              }
+                            >
                               <Icon
                                 href="."
-                                className={'fa fa-toggle-off fa-lg'}
+                                className={"fa fa-toggle-off fa-lg"}
                                 isSize="small"
                               />
                             </i>
@@ -868,36 +955,38 @@ export default class View extends Component {
                   </MenuList>
                 </Menu>
               </Column>
-              <Column isSize={'2/3'} style={style.imageColumn}>
+              <Column isSize={"2/3"} style={style.imageColumn}>
                 <img alt={`${this.state.name}`} src={this.state.fileURL} />
               </Column>
             </Columns>
-            <Columns isFullWidth style={{ backgroundColor: '#015249' }}>
+            <Columns isFullWidth style={{ backgroundColor: "#015249" }}>
               <Column>
                 <Message>
                   <MessageHeader style={style.dataHeader}>
                     <Heading
                       style={{
-                        fontSize: '18px',
-                        paddingTop: '5px',
-                        paddingBottom: '0px'
-                      }}>
+                        fontSize: "18px",
+                        paddingTop: "5px",
+                        paddingBottom: "0px"
+                      }}
+                    >
                       Image Data
                     </Heading>
                   </MessageHeader>
                   <MessageBody>
-                    <Menu style={{ minHeight: '35vh' }}>
+                    <Menu style={{ minHeight: "35vh" }}>
                       <MenuLabel>
                         Metadata
                         <a
                           href="."
                           onClick={this.handleMeta}
-                          style={style.removeUnderline}>
+                          style={style.removeUnderline}
+                        >
                           <Icon
                             className={
                               this.state.metadataOpen
-                                ? 'fa fa-angle-up'
-                                : 'fa fa-angle-down'
+                                ? "fa fa-angle-up"
+                                : "fa fa-angle-down"
                             }
                             isSize="small"
                           />
@@ -1049,16 +1138,17 @@ export default class View extends Component {
                         <div />
                       )}
                       <MenuLabel>
-                        Attributes{' '}
+                        Attributes{" "}
                         <a
                           href="."
                           onClick={this.handleAttrib}
-                          style={style.removeUnderline}>
+                          style={style.removeUnderline}
+                        >
                           <Icon
                             className={
                               this.state.attribOpen
-                                ? 'fa fa-angle-up'
-                                : 'fa fa-angle-down'
+                                ? "fa fa-angle-up"
+                                : "fa fa-angle-down"
                             }
                             isSize="small"
                           />
@@ -1092,7 +1182,7 @@ export default class View extends Component {
               </Column>
             </Columns>
           </div>
-          <ReactTooltip effect={'solid'} place={'bottom'} />
+          <ReactTooltip effect={"solid"} place={"bottom"} />
           <ArchiveModal
             {...{
               /* pass props here */

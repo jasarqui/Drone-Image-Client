@@ -1,21 +1,21 @@
 /* import React components here */
-import React, { Component } from 'react';
-import DocumentTitle from 'react-document-title';
-import BrowsePanel from './components/BrowsePanel';
-import BrowseBody from './components/BrowseBody';
-import BrowseFolders from './components/BrowseFolders';
+import React, { Component } from "react";
+import DocumentTitle from "react-document-title";
+import BrowsePanel from "./components/BrowsePanel";
+import BrowseBody from "./components/BrowseBody";
+import BrowseFolders from "./components/BrowseFolders";
 /* import bulma components */
-import { Columns, Column } from 'bloomer';
+import { Columns, Column } from "bloomer";
 /* import api here */
-import * as API from '../../api';
+import * as API from "../../api";
 
 export default class Browse extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      search: '',
-      searchTag: '',
+      search: "",
+      searchTag: "",
       images: [],
       folders: [],
       currentPage: 1,
@@ -23,11 +23,11 @@ export default class Browse extends Component {
       currentFolderPage: 1,
       totalFolderPages: 1,
       currentFolder: 1,
-      currentBrowse: 'folder',
+      currentBrowse: "folder",
       /* these are filters */
       myUpload: false, // default is false
-      category: 'All Seasons', // values: all, category name
-      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data', // values: Public and Private Data, Public Data, Private Data
+      category: "All Seasons", // values: all, category name
+      showData: this.props.loggedIn ? "Public and Private Data" : "Public Data", // values: Public and Private Data, Public Data, Private Data
       /* these are UX */
       loadingFolders: true,
       loadingImages: true
@@ -38,7 +38,7 @@ export default class Browse extends Component {
   openFolder = index => {
     this.setState({
       currentFolder: index,
-      currentBrowse: 'image',
+      currentBrowse: "image",
       currentPage: 1
     });
     this.newSearch(1);
@@ -48,7 +48,7 @@ export default class Browse extends Component {
   closeFolder = e => {
     e.preventDefault();
     this.setState({
-      currentBrowse: 'folder',
+      currentBrowse: "folder",
       currentPage: 1,
       images: []
     });
@@ -56,18 +56,19 @@ export default class Browse extends Component {
   };
 
   /* reusable function for setting the page */
-  newSearch = page => {
+  newSearch = async page => {
     this.setState({ loadingImages: true });
-    this.setPages(page).then(this.setImages);
+    this.setPages(page);
+    this.setImages();
   };
 
   /* these are for change to current user uploads */
-  filterMyUpload = e => {
+  filterMyUpload = async e => {
     e.preventDefault();
     this.changeMyUpload().then(
-      this.state.currentBrowse === 'image'
-        ? () => this.newSearch(1)
-        : () => this.newFolderSearch(1)
+      this.state.currentBrowse === "image"
+        ? async () => await this.newSearch(1)
+        : async () => await this.newFolderSearch(1)
     );
   };
 
@@ -76,12 +77,12 @@ export default class Browse extends Component {
   }
 
   /* these are for change category */
-  changeCategory = e => {
+  changeCategory = async e => {
     e.preventDefault();
     this.onChangeCategory(e).then(
-      this.state.currentBrowse === 'image'
-        ? () => this.newSearch(1)
-        : () => this.newFolderSearch(1)
+      this.state.currentBrowse === "image"
+        ? async () => await this.newSearch(1)
+        : async () => await this.newFolderSearch(1)
     );
   };
 
@@ -90,12 +91,12 @@ export default class Browse extends Component {
   }
 
   /* these are for changing data privacy */
-  changeData = e => {
+  changeData = async e => {
     e.preventDefault();
     this.onChangeData(e).then(
-      this.state.currentBrowse === 'image'
-        ? () => this.newSearch(1)
-        : () => this.newFolderSearch(1)
+      this.state.currentBrowse === "image"
+        ? async () => await this.newSearch(1)
+        : async () => await this.newFolderSearch(1)
     );
   };
 
@@ -104,34 +105,34 @@ export default class Browse extends Component {
   }
 
   /* these are for resetting filters when user logs out */
-  resetFilterOnLogout = () => {
+  resetFilterOnLogout = async () => {
     this.changeFilterOnLogout().then(
-      this.state.currentBrowse === 'image'
-        ? () => this.newSearch(1)
-        : () => this.newFolderSearch(1)
+      this.state.currentBrowse === "image"
+        ? async () => await this.newSearch(1)
+        : async () => await this.newFolderSearch(1)
     );
   };
 
   async changeFilterOnLogout() {
     this.setState({
       myUpload: false,
-      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data'
+      showData: this.props.loggedIn ? "Public and Private Data" : "Public Data"
     });
   }
 
   /* these are for resetting filters */
-  resetFilters = e => {
+  resetFilters = async e => {
     e.preventDefault();
-    this.onResetFilter().then(() => this.newSearch(1));
+    this.onResetFilter().then(async () => await this.newSearch(1));
   };
 
   async onResetFilter() {
     this.setState({
-      search: '',
-      searchTag: '',
+      search: "",
+      searchTag: "",
       myUpload: false,
-      category: 'All Seasons',
-      showData: this.props.loggedIn ? 'Public and Private Data' : 'Public Data'
+      category: "All Seasons",
+      showData: this.props.loggedIn ? "Public and Private Data" : "Public Data"
     });
   }
 
@@ -140,12 +141,12 @@ export default class Browse extends Component {
     this.setState({ search: e.target.value });
   };
 
-  search = e => {
+  search = async e => {
     e.preventDefault();
     this.onSearch().then(
-      this.state.currentBrowse === 'image'
-        ? () => this.newSearch(1)
-        : () => this.newFolderSearch(1)
+      this.state.currentBrowse === "image"
+        ? async () => await this.newSearch(1)
+        : async () => await this.newFolderSearch(1)
     );
   };
 
@@ -155,7 +156,7 @@ export default class Browse extends Component {
 
   /* page handling */
   changePage = offset => {
-    if (this.state.currentBrowse === 'image') {
+    if (this.state.currentBrowse === "image") {
       this.newSearch(this.state.currentPage + offset);
       this.setState({ currentPage: this.state.currentPage + offset });
     } else {
@@ -170,8 +171,8 @@ export default class Browse extends Component {
   prev = e => {
     e.preventDefault();
     if (
-      (this.state.currentBrowse === 'image' && this.state.currentPage !== 1) ||
-      (this.state.currentBrowse === 'folder' &&
+      (this.state.currentBrowse === "image" && this.state.currentPage !== 1) ||
+      (this.state.currentBrowse === "folder" &&
         this.state.currentFolderPage !== 1)
     )
       this.changePage(-1);
@@ -181,9 +182,9 @@ export default class Browse extends Component {
   next = e => {
     e.preventDefault();
     if (
-      (this.state.currentBrowse === 'image' &&
+      (this.state.currentBrowse === "image" &&
         this.state.currentPage !== this.state.totalPages) ||
-      (this.state.currentBrowse === 'folder' &&
+      (this.state.currentBrowse === "folder" &&
         this.state.currentFolderPage !== this.state.totalFolderPages)
     )
       this.changePage(1);
@@ -193,8 +194,8 @@ export default class Browse extends Component {
   prevTwo = e => {
     e.preventDefault();
     if (
-      (this.state.currentBrowse === 'image' && this.state.currentPage > 2) ||
-      (this.state.currentFolderBrowse === 'folder' &&
+      (this.state.currentBrowse === "image" && this.state.currentPage > 2) ||
+      (this.state.currentFolderBrowse === "folder" &&
         this.state.currentFolderPage > 2)
     )
       this.changePage(-2);
@@ -204,9 +205,9 @@ export default class Browse extends Component {
   nextTwo = e => {
     e.preventDefault();
     if (
-      (this.state.currentBrowse === 'image' &&
+      (this.state.currentBrowse === "image" &&
         this.state.currentPage < this.state.totalPages - 1) ||
-      (this.state.currentBrowse === 'folder' &&
+      (this.state.currentBrowse === "folder" &&
         this.state.currentFolderPage < this.state.totalFolderPages - 1)
     )
       this.changePage(2);
@@ -215,10 +216,10 @@ export default class Browse extends Component {
   /* this will go back to the start */
   start = e => {
     e.preventDefault();
-    if (this.state.currentBrowse === 'image' && this.state.currentPage !== 1)
+    if (this.state.currentBrowse === "image" && this.state.currentPage !== 1)
       this.changePage(1 - this.state.currentPage);
     else if (
-      this.state.currentBrowse === 'folder' &&
+      this.state.currentBrowse === "folder" &&
       this.state.currentFolderPage !== 1
     )
       this.changePage(1 - this.state.currentFolderPage);
@@ -228,12 +229,12 @@ export default class Browse extends Component {
   last = e => {
     e.preventDefault();
     if (
-      this.state.currentBrowse === 'image' &&
+      this.state.currentBrowse === "image" &&
       this.state.currentPage !== this.state.totalPages
     )
       this.changePage(this.state.totalPages - this.state.currentPage);
     else if (
-      this.state.currentBrowse === 'folder' &&
+      this.state.currentBrowse === "folder" &&
       this.state.currentFolderPage !== this.state.totalFolderPages
     )
       this.changePage(
@@ -242,8 +243,8 @@ export default class Browse extends Component {
   };
 
   /* reuseable set total pages function */
-  async setPages(page) {
-    API.countPages({
+  setPages = async page => {
+    await API.countPages({
       myUpload: this.state.myUpload,
       category: this.state.category,
       showData: this.state.showData,
@@ -285,17 +286,31 @@ export default class Browse extends Component {
   /* below are folder functions ================================== */
 
   /* load the first folders */
-  componentDidMount = () => this.newFolderSearch(1);
+  componentDidMount = async () => {
+    if (!this.props.folder_state) {
+      this.newFolderSearch(1);
+    } else {
+        await this.setFolderState();
+        await this.newSearch(this.state.currentPage);
+        this.props.nullFolderState();
+      };
+    }
+
+  setFolderState = async () => {
+    await this.setState(this.props.folder_state);
+    this.setState({images: []});
+  }
 
   /* reusable function for setting the page */
-  newFolderSearch = page => {
+  newFolderSearch = async page => {
     this.setState({ loadingFolders: true });
-    this.setFolderPages(page).then(this.setFolders);
+    this.setFolderPages(page);
+    this.setFolders();
   };
 
   /* reuseable set total folder pages function */
-  async setFolderPages(page) {
-    API.countFolderPages({
+  setFolderPages = async (page) => {
+    await API.countFolderPages({
       myUpload: this.state.myUpload,
       category: this.state.category,
       showData: this.state.showData,
@@ -325,8 +340,8 @@ export default class Browse extends Component {
     return (
       <DocumentTitle title="DIA | Browse">
         <div>
-          <Columns isCentered isGapless style={{ minHeight: '100vh' }}>
-            <Column isSize="1/4" style={{ backgroundColor: '#015249' }}>
+          <Columns isCentered isGapless style={{ minHeight: "100vh" }}>
+            <Column isSize="1/4" style={{ backgroundColor: "#015249" }}>
               <BrowsePanel
                 {...{
                   /* pass the props here */
@@ -345,8 +360,8 @@ export default class Browse extends Component {
                 }}
               />
             </Column>
-            <Column isSize="3/4" style={{ backgroundColor: '#F8F8F8' }}>
-              {this.state.currentBrowse === 'folder' ? (
+            <Column isSize="3/4" style={{ backgroundColor: "#F8F8F8" }}>
+              {this.state.currentBrowse === "folder" ? (
                 <BrowseFolders
                   {...{
                     /* pass the props here */
@@ -386,6 +401,7 @@ export default class Browse extends Component {
                     userID: this.props.userID,
                     folder_id: this.state.currentFolder,
                     loadingImages: this.state.loadingImages,
+                    folder_state: this.state,
                     /* pass the handlers here */
                     closeFolder: this.closeFolder,
                     next: this.next,

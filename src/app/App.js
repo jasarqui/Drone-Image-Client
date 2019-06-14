@@ -24,7 +24,8 @@ export default class App extends Component {
       currentUser: '',
       currentUserId: '',
       currentUserPic: '',
-      imageID: ''
+      imageID: '',
+      folder_state: null
     };
   }
 
@@ -45,9 +46,21 @@ export default class App extends Component {
     e.preventDefault();
     this.setState({
       activePage: 'view',
-      imageID: e.currentTarget.dataset.value
+      imageID: JSON.parse(e.currentTarget.dataset.value).id,
+      folder_state: JSON.parse(e.currentTarget.dataset.value).folder_state
     });
   };
+
+  backToFolders = e => {
+    e.preventDefault();
+    this.setState({
+      activePage: 'browse'
+    })
+  }
+
+  nullFolderState = () => {
+    this.setState({folder_state: null});
+  }
 
   preventReload = e => {
     e.preventDefault();
@@ -113,7 +126,9 @@ export default class App extends Component {
                 loggedIn: this.state.loggedIn,
                 imageID: this.state.imageID,
                 userID: this.state.currentUserId,
+                folder_state: this.state.folder_state,
                 /* pass the handlers here */
+                nullFolderState: this.nullFolderState,
                 viewImage: this.viewImage,
                 preventReload: this.preventReload
               }}
@@ -126,6 +141,7 @@ export default class App extends Component {
                 userID: this.state.currentUserId,
                 imageID: this.state.imageID,
                 /* pass the handlers here */
+                backToFolders: this.backToFolders,
                 preventReload: this.preventReload,
                 changePage: this.directChangePage
               }}
